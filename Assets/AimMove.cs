@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
-/// 照準の移動と射撃を行う
+/// 照準の移動を行う
 /// </summary>
-public class AimController : MonoBehaviour
+public class AimMove : MonoBehaviour
 {
     Rigidbody2D _rb;
     /// <summary>右側のエイムを動かすかどうか</summary>
@@ -23,7 +24,7 @@ public class AimController : MonoBehaviour
 
     void Start()
     {
-        
+
     }
 
     void Update()
@@ -32,25 +33,10 @@ public class AimController : MonoBehaviour
         float vert = Input.GetAxisRaw("Vertical_" + (_isRight ? "Right" : "Left"));
 
         _inputVec = new Vector3(hori, -1 * vert, 0).normalized;
-        Debug.Log(_inputVec);
-
-        //if (Input.GetButton("Fire" + (_useLeftStick ? "1" : "2")))
-        //{
-        //    Debug.Log("ガン射");
-        //}
     }
 
     void FixedUpdate()
     {
         _rb.velocity = _inputVec * _moveMag;
-    }
-
-    /// <summary>射撃</summary>
-    IEnumerator Trigger()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(0.1f); 
-        }
     }
 }

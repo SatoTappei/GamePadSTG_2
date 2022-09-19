@@ -74,7 +74,7 @@ InputManager:
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: 
+    positiveButton: joystick button 6
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -84,13 +84,13 @@ InputManager:
     invert: 0
     type: 0
     axis: 0
-    joyNum: 6
+    joyNum: 0
   - serializedVersion: 3
     m_Name: Fire_Right
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: 
+    positiveButton: joystick button 7
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -100,7 +100,7 @@ InputManager:
     invert: 0
     type: 0
     axis: 0
-    joyNum: 7
+    joyNum: 0
   - serializedVersion: 3
     m_Name: Fire2
     descriptiveName: 
