@@ -1,16 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
+using UniRx;
+using UniRx.Triggers;
 
 /// <summary>
-/// 照準から射撃をする_UniTaskバージョン
+/// 照準から射撃をする
 /// </summary>
 public class AimFire : MonoBehaviour
 {
     AudioSource _as;
     /// <summary>右側のエイムを動かすかどうか</summary>
     [SerializeField] bool _isRight;
+    /// <summary>弾の発射レート</summary>
+    [SerializeField] float _rate;
     /// <summary>射撃時の音</summary>
     [SerializeField] AudioClip _clip;
 
@@ -19,9 +22,12 @@ public class AimFire : MonoBehaviour
         _as = GetComponent<AudioSource>();
     }
 
-    async void Start()
+    void Start()
     {
-        await Trigger();
+        this.UpdateAsObservable()
+            .Where(_ => Input.GetButton("Fire_" + (_isRight ? "Right" : "Left")))
+            .ThrottleFirst(System.TimeSpan.FromSeconds(_rate))
+            .Subscribe(_ => Fire());
     }
 
     void Update()
@@ -29,14 +35,8 @@ public class AimFire : MonoBehaviour
 
     }
 
-    /// <summary>射撃</summary>
-    async UniTask Trigger()
+    void Fire()
     {
-        while (true)
-        {
-            await UniTask.Delay(200);
-            await UniTask.WaitUntil(() => Input.GetButton("Fire_" + (_isRight ? "Right" : "Left")));
-            _as.PlayOneShot(_clip);
-        }
+        _as.PlayOneShot(_clip);
     }
 }
