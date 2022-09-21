@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 /// <summary>
@@ -10,10 +11,12 @@ public class PlaySceneUIManager : MonoBehaviour
 {
     /// <summary>ダメージを受けた割合を示すゲージ</summary>
     [SerializeField] Transform _damageGauge;
+    /// <summary>スコアを表示するテキスト</summary>
+    [SerializeField] Text _scoreText;
     
     void Start()
     {
-        
+
     }
 
     void Update()
@@ -30,5 +33,15 @@ public class PlaySceneUIManager : MonoBehaviour
     {
         float xValue = 1 - (current * 1.0f / max * 1.0f);
         _damageGauge.DOScaleX(xValue, 0.5f);
+    }
+
+    /// <summary>
+    /// スコアをセットする
+    /// </summary>
+    /// <param name="score">セットするスコア</param>
+    public void SetScore(int score)
+    {
+        int prev = int.Parse(_scoreText.text);
+        _scoreText.DOCounter(prev, score, 0.5f);
     }
 }

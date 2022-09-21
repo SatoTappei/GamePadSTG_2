@@ -16,19 +16,24 @@ public class PlaySceneManager : MonoBehaviour
     [SerializeField] int _maxLife;
     /// <summary>プレイヤーの現在の体力</summary>
     IntReactiveProperty _currentLife = new IntReactiveProperty();
+    /// <summary>現在のスコア</summary>
+    IntReactiveProperty _currentScore = new IntReactiveProperty();
 
     void Awake()
     {
+        // 現在のスコアに0をセット
+        _currentScore.Value = 0;
         // 最大体力を現在の体力としてセット
         _currentLife.Value = _maxLife;
         _psUIm = GetComponent<PlaySceneUIManager>();
 
         _damageZone.OnTriggerEnterAsObservable()
-            .Where(c => c.CompareTag("Cube"))
+            .Where(collider => collider.CompareTag("Cube"))
             .Subscribe(_ => Debug.Log("ヒットした"));
 
-        _currentLife.Subscribe(i => _psUIm.SetLifeGauge(_maxLife, i));
-        _currentLife.Where(i => i == 0).Subscribe(_ => Debug.Log("死亡"));
+        _currentLife.Subscribe(life => _psUIm.SetLifeGauge(_maxLife, life));
+        _currentLife.Where(life => life == 0).Subscribe(_ => Debug.Log("死亡"));
+        _currentScore.Subscribe(score => _psUIm.SetScore(score));
     }
 
     void Start()
@@ -38,6 +43,10 @@ public class PlaySceneManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.anyKeyDown) _currentLife.Value--;
+        if (Input.anyKeyDown)
+        {
+            _currentLife.Value--;
+            _currentScore.Value += 100;
+        }
     }
 }
