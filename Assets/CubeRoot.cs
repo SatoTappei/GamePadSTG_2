@@ -7,14 +7,21 @@ using UnityEngine;
 /// </summary>
 public class CubeRoot : MonoBehaviour
 {
-    /// <summary>紅色のキューブ</summary>
-    [SerializeField] GameObject _red;
-    /// <summary>蒼色のキューブ</summary>
-    [SerializeField] GameObject _blue;
+    /// <summary>紅色のマテリアル</summary>
+    [SerializeField] Material _red;
+    /// <summary>蒼色のマテリアル</summary>
+    [SerializeField] Material _blue;
+    /// <summary>移動速度</summary>
+    [SerializeField] float _speed;
 
     void Awake()
     {
-        // 生成されたら3*3*3の27個のキューブを生成して位置を設定して子に設定する
+        // それぞれの子オブジェクトの色を紅か蒼にランダムで変える
+        foreach (Transform child in transform)
+        {
+            bool isRed = Random.Range(0, 2) == 1 ? true : false;
+            child.GetComponent<MeshRenderer>().material = isRed ? _red : _blue;
+        }
     }
 
     void Start()
@@ -24,6 +31,6 @@ public class CubeRoot : MonoBehaviour
 
     void Update()
     {
-        
+        transform.Translate(0, 0, -1 * Time.deltaTime * _speed);
     }
 }

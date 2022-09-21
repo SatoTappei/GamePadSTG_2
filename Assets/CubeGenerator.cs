@@ -13,13 +13,11 @@ public class CubeGenerator : MonoBehaviour
     /// <summary>生成するキューブのプレハブ</summary>
     [SerializeField] GameObject _cube;
     /// <summary>キューブのデフォルトの生成レート</summary>
-    [SerializeField] float _defaultRate;
-
-    float _rate;
+    [SerializeField] float _rate;
 
     void Awake()
     {
-        _rate = _defaultRate;
+
     }
 
     // 一定間隔で3*3*3のキューブを生成する
