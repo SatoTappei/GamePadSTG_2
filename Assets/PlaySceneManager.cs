@@ -32,7 +32,7 @@ public class PlaySceneManager : MonoBehaviour
             .Subscribe(_ => Debug.Log("ヒットした"));
 
         _currentLife.Subscribe(life => _psUIm.SetLifeGauge(_maxLife, life));
-        _currentLife.Where(life => life == 0).Subscribe(_ => Debug.Log("死亡"));
+        _currentLife.Where(life => life <= 0).Subscribe(_ => GameOver());
         _currentScore.Subscribe(score => _psUIm.SetScore(score));
     }
 
@@ -48,5 +48,13 @@ public class PlaySceneManager : MonoBehaviour
             _currentLife.Value--;
             _currentScore.Value += 100;
         }
+    }
+
+    // ゲームオーバーの演出を行う
+    void GameOver()
+    {
+        Debug.Log("がめおべら");
+        // 使わなくなったタイミング = 死亡なのでDisposeする。
+        _currentLife.Dispose();
     }
 }

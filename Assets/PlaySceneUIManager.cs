@@ -32,6 +32,7 @@ public class PlaySceneUIManager : MonoBehaviour
     public void SetLifeGauge(int max, int current)
     {
         float xValue = 1 - (current * 1.0f / max * 1.0f);
+        xValue = Mathf.Clamp01(xValue);
         _damageGauge.DOScaleX(xValue, 0.5f);
     }
 
