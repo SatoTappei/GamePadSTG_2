@@ -41,7 +41,7 @@ public class PlaySceneUIManager : MonoBehaviour
     /// <param name="score">セットするスコア</param>
     public void SetScore(int score)
     {
-        int prev = int.Parse(_scoreText.text.Replace(",", ""));
+        int prev = int.Parse(_scoreText.text);
         _scoreText.DOCounter(prev, score, 0.5f);
     }
 }
