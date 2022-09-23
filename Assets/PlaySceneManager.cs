@@ -43,10 +43,6 @@ public class PlaySceneManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.anyKeyDown)
-        {
-            _currentLife.Value--;
-            _currentScore.Value += 100;
-        }
+
     }
 }
