@@ -30,6 +30,11 @@ public class PlayerMove : MonoBehaviour
         float vert = Input.GetAxis("Vertical");
 
         _inputVec = new Vector3(hori, 0, vert).normalized;
+
+        if (_inputVec != Vector3.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(_inputVec);
+        }
     }
 
     void FixedUpdate()
