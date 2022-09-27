@@ -3,48 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// プレイヤーを背後から追従するカメラ
+/// プレイヤーを背後から追従するカメラ(未使用)
 /// </summary>
 public class CameraController : MonoBehaviour
 {
     /// <summary>カメラが追従するターゲット</summary>
     [SerializeField] Transform _target;
-    /// <summary>ターゲットを追従する際の位置オフセット</summary>
-    //[SerializeField] Vector3 _posOffset;
     /// <summary>ターゲットを追従する際のy位置のオフセット</summary>    
-    [SerializeField] float _yOffset;
+    [SerializeField] float _yOffset = 2.22f;
     /// <summary>ターゲットを追従する際のz位置のオフセット</summary>
-    [SerializeField] float _zOffset;
+    [SerializeField] float _zOffset = -3.33f;
     /// <summary>ターゲットを追従する際の角度オフセット</summary>
-    [SerializeField] float _angleOffset;
-    /// <summary>カメラが追従するターゲットが停止しているときの角度</summary>
-    //Quaternion _targetStopRot;
-    /// <summary>カメラが追従するターゲットが移動しているときの角度</summary>
-    //Quaternion _targetMoveRot;
+    [SerializeField] float _angleOffset = 2.0f;
 
     void Start()
     {
-        
+
     }
 
     void Update()
     {
-        //float hori = Input.GetAxis("Horizontal");
-        //float vert = Input.GetAxis("Vertical");
-        //Vector3 inputVec = new Vector3(hori, 0, vert);
 
-        //_targetMoveRot = _target.transform.rotation;
-        //transform.rotation = Quaternion.Euler(0, _targetMoveRot.eulerAngles.y, 0);
-
-        //if (inputVec != Vector3.zero)
-        //{
-        //    _targetMoveRot = _target.transform.rotation;
-        //}
-        //else
-        //{
-        //    transform.rotation = Quaternion.Euler(0, _targetMoveRot.eulerAngles.y, 0);
-        //    _targetStopRot = _target.transform.rotation;
-        //}
     }
 
     void LateUpdate()
