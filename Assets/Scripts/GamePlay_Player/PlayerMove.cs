@@ -88,7 +88,6 @@ public class PlayerMove : MonoBehaviour
 
         // Rigidbodyのvelocityに弄った移動速度を反映
         _rb.velocity = veloVec;
-        Debug.Log(_rb.velocity);
     }
 
     /// <summary>ジャンプの入力があった際にジャンプさせる</summary>

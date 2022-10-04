@@ -9,11 +9,18 @@ using UniRx.Triggers;
 /// </summary>
 public class PlayerFire : MonoBehaviour
 {
+    Animator _anim;
+    /// <summary>UŒ‚‚Ég‚¤•Ší</summary>
+    [SerializeField] GameObject _weapon;
     /// <summary>UŒ‚o—ˆ‚éŠÔŠu</summary>
     [SerializeField] float _attackRate;
 
+    public GameObject Weapon => _weapon;
+
     void Awake()
     {
+        _anim = GetComponentInChildren<Animator>();
+
         this.UpdateAsObservable()
             .Where(_ => Input.GetButton("Fire"))
             .ThrottleFirst(System.TimeSpan.FromSeconds(_attackRate))
@@ -32,6 +39,7 @@ public class PlayerFire : MonoBehaviour
 
     void Fire()
     {
+        _anim.Play("Slash");
         Debug.Log("UŒ‚‚µ‚½");
     }
 }
