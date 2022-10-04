@@ -6,7 +6,7 @@ using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
 
 /// <summary>
-/// “G‚ğ¶¬‚·‚é
+/// “G‚ğ¶¬‚·‚é(–¢g—p)
 /// </summary>
 public class EnemyGenerator : MonoBehaviour
 {

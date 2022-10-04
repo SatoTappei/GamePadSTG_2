@@ -1,0 +1,84 @@
+using System.Collections;
+using System.Collections.Generic;
+using System;
+using UnityEngine;
+
+/// <summary>
+/// プレイヤーを映すカメラを制御する汎用的カメラコントローラー
+/// Cinemachineを用いず、メインカメラにアタッチして使う
+/// </summary> 
+// 使用する場合は、空のオブジェクトParentの子にもう一つ空のオブジェクトChildを作り、
+// さらにその子にメインカメラを置く。Transfromの値はリセットしておくこと。
+[ExecuteInEditMode]
+public class CameraController : MonoBehaviour
+{
+    /// <summary>
+    /// カメラのパラメーター
+    /// 他のクラスからカメラを制御するときはこのクラスのインスタンスを用意する
+    /// </summary>
+    [Serializable]
+    public class Parameter
+    {
+        public Transform _target;
+
+        // CameraParentに使用
+        public Vector3 position;
+        public Vector3 angles = new Vector3(10f, 0f, 0f);
+        
+        // CameraChildに使用
+        public float distance = 7f;
+
+        // MainCameraに使用
+        public float fieldOfView = 45f;
+        public Vector3 offsetPosition = new Vector3(0f, 1f, 0f);
+        public Vector3 offsetAngles;
+    }
+
+    [SerializeField] Transform _parent;
+    [SerializeField] Transform _child;
+    [SerializeField] Camera _camera;
+    [SerializeField] Parameter _parameter;
+
+    /// <summary>設定したパラメーターを外部から参照するためのプロパティ</summary>
+    public Parameter Param => _parameter;
+
+    void Update()
+    {
+        /* ここに任意のカメラ操作方法を書く */
+        float horiR = Input.GetAxis("Horizontal_R");
+        float vertR = Input.GetAxis("Vertical_R");
+        Vector3 camVec = new Vector3(vertR, horiR, 0) * 3;
+        _parameter.angles += camVec;
+    }
+
+    void LateUpdate()
+    {
+        // 被写体の更新が済んだ後にカメラを更新する必要があるのでLateUpdateを使う
+        if (_parent == null || _child == null || _camera == null)
+            return;
+        // 被写体が指定されている場合は、カメラの座標を被写体の座標で上書き
+        if (_parameter._target != null)
+            UpdateTargetBlend(_parameter);
+
+        // パラメータを各種オブジェクトに反映
+        _parent.position = _parameter.position;
+        _parent.eulerAngles = _parameter.angles;
+
+        var childPos = _child.localPosition;
+        childPos.z = -1.0f * _parameter.distance;
+        _child.localPosition = childPos;
+
+        _camera.fieldOfView = _parameter.fieldOfView;
+        _camera.transform.localPosition = _parameter.offsetPosition;
+        _camera.transform.localEulerAngles = _parameter.offsetAngles;
+    }
+
+    // 少し遅れて追いかけてくるカメラを作るために線形補完を利用する
+    public static void UpdateTargetBlend(Parameter parameter)
+    {
+        Vector3 start = parameter.position;
+        Vector3 end = parameter._target.position;
+        float t = Time.deltaTime * 4.0f;
+        parameter.position = Vector3.Lerp(start, end, t);
+    }
+}

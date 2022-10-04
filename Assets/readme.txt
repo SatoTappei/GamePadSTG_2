@@ -7,6 +7,7 @@
 
 ★備考
 	URP導入済み
+	カメラのガクガクを減らすためにFixedTimestepをデフォルトの0.002から0.0167に変更
 
 ★導入アセット
 	Newbie & Friends
