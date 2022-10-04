@@ -14,15 +14,15 @@ public class PlayerFire : MonoBehaviour
 
     void Awake()
     {
-
-    }
-
-    void Start()
-    {
         this.UpdateAsObservable()
             .Where(_ => Input.GetButton("Fire"))
             .ThrottleFirst(System.TimeSpan.FromSeconds(_attackRate))
             .Subscribe(_ => Fire());
+    }
+
+    void Start()
+    {
+
     }
 
     void Update()

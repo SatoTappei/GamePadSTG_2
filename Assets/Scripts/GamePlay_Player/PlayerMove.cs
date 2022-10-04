@@ -17,7 +17,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("移動用")]
     /// <summary>移動速度</summary>
-    [SerializeField] float _velocity;
+    [SerializeField] float _speed;
     /// <summary>振り向く速度</summary>
     [SerializeField] float _turnSpeed;
     /// <summary>
@@ -36,8 +36,6 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] Transform _foot;
     /// <summary>ジャンプ可能かを判定するRayがヒットするレイヤー</summary>
     [SerializeField] LayerMask _mask;
-    /// <summary>ジャンプの入力があったかどうか</summary>
-    bool _isJump;
 
     void Awake()
     {
@@ -48,6 +46,11 @@ public class PlayerMove : MonoBehaviour
         //_mag.Where(_ => _inputVec.Value != Vector3.zero).Subscribe(f => _anim.SetFloat("Speed", f));
         //_inputVec.Where(v => v == Vector3.zero).Subscribe(_ => _anim.SetFloat("Speed",0));
         //_inputVec.Where(v => v != Vector3.zero).Subscribe(_ => _anim.SetFloat("Speed", 1));
+
+        this.UpdateAsObservable()
+            .Where(_ => Input.GetButtonDown("Jump"))
+            .BatchFrame(0, FrameCountType.FixedUpdate)
+            .Subscribe(_ => FixedUpdateJump());
     }
 
     void Start()
@@ -69,9 +72,6 @@ public class PlayerMove : MonoBehaviour
         // 現在の速度をAnimatorに伝える
         float speed = _inputVec.Value.magnitude * _mag.Value;
         _anim.SetFloat(_animParameterName, speed);
-
-        // ジャンプの入力を受け取る
-        _isJump = Input.GetButtonDown("Jump");
     }
 
     void FixedUpdate()
@@ -82,24 +82,24 @@ public class PlayerMove : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(_inputVec.Value), _turnSpeed);
         }
 
-        Vector3 veloVec = _inputVec.Value * _velocity * _mag.Value;
+        // 移動速度のベクトルを作成、Y方向はUnity内の重力そのまま
+        Vector3 veloVec = _inputVec.Value * _speed * _mag.Value;
         veloVec.y = _rb.velocity.y;
 
-        if (_isJump)
-        {
-            if (Physics.BoxCast(_foot.position, Vector3.one * 0.5f, -1 * Vector3.up, out RaycastHit hist, Quaternion.identity, 0.5f, _mask))
-            {
-                veloVec.y = _rb.velocity.y + 10;
-            }
-
-            _isJump = false;
-        }
-
+        // Rigidbodyのvelocityに弄った移動速度を反映
         _rb.velocity = veloVec;
+        Debug.Log(_rb.velocity);
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.DrawWireCube(-1.0f * transform.up, Vector3.one);
-    //}
+    /// <summary>ジャンプの入力があった際にジャンプさせる</summary>
+    void FixedUpdateJump()
+    {
+        Vector3 box = new Vector3(0.5f, 0.1f, 0.5f);
+        if (Physics.BoxCast(_foot.position, box, -1 * Vector3.up, out RaycastHit _, Quaternion.identity, 0.5f, _mask))
+        {
+            Vector3 vec = new Vector3(_rb.velocity.x, 0, _rb.velocity.z);
+            _rb.velocity = vec;
+            _rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+        }
+    }
 }
