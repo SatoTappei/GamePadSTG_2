@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// プレイヤーを映すカメラを制御する汎用的カメラコントローラー
@@ -38,6 +39,11 @@ public class CameraController : MonoBehaviour
     [SerializeField] Transform _child;
     [SerializeField] Camera _camera;
     [SerializeField] Parameter _parameter;
+    /// <summary>
+    /// カメラを振動させる用のベクトル
+    /// 参照無しでShakeを呼べるようにするためstaticにしているが不都合があったら直す
+    /// </summary>
+    static Vector3 _shakeAngles;
 
     /// <summary>設定したパラメーターを外部から参照するためのプロパティ</summary>
     public Parameter Param => _parameter;
@@ -70,7 +76,7 @@ public class CameraController : MonoBehaviour
 
         _camera.fieldOfView = _parameter.fieldOfView;
         _camera.transform.localPosition = _parameter.offsetPosition;
-        _camera.transform.localEulerAngles = _parameter.offsetAngles;
+        _camera.transform.localEulerAngles = _parameter.offsetAngles + _shakeAngles;
     }
 
     // 少し遅れて追いかけてくるカメラを作るために線形補完を利用する
@@ -80,5 +86,17 @@ public class CameraController : MonoBehaviour
         Vector3 end = parameter._target.position;
         float t = Time.deltaTime * 4.0f;
         parameter.position = Vector3.Lerp(start, end, t);
+    }
+
+    /// <summary>カメラを振動させる</summary>
+    public static void Shake(float duration,Vector3 strength,int vibratio)
+    {
+        DOTween.Shake(
+            () => _shakeAngles,             // 開始時の値
+            shake => _shakeAngles = shake,  // パラメータの更新
+            duration,                       // 持続時間
+            strength,                       // 揺れの強さ
+            vibratio)                       // どのくらい振動するか
+            .OnComplete(() => _shakeAngles = Vector3.zero);
     }
 }

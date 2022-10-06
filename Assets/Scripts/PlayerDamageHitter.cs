@@ -40,5 +40,11 @@ public class PlayerDamageHitter : MonoBehaviour
         Sequence sequence = DOTween.Sequence();
         sequence.SetDelay(EffectConst.HitStopTime);
         sequence.AppendCallback(() => _anim.speed = 1.0f);
+
+        // ƒJƒƒ‰‚ğ—h‚ç‚·
+        float duration = EffectConst.HitStopTime;
+        Vector3 strength = new Vector3(1f, 1f, 0);
+        int vibratio = 20;
+        CameraController.Shake(duration, strength, vibratio);
     }
 }
