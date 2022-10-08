@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bd36e6dd8200e04593fa0beab51aece, type: 3}
+  m_Name: EnemyParam1
+  m_EditorClassIdentifier: 
+  _name: Goblin
+  _speed: 2
+  _angle: 30
+  _bodyColor: {r: 0, g: 0, b: 1, a: 1}
+  _maxHp: 10
