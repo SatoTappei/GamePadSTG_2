@@ -95,9 +95,9 @@ public class EnemyStateTest
 /// <summary>
 /// ƒAƒCƒhƒ‹ó‘Ô:‚»‚Ìê‚Å—§‚¿~‚Ü‚é
 /// </summary>
-public class Idle : EnemyStateTest
+public class TestIdle : EnemyStateTest
 {
-    public Idle(GameObject enemy, NavMeshAgent agent, Transform player) : base(enemy, agent, player)
+    public TestIdle(GameObject enemy, NavMeshAgent agent, Transform player) : base(enemy, agent, player)
     {
         _name = STATE.IDLE;
     }

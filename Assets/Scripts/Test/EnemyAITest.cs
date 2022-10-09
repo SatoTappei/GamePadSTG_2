@@ -20,7 +20,7 @@ public class EnemyAITest : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
 
         // Å‰‚Ìó‘Ô
-        _currentState = new Idle(gameObject, _agent, _player);
+        _currentState = new TestIdle(gameObject, _agent, _player);
     }
 
     void Update()

@@ -33,7 +33,7 @@ public class FlyweightEnemyAITest : MonoBehaviour
         _bodyRenderer.SetPropertyBlock(materialPropertyBlock);
 
         // Å‰‚Ìó‘Ô
-        _currentState = new Idle(this.gameObject, _agent, _player);
+        _currentState = new TestIdle(this.gameObject, _agent, _player);
     }
 
     void Update()
