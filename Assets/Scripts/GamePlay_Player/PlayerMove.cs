@@ -9,6 +9,7 @@ using Cysharp.Threading.Tasks;
 /// プレイヤーの移動を行う
 /// 常にカメラの向いている方向を正面として操作することが出来る。
 /// </summary>
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMove : MonoBehaviour
 {
     Rigidbody _rb;
@@ -19,7 +20,7 @@ public class PlayerMove : MonoBehaviour
     /// <summary>移動速度</summary>
     [SerializeField] float _speed;
     /// <summary>振り向く速度</summary>
-    [SerializeField] float _turnSpeed;
+    [SerializeField, Range(0, 1.0f)] float _turnSpeed;
     /// <summary>
     /// 移動のアニメーションを制御するパラメーター名
     /// 各モーションの基準となる値 停止:0 歩き:1 ダッシュ:2

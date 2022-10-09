@@ -32,6 +32,11 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        }
+#endif
     }
 }

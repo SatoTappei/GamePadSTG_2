@@ -4,12 +4,12 @@ using System;
 using UnityEngine;
 using DG.Tweening;
 
-/// <summary>
-/// プレイヤーを映すカメラを制御する汎用的カメラコントローラー
-/// Cinemachineを用いず、メインカメラにアタッチして使う
-/// </summary> 
 // 使用する場合は、空のオブジェクトParentの子にもう一つ空のオブジェクトChildを作り、
 // さらにその子にメインカメラを置く。Transfromの値はリセットしておくこと。
+/// <summary>
+/// プレイヤーを映すカメラを制御する汎用的カメラコントローラー
+/// Cinemachineを用いず、CameraParentにアタッチして使う
+/// </summary> 
 [ExecuteInEditMode]
 public class CameraController : MonoBehaviour
 {

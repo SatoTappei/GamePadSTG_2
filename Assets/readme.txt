@@ -14,6 +14,16 @@
 ★備考
 	URP導入済み
 	カメラのガクガクを減らすためにFixedTimestepをデフォルトの0.002から0.0167に変更
+	ヒエラルキーの並び順上から
+		カメラ
+		DirectionalLight
+		Managers
+		UICanvas
+		EventSystem
+		実体のあるもの
+		シングルトンDDOL
+	プレイヤーの移動方法の実装に関して、RigidBodyを使用した移動で進めていく。
+		Rayを飛ばすやり方だとジャンプや崖から落ちたときの挙動が、現状だと作れないため
 
 ★導入アセット
 	Newbie & Friends
