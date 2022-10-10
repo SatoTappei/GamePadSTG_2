@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using System;
 
+// コライダーが付いたオブジェクトにアタッチするだけ
 /// <summary>
 /// DamageSenderからダメージを受けたことを受信する
 /// </summary>

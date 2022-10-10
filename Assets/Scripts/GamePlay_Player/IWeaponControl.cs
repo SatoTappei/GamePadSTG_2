@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
-/// プレイヤーの武器のコライダーの制御をするためのインターフェース
+/// 武器のコライダーのオンオフを切り替えるインターフェース
 /// EventSystemによるメッセージ送信を使う
 /// </summary>
 public interface IWeaponControl : IEventSystemHandler
 {
-    void EnableWeaponCollider();
-
-    void DisableWeaponCollider();
+    /// <summary>攻撃のアニメーション時にコライダーをオンにする</summary>
+    void EnableCollider();
+    /// <summary>攻撃のアニメーション終了時にコライダーをオフにする</summary>
+    void DisableCollider();
 }

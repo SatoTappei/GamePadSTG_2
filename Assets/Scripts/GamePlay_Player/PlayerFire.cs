@@ -10,11 +10,6 @@ using UniRx.Triggers;
 public class PlayerFire : MonoBehaviour
 {
     Animator _anim;
-    /// <summary>
-    /// オーディオの再生のテスト、終わったら子オブジェクトになっている
-    /// TestAudioオブジェクトごと消す。
-    /// </summary>
-    [SerializeField] AudioSource _as;
     /// <summary>攻撃に使う武器</summary>
     [SerializeField] GameObject _weapon;
     /// <summary>攻撃出来る間隔</summary>
@@ -28,7 +23,8 @@ public class PlayerFire : MonoBehaviour
         this.UpdateAsObservable()
             .Where(_ => Input.GetButton("Fire"))
             .ThrottleFirst(System.TimeSpan.FromSeconds(_attackRate))
-            .Subscribe(_ => Fire());
+            .Subscribe(_ => Fire())
+            .AddTo(this);
     }
 
     void Start()
@@ -41,11 +37,9 @@ public class PlayerFire : MonoBehaviour
 
     }
 
+    /// <summary>攻撃を行う</summary>
     void Fire()
     {
         _anim.Play("Slash");
-        Debug.Log("攻撃した");
-        // サウンド再生のテスト
-        _as.Play();
     }
 }
