@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
-using UniRx.Triggers;
-using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// 敵の行動をStateパターンで実装する
@@ -29,6 +27,12 @@ public class ChaseStraightEnemyBase
     protected GameObject _character;
     protected Transform _target;
     protected ChaseStraightEnemyBase _nextState;
+    protected Animator _anim;
+
+    // 各アニメーション名
+    protected readonly string WalkAnim = "Run";
+    protected readonly string AttackAnim = "Slash";
+    protected readonly string IdleAnim = "Idle";
 
     // CharacterのY座標を決めるためのRay
     readonly float RayRadius = 0.01f;
@@ -39,14 +43,15 @@ public class ChaseStraightEnemyBase
     /// <summary>視界の距離</summary>
     readonly float SightRange = 10.0f;
     /// <summary>視界の角度</summary>
-    readonly float SightAngle = 30.0f;
+    readonly float SightAngle = 100.0f;
     /// <summary>攻撃してくる距離</summary>
-    readonly float AttackRange = 7.0f;
+    readonly float AttackRange = 1.2f;
 
-    public ChaseStraightEnemyBase(GameObject character, Transform target)
+    public ChaseStraightEnemyBase(GameObject character, Transform target, Animator anim)
     {
         _character = character;
         _target = target;
+        _anim = anim;
     }
 
     /// <summary>Stateに推移した際、1度だけ呼ばれる</summary>
@@ -72,6 +77,13 @@ public class ChaseStraightEnemyBase
         return this;
     }
 
+    /// <summary>ステートを変える</summary>
+    protected void ChangeState(ChaseStraightEnemyBase next)
+    {
+        _nextState = next;
+        _event = Event.Exit;
+    }
+
     /// <summary>ターゲットが視界に入っているか</summary>
     protected bool FindTarget()
     {
@@ -84,8 +96,15 @@ public class ChaseStraightEnemyBase
         return inSight ? true : false;
     }
 
+    /// <summary>対象との距離が攻撃可能か調べる</summary>
+    protected bool CheckCanAttack()
+    {
+        Vector3 diff = _target.position - _character.transform.position;
+        return diff.magnitude <= AttackRange;
+    }
+
     /// <summary>レイを真下に飛ばして下に地面があるか調べる</summary>
-    protected bool GetCharacterPosY(out float y)
+    protected bool CheckFloor(out float y)
     {
         Vector3 rayPos = _character.transform.position + RayOffset;
         Ray ray = new Ray(rayPos, Vector3.down);
@@ -100,6 +119,14 @@ public class ChaseStraightEnemyBase
             return false;
         }
     }
+
+    /// <summary>Y座標をセットする</summary>
+    protected void SetCharacterPosY(float y)
+    {
+        Vector3 pos = _character.transform.position;
+        pos.y = y;
+        _character.transform.position = pos;
+    }
 }
 
 /// <summary>
@@ -107,33 +134,34 @@ public class ChaseStraightEnemyBase
 /// </summary>
 public class ChaseStraightEnemyIdle : ChaseStraightEnemyBase
 {
-    public ChaseStraightEnemyIdle(GameObject character, Transform target)
-        : base(character, target)
+    public ChaseStraightEnemyIdle(GameObject character, Transform target, Animator anim)
+        : base(character, target, anim)
     {
         CurrentState = State.Idle;
     }
 
-    public override void Enter() => base.Enter();
+    public override void Enter()
+    {
+        _anim.Play(IdleAnim);
+
+        _event = Event.Stay;
+    }
     
     public override void Update()
     {
-        Vector3 pos = _character.transform.position;
-        GetCharacterPosY(out float y);
-        pos.y = y;
-        _character.transform.position = pos;
+        CheckFloor(out float y);
+        SetCharacterPosY(y);
 
         // ターゲットが視界に入っていれば追跡を始める
         if (FindTarget())
         {
-            _nextState = new ChaseStraightEnemyChase(_character, _target);
-            _event = Event.Exit;
+            ChangeState(new ChaseStraightEnemyChase(_character, _target, _anim));
         }
         // ターゲットが視界に入っていない場合
         // 3％の確率でうろうろし始める
         else if (Random.Range(0, 100) == 3)
         {
-            _nextState = new ChaseStraightEnemyWander(_character, _target);
-            _event = Event.Exit;
+            ChangeState(new ChaseStraightEnemyWander(_character, _target, _anim));
         }
     }
 
@@ -145,13 +173,13 @@ public class ChaseStraightEnemyIdle : ChaseStraightEnemyBase
 /// </summary>
 public class ChaseStraightEnemyWander : ChaseStraightEnemyBase
 {
-    /// <summary>XZ平面での移動する方向、Yはレイで判定する</summary>
+
+    readonly float Speed = 1.5f;
     Vector3 _dir;
+    Vector3 _prevPos;
 
-    readonly int Speed = 3;
-
-    public ChaseStraightEnemyWander(GameObject character, Transform target)
-        : base(character, target)
+    public ChaseStraightEnemyWander(GameObject character, Transform target, Animator anim)
+        : base(character, target, anim)
     {
         CurrentState = State.Wander;
     }
@@ -161,6 +189,8 @@ public class ChaseStraightEnemyWander : ChaseStraightEnemyBase
         float x = Random.Range(-1.0f, 1.0f);
         float z = Random.Range(-1.0f, 1.0f);
         _dir = new Vector3(x, 0, z).normalized;
+        _anim.Play(WalkAnim);
+        _prevPos = _character.transform.position;
 
         _event = Event.Stay;
     }
@@ -170,36 +200,33 @@ public class ChaseStraightEnemyWander : ChaseStraightEnemyBase
         // 1％の確率で停止し、アイドル状態に戻す
         if (Random.Range(0, 100) <= 1)
         {
-            _nextState = new ChaseStraightEnemyIdle(_character, _target);
-            _event = Event.Exit;
+            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim));
             return;
         }
 
+        _character.transform.position += _dir * Time.deltaTime * Speed;
+        _character.transform.rotation = Quaternion.LookRotation(_dir);
+
         // 真下に床があるか調べる
-        bool checkFloor = GetCharacterPosY(out float y);
-        if (checkFloor)
+        if (CheckFloor(out float y))
         {
-            _character.transform.position += _dir * Time.deltaTime * Speed;
+            _prevPos = _character.transform.position;
         }
         else
         {
-            // 真下が床ではない場合は逆方向に1フレーム分だけ進ませ、アイドル状態に戻す
-            _character.transform.position += -1 * _dir * Time.deltaTime * Speed;
-            _nextState = new ChaseStraightEnemyIdle(_character, _target);
-            _event = Event.Exit;
+            // 真下が床ではない場合は前フレームの位置に戻す
+            _character.transform.position = _prevPos;
+            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim));
             return;
         }
 
         // 移動後にYだけ変える
-        Vector3 pos = _character.transform.position;
-        pos.y = y;
-        _character.transform.position = pos;
+        SetCharacterPosY(y);
 
         // ターゲットを見つけた場合は追跡状態にする
         if (FindTarget())
         {
-            _nextState = new ChaseStraightEnemyChase(_character, _target);
-            _event = Event.Exit;
+            ChangeState(new ChaseStraightEnemyChase(_character, _target, _anim));
         }
     }
 
@@ -211,25 +238,52 @@ public class ChaseStraightEnemyWander : ChaseStraightEnemyBase
 /// </summary>
 public class ChaseStraightEnemyChase : ChaseStraightEnemyBase
 {
-    public ChaseStraightEnemyChase(GameObject character, Transform target)
-        : base(character, target)
+    readonly float Speed = 3.0f;
+    Vector3 _prevPos;
+
+    public ChaseStraightEnemyChase(GameObject character, Transform target, Animator anim)
+        : base(character, target, anim)
     {
         CurrentState = State.Chase;
     }
 
-    public override void Enter() => base.Enter();
+    public override void Enter()
+    {
+        _anim.Play(WalkAnim);
+        _prevPos = _character.transform.position;
+
+        _event = Event.Stay;
+    }
 
     public override void Update()
     {
-        // 軽くするためにRayと座標書き換えで動かす
         Vector3 diff = _target.position - _character.transform.position;
-        Vector3 moveVec = new Vector3(diff.x, 0, diff.z);
-        _character.transform.position += moveVec.normalized * Time.deltaTime * 3;
+        Vector3 dir = new Vector3(diff.x, 0, diff.z);
 
-        Vector3 pos = _character.transform.position;
-        GetCharacterPosY(out float y);
-        pos.y = y;
-        _character.transform.position = pos;
+        _character.transform.position += dir.normalized * Time.deltaTime * Speed;
+        _character.transform.rotation = Quaternion.LookRotation(dir);
+
+        if (CheckFloor(out float y))
+        {
+            _prevPos = _character.transform.position;
+        }
+        else
+        {
+            _character.transform.position = _prevPos;
+        }
+
+        SetCharacterPosY(y);
+
+        // ターゲットとの距離が攻撃可能な距離なら攻撃状態にする
+        if (CheckCanAttack())
+        {
+            ChangeState(new ChaseStraightEnemyAttack(_character, _target, _anim));
+        }
+        // ターゲットを見失ったらアイドル状態に戻す
+        else if (!FindTarget())
+        {
+            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim));
+        }
     }
 
     public override void Exit() => base.Exit();
@@ -240,15 +294,42 @@ public class ChaseStraightEnemyChase : ChaseStraightEnemyBase
 /// </summary>
 public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase
 {
-    public ChaseStraightEnemyAttack(GameObject character, Transform target)
-        : base(character, target)
+    System.IDisposable _disposable;
+
+    public ChaseStraightEnemyAttack(GameObject character, Transform target, Animator anim)
+        : base(character, target, anim)
     {
         CurrentState = State.Attack;
     }
 
-    public override void Enter() => base.Enter();
+    public override void Enter()
+    {
+        // 攻撃状態になった時に一度攻撃して以後2秒に1回攻撃する
+        _anim.Play(AttackAnim);
+        _disposable = Observable.Interval(System.TimeSpan.FromSeconds(2.0f)).Subscribe(_ =>
+        {
+            _anim.Play(AttackAnim);
+        });
 
-    public override void Update() => base.Update();
+        _event = Event.Stay;
+    }
 
-    public override void Exit() => base.Exit();
+    public override void Update()
+    {
+        // 攻撃範囲外に出たらアイドル状態に戻す
+        if (!CheckCanAttack() && !_anim.GetCurrentAnimatorStateInfo(0).IsName(AttackAnim))
+        {
+            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim));
+        }
+
+        CheckFloor(out float y);
+        SetCharacterPosY(y);
+    }
+
+    public override void Exit()
+    {
+        _disposable.Dispose();
+
+        _event = Event.Exit;
+    }
 }
