@@ -9,5 +9,10 @@ using UnityEngine.EventSystems;
 /// </summary>
 public interface IDamageable : IEventSystemHandler
 {
-    void OnDamage(int damageValue, Vector3 hitPos);
+    /// <summary>
+    /// ダメージ処理
+    /// </summary>
+    /// <param name="value">ダメージ量</param>
+    /// <param name="hitPos">ダメージを与えたオブジェクトと接触した座標</param>
+    void OnDamage(int value, Vector3 hitPos);
 }

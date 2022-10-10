@@ -3365,7 +3365,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damage: 10
-  _effectiveTag: Enemy
+  _hitTag: Enemy
 --- !u!1 &2199836451587848338
 GameObject:
   m_ObjectHideFlags: 0
@@ -4063,7 +4063,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e123791c1b58951498bb0e4b845b7385, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _knockBackPower: 20
+  _knockBackPower: 3
   _invincibleTime: 2
   _damageEffectPrefab: {fileID: 1844881388747771113, guid: 598ba070c25b09843afba08c7d418a32, type: 3}
 --- !u!4 &4469908194800631699

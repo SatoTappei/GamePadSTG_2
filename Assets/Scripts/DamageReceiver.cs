@@ -15,11 +15,10 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     [SerializeField] float _knockBackPower = 3.0f;
     /// <summary>無敵時間</summary>
     [SerializeField] float _invincibleTime = 2.0f;
-    ///// <summary>Rigidbodyを使うかどうか</summary>
-    //[SerializeField] bool _useRigidbody;
     [SerializeField] GameObject _damageEffectPrefab;
     GameObject _damageEffect;
 
+    /// <summary>ダメージを受けたときに行う追加の処理</summary>
     public event Action OnDamageReceived;
 
     bool _isInvincible;
@@ -64,31 +63,22 @@ public class DamageReceiver : MonoBehaviour, IDamageable
             .OnStart(() => _isInvincible = true)
             .OnComplete(() => _isInvincible = false);
 
-        // 各種演出
-        Sequence seqE = DOTween.Sequence();
-        // 後方に移動
-        Vector3 knockBackVec = GetAngleVec(hitPos, transform.position);
-        seqE.Append(transform.DOMove(knockBackVec * _knockBackPower, 0.5f).SetRelative());
-        // コールバック処理
-        OnDamageReceived?.Invoke();
+        // TODO:ノックバックさせると壁を貫通してしまうのでレイキャストを用いるなどして壁に埋まらないようにする
+        KnockBack(hitPos, _knockBackPower);
 
-        //if (_useRigidbody)
-        //{
-        //    // RigidBodyを使った実装
-        //    _rb.AddForce(knockBackVec * _knockBackPower, ForceMode.Impulse);
-        //}
-        //else
-        //{
-        //    // DotWeenを使った実装
-        //    transform.DOMove(knockBackVec * _knockBackPower, 0.5f).SetRelative();
-        //}
+        OnDamageReceived?.Invoke();
     }
 
-    /// <summary>吹き飛ばす方向を決める</summary>
-    Vector3 GetAngleVec(Vector3 from, Vector3 to)
+    /// <summary>ノックバックさせる</summary>
+    void KnockBack(Vector3 hit, float power)
     {
-        from.y = 0;
-        to.y = 0;
-        return Vector3.Normalize(to - from);
+        // ノックバックさせる方向を求める
+        Vector3 pos = transform.position;
+        pos.y = 0;
+        hit.y = 0;
+        Vector3 dir = Vector3.Normalize(pos - hit);
+
+        // ノックバック
+        transform.DOMove(dir * power, 0.5f).SetRelative();
     }
 }
