@@ -73,7 +73,7 @@ public class CameraController : MonoBehaviour
         var childPos = _child.localPosition;
         childPos.z = -1.0f * _parameter.distance;
         _child.localPosition = childPos;
-
+        
         _camera.fieldOfView = _parameter.fieldOfView;
         _camera.transform.localPosition = _parameter.offsetPosition;
         _camera.transform.localEulerAngles = _parameter.offsetAngles + _shakeAngles;

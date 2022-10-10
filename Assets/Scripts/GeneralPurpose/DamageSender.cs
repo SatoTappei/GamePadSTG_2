@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System;
+using UnityEngine.Events;
 
 // コライダーが付いたオブジェクトにアタッチするだけ
 /// <summary>
@@ -17,7 +17,7 @@ public class DamageSender : MonoBehaviour
     [SerializeField] string _hitTag;
 
     /// <summary>ダメージを与えた時に行う追加の処理</summary>
-    public event Action OnDamageSended;
+    public UnityAction OnDamageSended;
 
     void OnTriggerEnter(Collider other)
     {

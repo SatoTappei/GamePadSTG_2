@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ヒットストップのアニメーションを実装するために
-/// プレイヤーと敵の両方から見ることが出来るクラス
+/// 異なるオブジェクト間で共通の値を使用するための定数クラス
 /// </summary>
-public class EffectConst : MonoBehaviour
+public class ConstValue
 {
+    /// <summary>ヒットストップする時間</summary>
     public static readonly float HitStopTime = 0.23f;
 }

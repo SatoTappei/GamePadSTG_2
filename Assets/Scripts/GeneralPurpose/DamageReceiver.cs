@@ -1,34 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using DG.Tweening;
-using System;
 
 // コライダーが付いたオブジェクトにアタッチするだけ
+// プレイヤーと敵で共通の演出はこっちに書いてある
 /// <summary>
 /// DamageSenderからダメージを受けたことを受信する
 /// </summary>
 public class DamageReceiver : MonoBehaviour, IDamageable
 {
-    //Rigidbody _rb;
     /// <summary>ノックバック力</summary>
     [SerializeField] float _knockBackPower = 3.0f;
     /// <summary>無敵時間</summary>
     [SerializeField] float _invincibleTime = 2.0f;
+    /// <summary>ダメージを受けた際のエフェクトのプレハブ</summary>
     [SerializeField] GameObject _damageEffectPrefab;
+    /// <summary>表示非表示を切り替えて使いまわすダメージエフェクト</summary>
     GameObject _damageEffect;
+    /// <summary>無敵時間中かどうかのフラグ</summary>
+    bool _isInvincible;
 
     /// <summary>ダメージを受けたときに行う追加の処理</summary>
-    public event Action OnDamageReceived;
-
-    bool _isInvincible;
+    public UnityAction OnDamageReceived;
 
     void Awake()
     {
-        //_rb = GetComponent<Rigidbody>();
-
-        // Awake時点でダメージエフェクトをインスタンス化して
-        // 非アクティブにしておく
+        // 使いまわせるようにダメージエフェクトをインスタンス化して非アクティブにしておく
         if (_damageEffectPrefab != null)
         {
             _damageEffect = Instantiate(_damageEffectPrefab);
@@ -36,37 +35,32 @@ public class DamageReceiver : MonoBehaviour, IDamageable
         }
     }
 
-    /// <summary>敵から攻撃を受けたときの処理</summary>
+    /// <summary>攻撃を受けたときの処理</summary>
     public void OnDamage(int damageValue, Vector3 hitPos)
     {
-        // 無敵中の場合は攻撃を受けない
-        if (_isInvincible)
-        {
-            Debug.Log("無敵時間中:" + gameObject.name);
-            return;
-        }
-        else
-        {
-            Debug.Log("ダメージを受けた:" + gameObject.name);
-        }
-
-        // 衝突位置にパーティクルを発生
-        if (_damageEffect != null)
-        {
-            _damageEffect.transform.position = hitPos;
-            _damageEffect.SetActive(true);
-        }
-
-        // 一定時間無敵
+        // 無敵時間中は攻撃を受けない
+        if (_isInvincible) return;
+        // 無敵時間を設定する
         Sequence sequence = DOTween.Sequence()
             .AppendInterval(_invincibleTime)
             .OnStart(() => _isInvincible = true)
             .OnComplete(() => _isInvincible = false);
 
-        // TODO:ノックバックさせると壁を貫通してしまうのでレイキャストを用いるなどして壁に埋まらないようにする
-        KnockBack(hitPos, _knockBackPower);
+        // 衝突位置にパーティクルを発生させる
+        if (_damageEffect != null) 
+            EnabledDamageEffect(hitPos);
+
+        // ヒットストップの後、ノックバックさせる
+        DOVirtual.DelayedCall(ConstValue.HitStopTime, () => KnockBack(hitPos, _knockBackPower));
 
         OnDamageReceived?.Invoke();
+    }
+
+    /// <summary>ダメージエフェクトを発生させる</summary>
+    void EnabledDamageEffect(Vector3 pos)
+    {
+        _damageEffect.transform.position = pos;
+        _damageEffect.SetActive(true);
     }
 
     /// <summary>ノックバックさせる</summary>

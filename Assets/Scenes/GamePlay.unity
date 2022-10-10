@@ -1579,6 +1579,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 765d440368b51b8469d39942acd8a129, type: 3}
+--- !u!137 &1087431685 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7485758597944767729, guid: 9a6d0b60129ea864bbe6389859d59e13, type: 3}
+  m_PrefabInstance: {fileID: 2129815772}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1112439251
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2567,6 +2572,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -4482760282949413008, guid: 9a6d0b60129ea864bbe6389859d59e13, type: 3}
+      propertyPath: _renderer
+      value: 
+      objectReference: {fileID: 1087431685}
     - target: {fileID: 8211013611174312534, guid: 9a6d0b60129ea864bbe6389859d59e13, type: 3}
       propertyPath: m_Name
       value: Enemy_BlueSolider
