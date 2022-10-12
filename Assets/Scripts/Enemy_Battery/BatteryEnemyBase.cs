@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 /// <summary>
 /// 敵の行動をStateパターンで実装する
@@ -85,23 +86,30 @@ public class BatteryEnemyBase
     }
 
     /// <summary>ターゲットが視界に入っているか</summary>
+    //protected bool FindTarget()
+    //{
+    //    // ターゲットと自身の距離ベクトルを求める
+    //    Vector3 diff = _target.position - _character.transform.position;
+    //    // ターゲットとの角度を計算
+    //    float angle = Vector3.Angle(diff, _character.transform.forward);
+    //    // ターゲットが視界内にいるかを返す
+    //    bool inSight = diff.magnitude <= SightRange && angle <= SightAngle;
+    //    return inSight;
+    //}
     protected bool FindTarget()
     {
-        // ターゲットと自身の距離ベクトルを求める
         Vector3 diff = _target.position - _character.transform.position;
-        // ターゲットとの角度を計算
-        float angle = Vector3.Angle(diff, _character.transform.forward);
-        // ターゲットが視界内にいるかを返す
-        bool inSight = diff.magnitude <= SightRange && angle <= SightAngle;
-        return inSight;
+        float angle = Vector3.Angle(diff, _turret.transform.forward);
+        bool isSight = diff.magnitude <= SightRange && angle <= SightAngle;
+        return isSight;
     }
 
     /// <summary>対象との距離が攻撃可能か調べる</summary>
-    protected bool CheckCanAttack()
-    {
-        Vector3 diff = _target.position - _character.transform.position;
-        return diff.magnitude <= AttackRange;
-    }
+    //protected bool CheckCanAttack()
+    //{
+    //    Vector3 diff = _target.position - _character.transform.position;
+    //    return diff.magnitude <= AttackRange;
+    //}
 
     /// <summary>レイを真下に飛ばして下に地面があるか調べる</summary>
     protected bool CheckFloor(out float y)
@@ -159,21 +167,54 @@ public class BatteryEnemyIdle : BatteryEnemyBase
 /// </summary>
 public class BatteryEnemySearch : BatteryEnemyBase
 {
+    /// <summary>砲塔が正面を向いたか</summary>
+    bool _lookedFront;
+    /// <summary>砲塔を回転させるために使う三角関数用のカウント</summary>
+    float _count;
+
     public BatteryEnemySearch(GameObject character, Transform target, Animator anim, Transform turret)
         : base(character, target, anim, turret)
     {
         CurrentState = State.Search;
     }
 
-    public override void Enter() => base.Enter();
+    public override void Enter()
+    {
+        _event = Event.Stay;
+    }
 
     public override void Update()
     {
-        // -90~90を行ったり来たりする
-        float angle = Mathf.Sin(Time.time);
-        Debug.Log(angle);
+        CheckFloor(out float y);
+        SetCharacterPosY(y);
 
-        _turret.transform.eulerAngles = new Vector3(0, angle * 90, 0);
+        // 探索状態になったらまず砲塔を正面を向かせる
+        if (!_lookedFront)
+        {
+            Quaternion look = Quaternion.LookRotation(_character.transform.forward);
+            _turret.rotation = Quaternion.Lerp(_turret.rotation, look, 0.05f);
+            // 砲塔の正面と戦車の正面の角度がほぼ同じになったら正面を向いたとみなす
+            float angle = Vector3.Angle(_turret.forward, _character.transform.forward);
+            if (angle < 0.01f)
+                _lookedFront = true;
+        }
+        // 正面を向いた後はくるくる回転させる
+        else
+        {
+            // 正面に向かせる状態のときはカウントを足さないようにする
+            _count += Time.deltaTime;
+            float sin = Mathf.Sin(_count);
+            float cos = Mathf.Cos(_count);
+
+            Vector3 dir = new Vector3(sin, 0, -1 * cos);
+            Quaternion look = Quaternion.LookRotation(dir);
+            _turret.rotation = Quaternion.Lerp(_turret.rotation, look, 0.05f);
+        }
+
+        if (FindTarget())
+        {
+            ChangeState(new BatteryEnemyCapture(_character, _target, _anim, _turret));
+        }
     }
 
     public override void Exit() => base.Exit();
@@ -192,7 +233,23 @@ public class BatteryEnemyCapture : BatteryEnemyBase
 
     public override void Enter() => base.Enter();
 
-    public override void Update() => base.Update();
+    public override void Update()
+    {
+        CheckFloor(out float y);
+        SetCharacterPosY(y);
+
+        // ターゲットの方向を計算して、Y軸方向の回転を防ぐためにYを0にする
+        Vector3 dir = _target.position - _character.transform.position;
+        dir.y = 0;
+        Quaternion look = Quaternion.LookRotation(dir);
+        // 向きをターゲットの向きに近づけていく
+        _turret.rotation = Quaternion.Lerp(_turret.rotation, look, 0.05f);
+
+        if (!FindTarget())
+        {
+            ChangeState(new BatteryEnemySearch(_character, _target, _anim, _turret));
+        }
+    }
 
     public override void Exit() => base.Exit();
 }
