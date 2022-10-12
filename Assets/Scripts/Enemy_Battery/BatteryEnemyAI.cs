@@ -11,7 +11,8 @@ using UnityEngine;
 /// </summary>
 public class BatteryEnemyAI : MonoBehaviour
 {
-    [SerializeField] Transform _muzzle;
+    // 回転砲塔、子オブジェクトにMuzzleという名前のオブジェクトが無いと
+    // BatteryEnemyIdleのコンストラクタを呼んだ時点でエラーになるので注意
     [SerializeField] Transform _turret;
 
     /// <summary>現在のステートに対応したクラス</summary>
@@ -22,7 +23,7 @@ public class BatteryEnemyAI : MonoBehaviour
         // ターゲットは現状Playerのみ、タグを変えることでターゲットを変えることが出来る
         Transform target = GameObject.FindGameObjectWithTag("Player").transform;
         Animator anim = GetComponentInChildren<Animator>();
-        _currentStateClass = new BatteryEnemyIdle(gameObject, target, anim);
+        _currentStateClass = new BatteryEnemyIdle(gameObject, target, anim, _turret);
     }
 
     void Update()

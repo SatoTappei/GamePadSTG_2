@@ -28,6 +28,9 @@ public class BatteryEnemyBase
     protected BatteryEnemyBase _nextState;
     protected Animator _anim;
 
+    protected Transform _turret;
+    protected Transform _muzzle;
+
     // 各アニメーション名
     protected readonly string IdleAnim = "Idle";
 
@@ -41,11 +44,14 @@ public class BatteryEnemyBase
     readonly float SightAngle = 60.0f;
     readonly float AttackRange = 1.2f;
 
-    public BatteryEnemyBase(GameObject character, Transform target, Animator anim)
+    public BatteryEnemyBase(GameObject character, Transform target, Animator anim, Transform turret)
     {
         _character = character;
         _target = target;
         _anim = anim;
+        _turret = turret;
+        // タレットの子オブジェクトにMuzzleという名前のオブジェクトが必要
+        _muzzle = _turret.Find("Muzzle");
     }
 
     /// <summary>Stateに推移した際、1度だけ呼ばれる</summary>
@@ -128,8 +134,8 @@ public class BatteryEnemyBase
 /// </summary>
 public class BatteryEnemyIdle : BatteryEnemyBase
 {
-    public BatteryEnemyIdle(GameObject character, Transform target, Animator anim)
-        : base(character, target, anim)
+    public BatteryEnemyIdle(GameObject character, Transform target, Animator anim, Transform turret)
+        : base(character, target, anim, turret)
     {
         CurrentState = State.Idle;
     }
@@ -139,6 +145,10 @@ public class BatteryEnemyIdle : BatteryEnemyBase
     public override void Update()
     {
         Debug.Log("アイドル状態です");
+
+        CheckFloor(out float y);
+        SetCharacterPosY(y);
+        ChangeState(new BatteryEnemySearch(_character, _target, _anim, _turret));
     }
 
     public override void Exit() => base.Exit();
@@ -149,15 +159,22 @@ public class BatteryEnemyIdle : BatteryEnemyBase
 /// </summary>
 public class BatteryEnemySearch : BatteryEnemyBase
 {
-    public BatteryEnemySearch(GameObject character, Transform target, Animator anim)
-        : base(character, target, anim)
+    public BatteryEnemySearch(GameObject character, Transform target, Animator anim, Transform turret)
+        : base(character, target, anim, turret)
     {
         CurrentState = State.Search;
     }
 
     public override void Enter() => base.Enter();
 
-    public override void Update() => base.Update();
+    public override void Update()
+    {
+        // -90~90を行ったり来たりする
+        float angle = Mathf.Sin(Time.time);
+        Debug.Log(angle);
+
+        _turret.transform.eulerAngles = new Vector3(0, angle * 90, 0);
+    }
 
     public override void Exit() => base.Exit();
 }
@@ -167,8 +184,8 @@ public class BatteryEnemySearch : BatteryEnemyBase
 /// </summary>
 public class BatteryEnemyCapture : BatteryEnemyBase
 {
-    public BatteryEnemyCapture(GameObject character, Transform target, Animator anim)
-        : base(character, target, anim)
+    public BatteryEnemyCapture(GameObject character, Transform target, Animator anim, Transform turret)
+        : base(character, target, anim, turret)
     {
         CurrentState = State.Capture;
     }
