@@ -92,8 +92,8 @@ public class ChaseStraightEnemyBase
         // ターゲットとの角度を計算
         float angle = Vector3.Angle(diff, _character.transform.forward);
         // ターゲットが視界内にいるかを返す
-        bool inSight = diff.magnitude < SightRange && angle < SightAngle;
-        return inSight ? true : false;
+        bool inSight = diff.magnitude <= SightRange && angle <= SightAngle;
+        return inSight;
     }
 
     /// <summary>対象との距離が攻撃可能か調べる</summary>
