@@ -51,7 +51,7 @@ public class Shell : MonoBehaviour
         Vector3 prevVec = transform.position;
 
         // d—Í‚É]‚Á‚Ä—‰º‚·‚é‚æ‚¤‚È‹““®‚ğŒvZ‚·‚é
-        Vector3 moveVec = Vector3.forward * Time.deltaTime * _velocity;
+        Vector3 moveVec = transform.forward * Time.deltaTime * _velocity;
         moveVec.y = _gravity;
         _gravity += _gravityScale;
         _velocity *= 0.95f;

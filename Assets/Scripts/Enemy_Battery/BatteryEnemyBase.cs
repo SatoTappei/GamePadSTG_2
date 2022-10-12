@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
+using UniRx;
 
 /// <summary>
 /// 敵の行動をStateパターンで実装する
@@ -178,10 +178,7 @@ public class BatteryEnemySearch : BatteryEnemyBase
         CurrentState = State.Search;
     }
 
-    public override void Enter()
-    {
-        _event = Event.Stay;
-    }
+    public override void Enter() => base.Enter();
 
     public override void Update()
     {
@@ -225,13 +222,31 @@ public class BatteryEnemySearch : BatteryEnemyBase
 /// </summary>
 public class BatteryEnemyCapture : BatteryEnemyBase
 {
+    ObjectPool _pool;
+    System.IDisposable _disposable;
+
     public BatteryEnemyCapture(GameObject character, Transform target, Animator anim, Transform turret)
         : base(character, target, anim, turret)
     {
         CurrentState = State.Capture;
     }
 
-    public override void Enter() => base.Enter();
+    public override void Enter()
+    {
+        // TODO:攻撃する状態になったら毎回GetComponentしてくるので
+        //      他に良い方法が見つかったら変える
+        _pool = _character.GetComponent<ObjectPool>();
+        _disposable = Observable.Interval(System.TimeSpan.FromSeconds(2.0f)).Subscribe(_ =>
+        {
+            // 攻撃処理
+            GameObject go = _pool.GetPooledObject();
+            go.SetActive(true);
+            go.transform.position = _muzzle.position;
+            go.transform.forward = _muzzle.forward;
+        });
+
+        _event = Event.Stay;
+    }
 
     public override void Update()
     {
@@ -251,5 +266,8 @@ public class BatteryEnemyCapture : BatteryEnemyBase
         }
     }
 
-    public override void Exit() => base.Exit();
+    public override void Exit()
+    {
+        _disposable.Dispose();
+    }
 }
