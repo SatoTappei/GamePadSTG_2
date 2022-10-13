@@ -14,6 +14,7 @@ public class PlayerFire : MonoBehaviour
     [SerializeField] GameObject _weapon;
     /// <summary>UŒ‚o—ˆ‚éŠÔŠu</summary>
     [SerializeField] float _attackRate;
+
     public GameObject Weapon => _weapon;
 
     void Awake()
