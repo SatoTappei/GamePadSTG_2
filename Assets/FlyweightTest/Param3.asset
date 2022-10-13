@@ -9,11 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8bd36e6dd8200e04593fa0beab51aece, type: 3}
-  m_Name: EnemyParam1
+  m_Script: {fileID: 11500000, guid: 13ced8a9ad4bee340ba3873fe0743c92, type: 3}
+  m_Name: Param3
   m_EditorClassIdentifier: 
-  _name: Goblin
-  _speed: 2
-  _angle: 30
+  _name: BlueSolider
+  _speed: 10
+  _angle: 80
   _bodyColor: {r: 0, g: 0, b: 1, a: 1}
-  _maxHp: 10
+  _maxHp: 100

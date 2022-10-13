@@ -2,12 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Flyweightパターンで実装する敵のパラメータのデータ
-/// </summary>
 [CreateAssetMenu]
-public class EnemyParamTest : ScriptableObject
+public class ParamSO : ScriptableObject
 {
+    // 同じ種類のオブジェクトで共通して使うデータ
     public string _name;
     public float _speed;
     public float _angle;
