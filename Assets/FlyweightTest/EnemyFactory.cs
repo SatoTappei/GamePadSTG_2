@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class EnemyFactory : MonoBehaviour
 {
     /// <summary>敵の各パラメータが書かれたSOのリスト</summary>
