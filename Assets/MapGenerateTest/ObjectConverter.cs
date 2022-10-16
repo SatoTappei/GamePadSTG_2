@@ -49,6 +49,12 @@ public class ObjectConverter : MonoBehaviour
         /// <summary>‹æˆæ‚Ì“ñŽŸŒ³”z—ñ</summary>
         public static Area[,] _areas = new Area[MapWidth, MapHeight];
 
+        //public static void SetID()
+        //{
+        //    for (int i = 0; i < MapWidth; i++)
+        //        for (int j = 0; j < MapHeight; j++)
+        //            _areas[i, j]._id = i + j;
+        //}
     }
 
     AreaGenerator _areaGenerator;
