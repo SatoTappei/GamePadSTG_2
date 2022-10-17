@@ -82,7 +82,7 @@ public class ObjectConverter : MonoBehaviour
         // 区域の二次元配列を作成する二次元配列の二次元配列
 
         // 区域を生成して二次元配列に格納する
-        _areaGenerator.Generate(Map._areas);
+        Map._areas = _areaGenerator.Generate();
 
         //// 区域型の二次元配列を作成する
         //Area[,] map = new Area[MapWidth, MapHeight];
