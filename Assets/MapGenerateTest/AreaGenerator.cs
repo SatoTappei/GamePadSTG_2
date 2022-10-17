@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// 区域の生成を行う
@@ -48,29 +49,29 @@ public class AreaGenerator : MonoBehaviour
                 areas[z, x]._roadStrs = SetBaseRoad(area, z, x);
             }
 
-        // 外周の辺を一部カットする
-        // 辺をカットする際に基準となる区域のリスト(上下左右の辺の真ん中に位置する区域)
-        List<(int, int)> edgeCenterList = new List<(int, int)>()
-        {
-            (0, 2), (4, 2), (2, 0), (2, 4)
-        };
-        // 見栄え的に2回もしくは3回カットするといい感じ
-        int count = Random.Range(2, 4);
+        /* 外周の辺を一部カットする */
+        // カットする際の基準にする向きを正負で決める
+        bool isPositive = Random.Range(0, 2) == 1 ? true : false;
+        // 辺をカットする際に基準となる区域の候補(上下左右の辺の真ん中に位置する区域)
+        (int, int)[] edgeCenters = { (0, 2), (4, 2), (2, 0), (2, 4) };
+        
+        // 見栄え的に1回もしくは2回カットするといい感じ
+        int count = Random.Range(1, 3);
         for (int i = 0; i < count; i++)
         {
-            // カットする基準になる座標をリストからランダムに取得
-            int r = Random.Range(0, edgeCenterList.Count);
-            int posZ = edgeCenterList[r].Item1;
-            int posX = edgeCenterList[r].Item2;
-            edgeCenterList.RemoveAt(r);
-            // 方向を正負で決める
-            bool isPositive = Random.Range(0, 2) == 1 ? true : false;
+            // カットする基準になる区域をリストからランダムに取得
+            int r = Random.Range(0, edgeCenters.Length);
+            int posZ = edgeCenters[r].Item1;
+            int posX = edgeCenters[r].Item2;
+            // 対になる辺では正の方向が反対になるので下と左の場合は反転させる
+            // 下と左の場合はXもしくはZが最大なので、足すと一辺の長さを超える
+            bool cutPositive = posZ + posX > 5 ? !isPositive : isPositive;
 
             // 上下の辺の場合
             if (posX == 2)
             {
                 // 左右どちらかにカットする
-                if (isPositive)
+                if (cutPositive)
                     CutMapEdge(areas, (posZ, posX), Direction.Right);
                 else
                     CutMapEdge(areas, (posZ, posX), Direction.Left);
@@ -79,14 +80,65 @@ public class AreaGenerator : MonoBehaviour
             else
             {
                 // 上下どちらかにカットする
-                if (isPositive)
+                if (cutPositive)
                     CutMapEdge(areas, (posZ, posX), Direction.Up);
                 else
                     CutMapEdge(areas, (posZ, posX), Direction.Down);
             }
         }
 
-        // 穴を開ける
+        /* 穴を開ける */
+        // 任意の箇所からランダムな方向を取得する
+        // その方向が3方向に繋がっているか調べる
+        // マップの端はカットするとおかしくなるので除く
+        int rz = Random.Range(1, 5 - 1);
+        int rx = Random.Range(1, 5 - 1);
+        Direction dir = (Direction)Random.Range(0, 4);
+
+        if (dir == Direction.Up)
+        {
+            int connect = 0;
+            if (areas[rz - 1, rx]._roadStrs[2, 3] == "r") connect++;
+            if (areas[rz - 1, rx]._roadStrs[4, 3] == "r") connect++;
+            if (areas[rz - 1, rx]._roadStrs[3, 2] == "r") connect++;
+            if (areas[rz - 1, rx]._roadStrs[3, 4] == "r") connect++;
+
+            if (connect >= 3)
+                CutMapEdge(areas, (rz, rx), dir);
+        }
+        else if (dir == Direction.Down)
+        {
+            int connect = 0;
+            if (areas[rz + 1, rx]._roadStrs[2, 3] == "r") connect++;
+            if (areas[rz + 1, rx]._roadStrs[4, 3] == "r") connect++;
+            if (areas[rz + 1, rx]._roadStrs[3, 2] == "r") connect++;
+            if (areas[rz + 1, rx]._roadStrs[3, 4] == "r") connect++;
+
+            if (connect >= 3)
+                CutMapEdge(areas, (rz, rx), dir);
+        }
+        else if (dir == Direction.Right)
+        {
+            int connect = 0;
+            if (areas[rz, rx + 1]._roadStrs[2, 3] == "r") connect++;
+            if (areas[rz, rx + 1]._roadStrs[4, 3] == "r") connect++;
+            if (areas[rz, rx + 1]._roadStrs[3, 2] == "r") connect++;
+            if (areas[rz, rx + 1]._roadStrs[3, 4] == "r") connect++;
+
+            if (connect >= 3)
+                CutMapEdge(areas, (rz, rx), dir);
+        }
+        else if (dir == Direction.Left)
+        {
+            int connect = 0;
+            if (areas[rz, rx - 1]._roadStrs[2, 3] == "r") connect++;
+            if (areas[rz, rx - 1]._roadStrs[4, 3] == "r") connect++;
+            if (areas[rz, rx - 1]._roadStrs[3, 2] == "r") connect++;
+            if (areas[rz, rx - 1]._roadStrs[3, 4] == "r") connect++;
+
+            if (connect >= 3)
+                CutMapEdge(areas, (rz, rx), dir);
+        }
 
         return areas;
     }
