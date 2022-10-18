@@ -32,8 +32,8 @@ public class AreaGenerator : MonoBehaviour
     Area[,] _areaMap;
 
 
-    List<(int, int)> _edgePosList = new List<(int, int)>();
-    List<(int, int)> _innerPosList = new List<(int, int)>();
+    List<(int, int)> _edgeAreaList = new List<(int, int)>();
+    List<(int, int)> _innerAreaList = new List<(int, int)>();
 
     void Start()
     {
@@ -65,6 +65,8 @@ public class AreaGenerator : MonoBehaviour
                 // 区域の座標を端か内側かでリストに振り分ける
                 AddPosList(z, x);
             }
+
+        CutConnectRandom(2, 3);
 
         // 端から2番目から幅-2のマス
         //端っこリストの座標のうち上下の端なら左右、左右の端なら上下をカットする
@@ -114,54 +116,7 @@ public class AreaGenerator : MonoBehaviour
         //// その方向が3方向に繋がっているか調べる
         //// マップの端はカットするとおかしくなるので除く
 
-        int cutAmount = Random.Range(1, 4);
-        CutConnectRandom(cutAmount);
 
-
-        //int cutCount = 3;
-        //int current = 0;
-        //for (int i = 0; i < 100; i++)
-        //{
-        //    int rz = Random.Range(1, 5 - 1);
-        //    int rx = Random.Range(1, 5 - 1);
-        //    // その区域が4方向に繋がっていない場合は処理をしない
-        //    if (GetConnectCount(_areaMap[rz, rx]) < 4) continue;
-        //    Direction dir = (Direction)Random.Range(0, 4);
-
-        //    // その区域が4方向に繋がっている場合は
-        //    // 上下にカットするときは左右を調べてカットされていないか調べる
-        //    // 左右にカットするときは上下を調べてカットされていないか調べる
-        //    if (dir == Direction.Up && GetConnectCount(_areaMap[rz - 1, rx]) >= 4)
-        //    {
-        //        if (GetConnectCount(_areaMap[rz - 1, rx - 1]) < 4 &&
-        //            GetConnectCount(_areaMap[rz - 1, rx + 1]) < 4) continue;
-        //        CutMapEdge(_areaMap, (rz, rx), dir);
-        //        current++;
-        //    }
-        //    else if (dir == Direction.Down && GetConnectCount(_areaMap[rz + 1, rx]) >= 4)
-        //    {
-        //        if (GetConnectCount(_areaMap[rz + 1, rx - 1]) < 4 &&
-        //            GetConnectCount(_areaMap[rz + 1, rx + 1]) < 4) continue;
-        //        CutMapEdge(_areaMap, (rz, rx), dir);
-        //        current++;
-        //    }
-        //    else if (dir == Direction.Right && GetConnectCount(_areaMap[rz, rx + 1]) >= 4)
-        //    {
-        //        if (GetConnectCount(_areaMap[rz - 1, rx + 1]) < 4 &&
-        //            GetConnectCount(_areaMap[rz + 1, rx + 1]) < 4) continue;
-        //        CutMapEdge(_areaMap, (rz, rx), dir);
-        //        current++;
-        //    }
-        //    else if (dir == Direction.Left && GetConnectCount(_areaMap[rz, rx - 1]) >= 4)
-        //    {
-        //        if (GetConnectCount(_areaMap[rz - 1, rx - 1]) < 4 &&
-        //            GetConnectCount(_areaMap[rz + 1, rx - 1]) < 4) continue;
-        //        CutMapEdge(_areaMap, (rz, rx), dir);
-        //        current++;
-        //    }
-
-        //    if (current == cutCount) break;
-        //}
 
         return _areaMap;
     }
@@ -196,7 +151,7 @@ public class AreaGenerator : MonoBehaviour
         return area;
     }
 
-    /// <summary>座標を対応したリストに振り分ける</summary>
+    /// <summary>区域を対応したリストに振り分ける</summary>
     void AddPosList(int z, int x)
     {
         // 上下左右の辺上の区域
@@ -205,29 +160,46 @@ public class AreaGenerator : MonoBehaviour
             // TODO:端から0番目と1番目を弾く処理が幅7マスにしか対応していない
             if (!(z == 2 || x == 2 || z == 6 || x == 6)) return;
 
-            _edgePosList.Add((z, x));
+            _edgeAreaList.Add((z, x));
         }
         // 内側の区域
         else
         {
-            _innerPosList.Add((z, x));
+            _innerAreaList.Add((z, x));
         }
     }
 
-    /// <summary>指定された回数だけ区域同士の接続をランダムに削除する</summary>
-    void CutConnectRandom(int count)
+    /// <summary>区域同士の接続をランダムに削除する</summary>
+    void CutConnectRandom(int min, int max)
     {
-        List<(int, int)> copyInnerPosList = new List<(int, int)>(_innerPosList);
-        for (int i = 0; i < count; i++)
+        // 理想の削除数
+        int ideal = Random.Range(min, max + 1);
+        int count = 0;
+
+        // 全ての区域の中からランダムに接続を削除できるか調べる
+        foreach ((int, int) pos in _innerAreaList.OrderBy(t => System.Guid.NewGuid()))
         {
-            int r = Random.Range(0, copyInnerPosList.Count);
-            int pz = copyInnerPosList[r].Item1;
-            int px = copyInnerPosList[r].Item2;
-            Direction dir = (Direction)Random.Range(0, 4);
+            int z = pos.Item1;
+            int x = pos.Item2;
 
-            CutMapEdge(pz, px, dir);
+            List<Direction> list = new List<Direction>()
+                { Direction.Up, Direction.Down, Direction.Right, Direction.Left };
 
-            copyInnerPosList.RemoveAt(r);
+            foreach (Direction dir in list.OrderBy(t => System.Guid.NewGuid()))
+            {
+                // 接続数が1になってしまう場合があったため
+                // 削除先の区域が4方向に接続されている場合のみ削除する
+                (int, int) pair = GetDirTuple(dir);
+                if (GetConnectCount(z + pair.Item1, x + pair.Item2) == 4)
+                {
+                    CutMapEdge(z, x, dir);
+                    count++;
+                    break;
+                }
+            }
+
+            // 削除数を満たしていたらこれ以上削除するのをやめる
+            if (count == ideal) break;
         }
     }
 
@@ -293,11 +265,21 @@ public class AreaGenerator : MonoBehaviour
     }
 
     /// <summary>デバッグ用:"端っこリスト"と"内側リスト"の中身を表示する</summary>
-    void DebugLog()
+    void DebugLogListContent()
     {
         Debug.Log("端っこリストの中身");
-        _edgePosList.ForEach(t => Debug.Log(t));
+        _edgeAreaList.ForEach(t => Debug.Log(t));
         Debug.Log("内側リストの中身");
-        _innerPosList.ForEach(t => Debug.Log(t));
+        _innerAreaList.ForEach(t => Debug.Log(t));
+    }
+
+    /// <summary>デバッグ用:全ての区域の接続数を表示する</summary>
+    void DebugLogAllConnect()
+    {
+        for (int j = 0; j < MapWidth; j++)
+            for (int k = 0; k < MapHeight; k++)
+            {
+                Debug.Log(GetConnectCount(j, k));
+            }
     }
 }
