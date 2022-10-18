@@ -49,7 +49,7 @@ public class AreaGenerator : MonoBehaviour
     /// 7*7の区域を生成する
     /// 道路のみ生成する
     /// </summary>
-    public Area[,] Generate(/*Area[,] areas*/)
+    public Area[,] Generate()
     {
         _areaMap = new Area[5, 5];
 
@@ -66,59 +66,96 @@ public class AreaGenerator : MonoBehaviour
                 AddPosList(z, x);
             }
 
-        CutConnectRandom(2, 3);
-
-        // 端から2番目から幅-2のマス
-        //端っこリストの座標のうち上下の端なら左右、左右の端なら上下をカットする
+        // 内側の区域の接続をいくつか削除する
+        CutConnectRandom(3, 5);
 
 
-        ///* 外周の辺を一部カットする */
-        //// カットする際の基準にする向きを正負で決める
-        //bool isPositive = Random.Range(0, 2) == 1 ? true : false;
-
-        ////// 辺をカットする際に基準となる区域の候補(上下左右の辺の真ん中に位置する区域)
-        ////(int, int)[] edgeCenters = { (0, 2), (4, 2), (2, 0), (2, 4) };
-
-        //// 見栄え的に1回もしくは2回カットするといい感じ
-        //int count = Random.Range(1, 3);
-        //for (int i = 0; i < count; i++)
+        //int diffZ = 0;
+        //int diffX = 0;
+        //for (int i = 0; i < 100; i++)
         //{
-        //    // カットする基準になる区域をリストからランダムに取得
-        //    int r = Random.Range(0, edgeCenters.Length);
-        //    int posZ = edgeCenters[r].Item1;
-        //    int posX = edgeCenters[r].Item2;
-        //    // 対になる辺では正の方向が反対になるので下と左の場合は反転させる
-        //    // 下と左の場合はXもしくはZが最大なので、足すと一辺の長さを超える
-        //    bool cutPositive = posZ + posX > 5 ? !isPositive : isPositive;
+        //    IEnumerable<(int, int)> pair = _edgeAreaList.OrderBy(t => System.Guid.NewGuid()).Take(2);
+        //    (int, int) posA = pair.ElementAt(0);
+        //    (int, int) posB = pair.ElementAt(1);
 
-        //    // 上下の辺の場合
-        //    if (posX == 2)
-        //    {
-        //        // 左右どちらかにカットする
-        //        if (cutPositive)
-        //            CutMapEdge(_areaMap, (posZ, posX), Direction.Right);
-        //        else
-        //            CutMapEdge(_areaMap, (posZ, posX), Direction.Left);
-        //    }
-        //    // 左右の辺の場合
-        //    else
-        //    {
-        //        // 上下どちらかにカットする
-        //        if (cutPositive)
-        //            CutMapEdge(_areaMap, (posZ, posX), Direction.Up);
-        //        else
-        //            CutMapEdge(_areaMap, (posZ, posX), Direction.Down);
-        //    }
+        //    diffZ = posA.Item1 - posB.Item2;
+        //    diffX = posA.Item2 - posB.Item2;
+
+        //    if(diff)
         //}
 
-        ///* 穴を開ける */
-        //// 任意の箇所からランダムな方向を取得する
-        //// その方向が3方向に繋がっているか調べる
-        //// マップの端はカットするとおかしくなるので除く
+        (int, int) pointUC = (0, MapWidth / 2);
+        (int, int) pointLC = (MapHeight / 2, 0);
+        (int, int) pointBC = (MapHeight - 1, MapWidth / 2);
+        (int, int) pointRC = (MapHeight / 2, MapWidth - 1);
+
+        Hoge(pointUC, pointLC);
+        //Hoge(pointLC, pointBC);
+        //Hoge(pointBC, pointRC);
+        //Hoge(pointRC, pointUC);
+
+        // posA.z - posB.z > 0 up
+        // posA.z - posB.z < 0 down
+        // posA.z - posB.z == 0 なし
+        // posA.x - posB.x > 0 left
+        // posA.x - posB.x < 0 right
+        // posA.x - posB.x == 0 なし
 
 
 
         return _areaMap;
+
+        void Hoge((int, int) point1, (int, int) point2)
+        {
+            int diffZ = point1.Item1 - point2.Item1;
+            int diffX = point1.Item2 - point2.Item2;
+
+            List<Direction> list = new List<Direction>();
+            if (diffZ > 0)
+            {
+                list.Add(Direction.Up);
+            }
+            else
+            {
+                list.Add(Direction.Down);
+            }
+
+            if (diffX > 0)
+            {
+                list.Add(Direction.Left);
+            }
+            else
+            {
+                list.Add(Direction.Right);
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                // 上下方向か左右方向どちらかに進む
+                foreach (Direction dir in list.OrderBy(_ => System.Guid.NewGuid()))
+                {
+                    // 現在の位置がその方向に道を伸ばしているか調べる
+                    bool b = CheckExistRoad(point1.Item1, point1.Item2, dir);
+                    // 伸ばしていない場合は違う方向へ
+                    if (!b) continue;
+                    // 伸ばしている場合は
+                    (int, int) pair = GetDirTuple(dir);
+                    //Debug.Log("pair = " + pair.Item1);
+                    //Debug.Log("point1 = " + )
+                    (int, int) to = (point1.Item1 + pair.Item1, point1.Item2 + pair.Item2);
+                    // その方向を太い道路にする
+                    //string[,] next = _areaMap[to.Item1, to.Item2]._roadStrs;
+                    SetWordOnMapEdge(point1.Item1, point1.Item2, "R", dir);
+                    // point1を現在地に更新する
+                    point1.Item1 = to.Item1;
+                    point1.Item2 = to.Item2;
+                    break;
+                }
+
+                if (point1.Item1 == point2.Item1 && point1.Item2 == point2.Item2)
+                    break;
+            }
+        }
     }
 
     /// <summary>正方形の区域(文字列の二次元配列)を作り、何もなしの文字で埋める</summary>
@@ -177,7 +214,7 @@ public class AreaGenerator : MonoBehaviour
         int count = 0;
 
         // 全ての区域の中からランダムに接続を削除できるか調べる
-        foreach ((int, int) pos in _innerAreaList.OrderBy(t => System.Guid.NewGuid()))
+        foreach ((int, int) pos in _innerAreaList.OrderBy(_ => System.Guid.NewGuid()))
         {
             int z = pos.Item1;
             int x = pos.Item2;
@@ -185,14 +222,14 @@ public class AreaGenerator : MonoBehaviour
             List<Direction> list = new List<Direction>()
                 { Direction.Up, Direction.Down, Direction.Right, Direction.Left };
 
-            foreach (Direction dir in list.OrderBy(t => System.Guid.NewGuid()))
+            foreach (Direction dir in list.OrderBy(_ => System.Guid.NewGuid()))
             {
                 // 接続数が1になってしまう場合があったため
                 // 削除先の区域が4方向に接続されている場合のみ削除する
                 (int, int) pair = GetDirTuple(dir);
                 if (GetConnectCount(z + pair.Item1, x + pair.Item2) == 4)
                 {
-                    CutMapEdge(z, x, dir);
+                    SetWordOnMapEdge(z, x, _non, dir);
                     count++;
                     break;
                 }
@@ -203,8 +240,8 @@ public class AreaGenerator : MonoBehaviour
         }
     }
 
-    /// <summary>任意の辺をカットする</summary>
-    void CutMapEdge(int z, int x, Direction dir)
+    /// <summary>任意の辺の文字を置き換える</summary>
+    void SetWordOnMapEdge(int z, int x, string str, Direction dir)
     {
         // 隣の区域は基準となった座標で置換した向きと対になる向きに置換する
         Direction revDir = GetReverseDir(dir);
@@ -212,8 +249,8 @@ public class AreaGenerator : MonoBehaviour
         int nextZ = z + pair.Item1;
         int nextX = x + pair.Item2;
 
-        SetWordToDirection(_areaMap[z, x]._roadStrs, _non, dir);
-        SetWordToDirection(_areaMap[nextZ, nextX]._roadStrs, _non, revDir);
+        SetWordToDirection(_areaMap[z, x]._roadStrs, str, dir);
+        SetWordToDirection(_areaMap[nextZ, nextX]._roadStrs, str, revDir);
     }
 
     /// <summary>区域の中央一マス先から指定した方向の文字を置き換える</summary>
@@ -244,6 +281,18 @@ public class AreaGenerator : MonoBehaviour
         if (area[center, center + 1] == _road) count++;
 
         return count;
+    }
+
+    /// <summary>区域がその方向に道を伸ばしているかを返す</summary>
+    bool CheckExistRoad(int z, int x, Direction dir)
+    {
+        int center = AreaWide / 2;
+        string[,] area = _areaMap[z, x]._roadStrs;
+        (int, int) pair = GetDirTuple(dir);
+        int addZ = pair.Item1;
+        int addX = pair.Item2;
+
+        return area[center + addZ, center + addX] != _non;
     }
 
     /// <summary>逆向きの方向を返す</summary>
