@@ -90,9 +90,9 @@ public class AreaGenerator : MonoBehaviour
         (int, int) pointRC = (MapHeight / 2, MapWidth - 1);
 
         Hoge(pointUC, pointLC);
-        //Hoge(pointLC, pointBC);
-        //Hoge(pointBC, pointRC);
-        //Hoge(pointRC, pointUC);
+        Hoge(pointLC, pointBC);
+        Hoge(pointBC, pointRC);
+        Hoge(pointRC, pointUC);
 
         // posA.z - posB.z > 0 up
         // posA.z - posB.z < 0 down
@@ -101,60 +101,112 @@ public class AreaGenerator : MonoBehaviour
         // posA.x - posB.x < 0 right
         // posA.x - posB.x == 0 なし
 
-
+        // 左=>下もしくは左
 
         return _areaMap;
 
-        void Hoge((int, int) point1, (int, int) point2)
+        void Hoge((int z, int x) point1, (int z, int x) point2)
         {
             int diffZ = point1.Item1 - point2.Item1;
             int diffX = point1.Item2 - point2.Item2;
 
-            List<Direction> list = new List<Direction>();
-            if (diffZ > 0)
-            {
-                list.Add(Direction.Up);
-            }
-            else
-            {
-                list.Add(Direction.Down);
-            }
+            int diff = Mathf.Abs(diffZ) + Mathf.Abs(diffX);
 
-            if (diffX > 0)
+            // 最初の1回は必ず辺に沿って移動する
+            if (point1.z == 0)
             {
-                list.Add(Direction.Left);
-            }
-            else
-            {
-                list.Add(Direction.Right);
-            }
+                (int z, int x) dir = GetDirTuple(Direction.Left);
+                (int z, int x) to = (point1.z + dir.z, point1.x + dir.x);
+                string[,] next = _areaMap[to.z, to.x]._roadStrs;
+                SetWordOnMapEdge(point1.z, point1.x, "R", Direction.Left);
 
-            for (int i = 0; i < 100; i++)
-            {
-                // 上下方向か左右方向どちらかに進む
-                foreach (Direction dir in list.OrderBy(_ => System.Guid.NewGuid()))
+                // 基準となる座標を更新する
+                point1.z = to.z;
+                point1.x = to.x;
+
+                // どっちかに進む
+                for (int i = 0; i < diff - 1; i++)
                 {
-                    // 現在の位置がその方向に道を伸ばしているか調べる
-                    bool b = CheckExistRoad(point1.Item1, point1.Item2, dir);
-                    // 伸ばしていない場合は違う方向へ
-                    if (!b) continue;
-                    // 伸ばしている場合は
-                    (int, int) pair = GetDirTuple(dir);
-                    //Debug.Log("pair = " + pair.Item1);
-                    //Debug.Log("point1 = " + )
-                    (int, int) to = (point1.Item1 + pair.Item1, point1.Item2 + pair.Item2);
-                    // その方向を太い道路にする
-                    //string[,] next = _areaMap[to.Item1, to.Item2]._roadStrs;
-                    SetWordOnMapEdge(point1.Item1, point1.Item2, "R", dir);
-                    // point1を現在地に更新する
-                    point1.Item1 = to.Item1;
-                    point1.Item2 = to.Item2;
-                    break;
-                }
+                    List<Direction> list = new List<Direction>() { Direction.Down, Direction.Left };
+                    // 道が伸びている方向をランダムに返す
+                    Direction d = list.OrderBy(_ => System.Guid.NewGuid())
+                                      .Where(d => CheckExistRoad(point1.z, point1.x, d))
+                                      .FirstOrDefault();
 
-                if (point1.Item1 == point2.Item1 && point1.Item2 == point2.Item2)
-                    break;
+                    (int z, int x) pair = GetDirTuple(d);
+                    (int z, int x) moveTo = (point1.z + pair.z, point1.x + pair.x);
+
+                    SetWordOnMapEdge(point1.Item1, point1.Item2, "R", d);
+                }
             }
+            else if (point1.z == MapHeight - 1)
+            {
+                (int z, int x) dir = GetDirTuple(Direction.Right);
+                (int z, int x) to = (point1.z + dir.z, point1.x + dir.x);
+                string[,] next = _areaMap[to.z, to.x]._roadStrs;
+                SetWordOnMapEdge(point1.z, point1.x, "R", Direction.Right);
+            }
+            else if (point1.x == 0)
+            {
+                (int z, int x) dir = GetDirTuple(Direction.Down);
+                (int z, int x) to = (point1.z + dir.z, point1.x + dir.x);
+                string[,] next = _areaMap[to.z, to.x]._roadStrs;
+                SetWordOnMapEdge(point1.z, point1.x, "R", Direction.Down);
+            }
+            else if (point1.x == MapWidth - 1)
+            {
+                (int z, int x) dir = GetDirTuple(Direction.Up);
+                (int z, int x) to = (point1.z + dir.z, point1.x + dir.x);
+                string[,] next = _areaMap[to.z, to.x]._roadStrs;
+                SetWordOnMapEdge(point1.z, point1.x, "R", Direction.Up);
+            }
+
+
+            //List<Direction> list = new List<Direction>();
+            //if (diffZ > 0)
+            //{
+            //    list.Add(Direction.Up);
+            //}
+            //else
+            //{
+            //    list.Add(Direction.Down);
+            //}
+
+            //if (diffX > 0)
+            //{
+            //    list.Add(Direction.Left);
+            //}
+            //else
+            //{
+            //    list.Add(Direction.Right);
+            //}
+
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    // 上下方向か左右方向どちらかに進む
+            //    foreach (Direction dir in list/*.OrderBy(_ => System.Guid.NewGuid())*/)
+            //    {
+            //        // 現在の位置がその方向に道を伸ばしているか調べる
+            //        bool b = CheckExistRoad(point1.Item1, point1.Item2, dir);
+            //        // 伸ばしていない場合は違う方向へ
+            //        if (!b) continue;
+            //        // 伸ばしている場合は
+            //        (int, int) pair = GetDirTuple(dir);
+            //        //Debug.Log("pair = " + pair.Item1);
+            //        //Debug.Log("point1 = " + )
+            //        (int, int) to = (point1.Item1 + pair.Item1, point1.Item2 + pair.Item2);
+            //        // その方向を太い道路にする
+            //        //string[,] next = _areaMap[to.Item1, to.Item2]._roadStrs;
+            //        SetWordOnMapEdge(point1.Item1, point1.Item2, "R", dir);
+            //        // point1を現在地に更新する
+            //        point1.Item1 = to.Item1;
+            //        point1.Item2 = to.Item2;
+            //        break;
+            //    }
+            //    Debug.Log("目的地は" + point2.Item1 + "," + point2.Item2);
+            //    if (point1.Item1 == point2.Item1 && point1.Item2 == point2.Item2)
+            //        break;
+            //}
         }
     }
 
