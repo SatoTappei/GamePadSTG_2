@@ -2,31 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>区域内の道路</summary>
-public struct Road
-{
-    GameObject _object;
-}
-
-/// <summary>区域内の建物</summary>
-public struct Build
-{
-    GameObject _object;
-}
-
-public struct Area
-{
-    //Road _road;
-    //Build _build;
-    public string[,] _roadStrs;
-
-    // 7*7のマスに道路を生成する
-    // 空いたマスに建物を生成する
-
-    // 幅が1マスの道路の場合は3*3の空きがある
-    // 幅が2マスの道路の場合は2.5*2.5の空きがある
-}
-
 /// <summary>
 /// 渡された文字列を建物に変換してマップにする
 /// </summary>
@@ -48,16 +23,10 @@ public class ObjectConverter : MonoBehaviour
     {
         /// <summary>区域の二次元配列</summary>
         public static Area[,] _areas = new Area[MapWidth, MapHeight];
-
-        //public static void SetID()
-        //{
-        //    for (int i = 0; i < MapWidth; i++)
-        //        for (int j = 0; j < MapHeight; j++)
-        //            _areas[i, j]._id = i + j;
-        //}
     }
 
     AreaGenerator _areaGenerator;
+    BuildingGenerator _buildingGenerator;
     /// <summary>マップ上に設置する建築物のリスト</summary>
     [SerializeField] List<Building> _buildingList;
     /// <summary>建築物を検索する用の辞書型</summary>
@@ -71,6 +40,7 @@ public class ObjectConverter : MonoBehaviour
     void Awake()
     {
         _areaGenerator = GetComponent<AreaGenerator>();
+        _buildingGenerator = GetComponent<BuildingGenerator>();
         _buildingList.ForEach(b => _buildingDic.Add(b._char, b));
     }
 
@@ -82,8 +52,8 @@ public class ObjectConverter : MonoBehaviour
         // 区域の二次元配列を作成する二次元配列の二次元配列
 
         // 区域を生成して二次元配列に格納する
-        Map._areas = _areaGenerator.Generate();
-
+        _areaGenerator.Generate(Map._areas);
+        _buildingGenerator.Generate(Map._areas);
         //// 区域型の二次元配列を作成する
         //Area[,] map = new Area[MapWidth, MapHeight];
 

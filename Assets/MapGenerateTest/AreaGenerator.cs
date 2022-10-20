@@ -17,10 +17,10 @@ public class AreaGenerator : MonoBehaviour
     }
 
     /// マップの1辺は奇数かつ負荷的に大丈夫な5で固定
-    readonly int MapWidth = 5;
-    readonly int MapHeight = 5;
+    readonly int MapWidth = MapGenerateUtility.MapWidth;
+    readonly int MapHeight = MapGenerateUtility.MapHeight;
     /// <summary>区域の一辺の幅、奇数でいい感じの値である7で固定</summary>
-    readonly int AreaWide = 7;
+    readonly int AreaWide = MapGenerateUtility.AreaWide;
 
     /// <summary>通常の道路</summary>
     readonly string _road = "r";
@@ -30,7 +30,6 @@ public class AreaGenerator : MonoBehaviour
     readonly string _non = "n";
 
     Area[,] _areaMap;
-
 
     List<(int, int)> _edgeAreaList = new List<(int, int)>();
     List<(int, int)> _innerAreaList = new List<(int, int)>();
@@ -49,13 +48,14 @@ public class AreaGenerator : MonoBehaviour
     /// 7*7の区域を生成する
     /// 道路のみ生成する
     /// </summary>
-    public Area[,] Generate()
+    public void Generate(Area[,] areas)
     {
         _areaMap = new Area[5, 5];
 
         for (int z = 0; z < 5; z++)
             for (int x = 0; x < 5; x++)
             {
+                _areaMap[z, x] = new Area();
                 // デフォルトの文字で埋める
                 string[,] areaStrs = Init();
                 // 十字状の道路を生成する
@@ -80,7 +80,7 @@ public class AreaGenerator : MonoBehaviour
         SetWideRoadOnGround(RightCenter, BottomCenter);
         SetWideRoadOnGround(BottomCenter, TopCenter);
 
-        return _areaMap;
+        areas = _areaMap;
     }
 
     /// <summary>正方形の区域(文字列の二次元配列)を作り、何もなしの文字で埋める</summary>
@@ -217,6 +217,8 @@ public class AreaGenerator : MonoBehaviour
         {
             (int z, int x) vec = GetDirTuple(dir);
             (int z, int x) to = (current.z + vec.z, current.x + vec.x);
+            int center = AreaWide / 2;
+            _areaMap[current.z, current.x]._roadStrs[center, center] = _wRoad;
             SetWordOnMapEdge(current.z, current.x, _wRoad, dir);
 
             next = to;
