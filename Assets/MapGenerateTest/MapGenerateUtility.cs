@@ -2,38 +2,85 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>マップ上の1マス</summary>
 public class Mass
 {
-    int x;
-    int z;
+    int _x;
+    int _z;
+    public char _char;
 }
 
-public class Area
+/// <summary>区域を構成する区画</summary>
+public class Section
 {
-    enum Section
+    int _height;
+    int _widht;
+    Mass[,] _masses;
+
+    public Section(int height, int width)
     {
-        Up,
-        Down,
-        Right,
-        Left,
-        UpRight,
-        UpLeft,
-        DownRight,
-        DownLeft,
+        _masses = new Mass[height, width];
     }
 
-    public string[,] _roadStrs;
+    /// <summary>この区画の文字を二次元配列にして返す</summary>
+    public char[,] GetStringArray()
+    {
+        char[,] array = new char[_height, _widht];
+        for (int z = 0; z < _height; z++)
+            for (int x = 0; x < _widht; x++)
+            {
+                array[z, x] = _masses[z, x]._char;
+            }
 
-    /// <summary>方角毎に区画を分けて持つ</summary>
-    Dictionary<Section, string[,]> sectionDic = new Dictionary<Section, string[,]>();
-    /// <summary>道路沿いのマスのリスト</summary>
-    List<Mass> byRoadList = new List<Mass>();
+        return array;
+    }
+}
 
-    // 7*7のマスに道路を生成する
-    // 空いたマスに建物を生成する
+/// <summary>マップを構成する区域</summary>
+public class Area
+{
+    /// <summary>各区画はテンキーの番号に対応している</summary>
+    Section[] _sections = new Section[]
+    {
+        new Section(3,3),   // 左下
+        new Section(3,1),   // 下
+        new Section(3,3),   // 右下
+        new Section(1,3),   // 左
+        new Section(1,1),   // 真ん中
+        new Section(1,3),   // 右
+        new Section(3,3),   // 左上
+        new Section(3,1),   // 上
+        new Section(3,3),   // 右上
+    };
 
-    // 幅が1マスの道路の場合は3*3の空きがある
-    // 幅が2マスの道路の場合は2.5*2.5の空きがある
+    // 各区画を合体させて1つの文字列型の二次元配列にして返す
+    public char[,] GetStringArray()
+    {
+        // このメソッドを呼び出して返した二次元配列をもとに
+        // マップをオブジェクトとして生成することを留意する
+        // TODO:ここから
+        char[,] mapArray = new char[7, 7];
+        for (int i = 0; i < 7; i++)
+            for (int j = 0; j < 7; j++)
+                mapArray[i, j] = 'r';
+        // ここまでを書き直す
+        return mapArray;
+    }
+}
+
+/// <summary>マップ</summary>
+public class Map
+{
+    public Area[,] Areas { get; set; }
+
+    public Map(int height, int width)
+    {
+        Areas = new Area[height, width];
+
+        for (int z = 0; z < height; z++)
+            for (int x = 0; x < width; x++)
+                Areas[z, x] = new Area();
+    }
 }
 
 /// <summary>
@@ -41,7 +88,8 @@ public class Area
 /// </summary>
 public class MapGenerateUtility
 {
-    /// マップの1辺は奇数かつ負荷的に大丈夫な5で固定
+    // マップの大きさは奇数じゃないと区域を綺麗に並べることが出来ない
+    // 大きすぎると負荷がすごい(かも)ので最大でも5*5にしておく
     public static readonly int MapWidth = 5;
     public static readonly int MapHeight = 5;
     /// <summary>区域の一辺の幅、奇数でいい感じの値である7で固定</summary>

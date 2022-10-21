@@ -15,16 +15,6 @@ public class ObjectConverter : MonoBehaviour
         public GameObject _object;
     }   
 
-    /// <summary>
-    /// マップはただ1つしかないのでstaticクラスにする
-    /// 道路レイヤーと建物レイヤーからなる
-    /// </summary>
-    public static class Map
-    {
-        /// <summary>区域の二次元配列</summary>
-        public static Area[,] _areas = new Area[MapWidth, MapHeight];
-    }
-
     AreaGenerator _areaGenerator;
     BuildingGenerator _buildingGenerator;
     /// <summary>マップ上に設置する建築物のリスト</summary>
@@ -32,10 +22,9 @@ public class ObjectConverter : MonoBehaviour
     /// <summary>建築物を検索する用の辞書型</summary>
     Dictionary<char, Building> _buildingDic = new Dictionary<char, Building>();
 
-    // マップの大きさは奇数じゃないと区域を綺麗に並べることが出来ない
-    // 大きすぎると負荷がすごい(かも)ので最大でも5*5にしておく
-    static readonly int MapWidth = 5;
-    static readonly int MapHeight = 5;
+    static readonly int MapHeight = MapGenerateUtility.MapHeight;
+    static readonly int MapWidth = MapGenerateUtility.MapWidth;
+    static readonly int AreaWide = MapGenerateUtility.AreaWide;
 
     void Awake()
     {
@@ -46,23 +35,21 @@ public class ObjectConverter : MonoBehaviour
 
     void Start()
     {
-        // 各区域を並べることででかいマップにする
-        // まずは区域に道路を生成する、道路には2種類(幅1マス、幅2マス)ある
-        // 建物は幅2マスを考慮して作る
-        // 区域の二次元配列を作成する二次元配列の二次元配列
+        /* マップの生成処理をここから書く */
 
-        // 区域を生成して二次元配列に格納する
-        _areaGenerator.Generate(Map._areas);
-        _buildingGenerator.Generate(Map._areas);
-        //// 区域型の二次元配列を作成する
-        //Area[,] map = new Area[MapWidth, MapHeight];
+        // 高さと幅を指定してマップを作成
+        Map map = new Map(MapHeight, MapWidth);
+        _areaGenerator.Generate();
 
-        for (int i = 0; i < MapWidth; i++)
-            for (int j = 0; j < MapHeight; j++)
+        /* マップの生成処理ここまで */
+
+        // 文字型の二次元配列から区域を生成する
+        for (int z = 0; z < MapHeight; z++)
+            for (int x = 0; x < MapWidth; x++)
             {
-                // 文字列型の二次元配列から区域を生成する
-                GameObject areaRoot = BuildingFromArray(Map._areas[i,j]._roadStrs);
-                areaRoot.transform.position = new Vector3(i * 7, 0, j * 7);
+                char[,] strMap = map.Areas[z, x].GetStringArray();
+                GameObject areaRoot = BuildingFromArray(strMap);
+                areaRoot.transform.position = new Vector3(z * AreaWide, 0, x * AreaWide);
             }
     }
 
@@ -72,7 +59,7 @@ public class ObjectConverter : MonoBehaviour
     }
 
     /// <summary>文字列型の二次元配列から建築物を生成して、区域として返す</summary>
-    GameObject BuildingFromArray(string[,] strMap)
+    GameObject BuildingFromArray(char[,] strMap)
     {
         // 生成した建築物を区域として設定する
         GameObject root = new GameObject();
@@ -81,7 +68,7 @@ public class ObjectConverter : MonoBehaviour
         for (int i = 0; i < strMap.GetLength(0); i++)
             for (int j = 0; j < strMap.GetLength(1); j++)
             {
-                char key = strMap[i, j][0];
+                char key = strMap[i, j];
                 bool isExist = _buildingDic.TryGetValue(key, out Building value);
 
                 // 対応する文字があれば生成する
