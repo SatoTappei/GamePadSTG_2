@@ -22,9 +22,9 @@ public class ObjectConverter : MonoBehaviour
     /// <summary>建築物を検索する用の辞書型</summary>
     Dictionary<char, Building> _buildingDic = new Dictionary<char, Building>();
 
-    static readonly int MapHeight = MapGenerateUtility.MapHeight;
-    static readonly int MapWidth = MapGenerateUtility.MapWidth;
-    static readonly int AreaWide = MapGenerateUtility.AreaWide;
+    //static readonly int MapHeight = MapGenerateUtility.MapHeight;
+    //static readonly int MapWidth = MapGenerateUtility.MapWidth;
+    //static readonly int AreaWide = MapGenerateUtility.AreaWide;
 
     void Awake()
     {
@@ -38,18 +38,18 @@ public class ObjectConverter : MonoBehaviour
         /* マップの生成処理をここから書く */
 
         // 高さと幅を指定してマップを作成
-        Map map = new Map(MapHeight, MapWidth);
-        map.Areas = _areaGenerator.Generate(map.Areas);
+        Map map = new Map(Map.Height, Map.Width);
+        _areaGenerator.Generate(map.Areas);
 
         /* マップの生成処理ここまで */
 
         // 文字型の二次元配列から区域を生成する
-        for (int z = 0; z < MapHeight; z++)
-            for (int x = 0; x < MapWidth; x++)
+        for (int z = 0; z < Map.Height; z++)
+            for (int x = 0; x < Map.Width; x++)
             {
                 char[,] strMap = map.Areas[z, x].GetCharArray();
                 GameObject areaRoot = BuildingFromArray(strMap);
-                areaRoot.transform.position = new Vector3(z * AreaWide, 0, x * AreaWide);
+                areaRoot.transform.position = new Vector3(z * Area.Wide, 0, x * Area.Wide);
             }
     }
 
@@ -75,9 +75,9 @@ public class ObjectConverter : MonoBehaviour
                 if (isExist)
                 {
                     // 区域の中央と区域内の真ん中のオブジェクトの位置を合わせるためオフセットを足す
-                    int offsetX =  -1 * (MapWidth / 2) - 1;
-                    int offsetY = -1 * (MapHeight / 2) - 1;
-                    GameObject go = Instantiate(value._object, new Vector3(i + offsetX, 0, j + offsetY), Quaternion.identity);
+                    int offsetZ = -1 * (Map.Height / 2) - 1;
+                    int offsetX =  -1 * (Map.Width / 2) - 1;
+                    GameObject go = Instantiate(value._object, new Vector3(i + offsetX, 0, j + offsetZ), Quaternion.identity);
                     go.transform.SetParent(root.transform);
                 }
             }

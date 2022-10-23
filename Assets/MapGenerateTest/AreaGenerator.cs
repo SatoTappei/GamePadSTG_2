@@ -16,12 +16,6 @@ public class AreaGenerator : MonoBehaviour
         Left,
     }
 
-    /// マップの1辺は奇数かつ負荷的に大丈夫な5で固定
-    readonly int MapWidth = MapGenerateUtility.MapWidth;
-    readonly int MapHeight = MapGenerateUtility.MapHeight;
-    /// <summary>区域の一辺の幅、奇数でいい感じの値である7で固定</summary>
-    readonly int AreaWide = MapGenerateUtility.AreaWide;
-
     /// <summary>通常の道路</summary>
     readonly char _road = 'r';
     /// <summary>幅の広い道路</summary>
@@ -48,18 +42,17 @@ public class AreaGenerator : MonoBehaviour
     /// 7*7の区域を生成する
     /// 道路のみ生成する
     /// </summary>
-    public Area[,] Generate(Area[,] areas)
+    public void Generate(Area[,] areas)
     {
         // 十字の道路を設置する
-        for (int z = 0; z < MapHeight; z++)
-            for (int x = 0; x < MapWidth; x++)
+        for (int z = 0; z < Map.Height; z++)
+            for (int x = 0; x < Map.Width; x++)
             {
-                areas[z, x].GetSectionFromNumKey(2).SetCharAll(_road);
-                areas[z, x].GetSectionFromNumKey(4).SetCharAll(_road);
-                areas[z, x].GetSectionFromNumKey(5).SetCharAll(_road);
-                areas[z, x].GetSectionFromNumKey(6).SetCharAll(_road);
-                areas[z, x].GetSectionFromNumKey(8).SetCharAll(_road);
-                areas[z, x].GetSectionFromNumKey(9).SetCharAll(_road);
+                areas[z, x].GetSectionFromNumKey(2).Fill(_road);
+                areas[z, x].GetSectionFromNumKey(4).Fill(_road);
+                areas[z, x].GetSectionFromNumKey(5).Fill(_road);
+                areas[z, x].GetSectionFromNumKey(6).Fill(_road);
+                areas[z, x].GetSectionFromNumKey(8).Fill(_road);
             }
 
         //_areaMap = new Area[5, 5];
@@ -91,8 +84,6 @@ public class AreaGenerator : MonoBehaviour
         //SetWideRoadOnGround(LeftCenter, RightCenter);
         //SetWideRoadOnGround(RightCenter, BottomCenter);
         //SetWideRoadOnGround(BottomCenter, TopCenter);
-
-        return areas; // <- 書く
     }
 
     /// <summary>正方形の区域(文字列の二次元配列)を作り、何もなしの文字で埋める</summary>
