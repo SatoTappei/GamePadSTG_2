@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 /// <summary>
 /// 区域の生成を行う
@@ -35,7 +33,7 @@ public class AreaGenerator : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 
     /// <summary>
@@ -44,16 +42,116 @@ public class AreaGenerator : MonoBehaviour
     /// </summary>
     public void Generate(Area[,] areas)
     {
-        // 十字の道路を設置する
+        // 全ての区域の中央に道路を生成する
         for (int z = 0; z < Map.Height; z++)
             for (int x = 0; x < Map.Width; x++)
+                areas[z, x].GetSectionFromNumKey(5).Fill(_wRoad);
+
+        // マップの角の区域の道路を中央から伸ばす
+        areas[0, 0].GetSectionFromNumKey(2).Fill(_road);
+        areas[0, 0].GetSectionFromNumKey(6).Fill(_road);
+
+        areas[0, 4].GetSectionFromNumKey(2).Fill(_road);
+        areas[0, 4].GetSectionFromNumKey(4).Fill(_road);
+
+        areas[4, 0].GetSectionFromNumKey(6).Fill(_road);
+        areas[4, 0].GetSectionFromNumKey(8).Fill(_road);
+
+        areas[4, 4].GetSectionFromNumKey(4).Fill(_road);
+        areas[4, 4].GetSectionFromNumKey(8).Fill(_road);
+
+        // マップの左右の区域の道路を中央から伸ばす
+        for (int z = 1; z < Map.Height - 1; z++)
+        {
+            areas[z, 0].GetSectionFromNumKey(2).Fill(_road);
+            areas[z, 0].GetSectionFromNumKey(6).Fill(_road);
+            areas[z, 0].GetSectionFromNumKey(8).Fill(_road);
+
+            areas[z, Map.Width - 1].GetSectionFromNumKey(2).Fill(_road);
+            areas[z, Map.Width - 1].GetSectionFromNumKey(4).Fill(_road);
+            areas[z, Map.Width - 1].GetSectionFromNumKey(8).Fill(_road);
+        }
+
+        // マップの上下の区域の道路を中央から伸ばす
+        for (int x = 1; x < Map.Width - 1; x++)
+        {
+            areas[0, x].GetSectionFromNumKey(4).Fill(_road);
+            areas[0, x].GetSectionFromNumKey(6).Fill(_road);
+            areas[0, x].GetSectionFromNumKey(2).Fill(_road);
+
+            areas[Map.Height - 1, x].GetSectionFromNumKey(4).Fill(_road);
+            areas[Map.Height - 1, x].GetSectionFromNumKey(6).Fill(_road);
+            areas[Map.Height - 1, x].GetSectionFromNumKey(8).Fill(_road);
+        }
+
+        // マップの内側区域の道路を中央から伸ばす
+        for (int z = 1; z < Map.Height - 1; z++)
+            for (int x = 1; x < Map.Width - 1; x++)
             {
                 areas[z, x].GetSectionFromNumKey(2).Fill(_road);
                 areas[z, x].GetSectionFromNumKey(4).Fill(_road);
-                areas[z, x].GetSectionFromNumKey(5).Fill(_road);
                 areas[z, x].GetSectionFromNumKey(6).Fill(_road);
                 areas[z, x].GetSectionFromNumKey(8).Fill(_road);
             }
+
+        // ランダムで道路を消す
+        for (int i = 0; i < 3; i++)
+        {
+            // マップの内側の区域の中からランダムな区域を選択
+            (int z, int x) pos = (Random.Range(1, Map.Height - 1), Random.Range(1, Map.Width - 1));
+
+            // 2,4,6,8の内、ランダムな方向
+            int dir = Random.Range(1, 5) * 2;
+            // その方向に対応した隣の座標
+            (int z, int x)[] nextPoses = { (1, 0), (0, -1), (0, 1), (-1, 0) };
+            (int z, int x) nextPos = nextPoses[dir / 2 - 1];
+            // 逆方向を求める
+            int reverseDir = 10 - dir;
+
+            // その座標と選ばれた方向の隣の座標が接続されていればその道を消す
+            if (areas[pos.z, pos.x].CheckExtendToDir(dir) &&
+                areas[pos.z + nextPos.z, pos.x + nextPos.x].CheckExtendToDir(reverseDir))
+            {
+                areas[pos.z, pos.x].GetSectionFromNumKey(dir).Fill(_non);
+                areas[pos.z + nextPos.z, pos.x + nextPos.x].GetSectionFromNumKey(reverseDir).Fill(_non);
+            }
+
+            //switch (dir)
+            //{
+            //    case 2:
+            //        if (areas[pos.z, pos.x].CheckExtendToDir(dir) && 
+            //            areas[pos.z + 1, pos.x].CheckExtendToDir(reverseDir))
+            //        {
+            //            areas[pos.z, pos.x].GetSectionFromNumKey(dir).Fill(_non);
+            //            areas[pos.z + 1, pos.x].GetSectionFromNumKey(reverseDir).Fill(_non);
+            //        }
+            //        break;
+            //    case 4:
+            //        if (areas[pos.z, pos.x].CheckExtendToDir(dir) &&
+            //            areas[pos.z, pos.x - 1].CheckExtendToDir(reverseDir))
+            //        {
+            //            areas[pos.z, pos.x].GetSectionFromNumKey(dir).Fill(_non);
+            //            areas[pos.z, pos.x - 1].GetSectionFromNumKey(reverseDir).Fill(_non);
+            //        }
+            //        break;
+            //    case 6:
+            //        if (areas[pos.z, pos.x].CheckExtendToDir(dir) &&
+            //            areas[pos.z, pos.x + 1].CheckExtendToDir(reverseDir))
+            //        {
+            //            areas[pos.z, pos.x].GetSectionFromNumKey(dir).Fill(_non);
+            //            areas[pos.z, pos.x + 1].GetSectionFromNumKey(reverseDir).Fill(_non);
+            //        }
+            //        break;
+            //    case 8:
+            //        if (areas[pos.z, pos.x].CheckExtendToDir(dir) &&
+            //            areas[pos.z - 1, pos.x].CheckExtendToDir(reverseDir))
+            //        {
+            //            areas[pos.z, pos.x].GetSectionFromNumKey(dir).Fill(_non);
+            //            areas[pos.z - 1, pos.x].GetSectionFromNumKey(reverseDir).Fill(_non);
+            //        }
+            //        break;
+            //}
+        }
 
         //_areaMap = new Area[5, 5];
 

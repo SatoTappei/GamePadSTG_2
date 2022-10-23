@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// マップ上の1マス
@@ -120,6 +121,21 @@ public class Area
 
     /// <summary>テンキーに対応した区画を返す</summary>
     public Section GetSectionFromNumKey(int numKey) => _sections[numKey - 1];
+
+    /// <summary>渡された方向に道路を伸ばしているかチェックする</summary>
+    public bool CheckExtendToDir(int dir)
+    {
+        if ((dir) % 2 == 1 || dir == 0)
+        {
+            Debug.LogWarning("チェックする方向は上下左右の中から選んでください。");
+            return false;
+        }
+
+        char[,] array = GetSectionFromNumKey(dir).GetCharArray();
+        
+        // 道路になっている区画は途中で途切れることがないので先頭だけ調べればよい。
+        return array[0, 0] != 'n';
+    }
 
     /// <summary>各区画を合体させて1つの文字型の二次元配列にして返す</summary>
     public char[,] GetCharArray()
