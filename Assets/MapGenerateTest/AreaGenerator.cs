@@ -23,11 +23,11 @@ public class AreaGenerator : MonoBehaviour
     readonly int AreaWide = MapGenerateUtility.AreaWide;
 
     /// <summary>’Êí‚Ì“¹˜H</summary>
-    readonly string _road = "r";
+    readonly char _road = 'r';
     /// <summary>•‚ÌL‚¢“¹˜H</summary>
-    readonly string _wRoad = "R";
+    readonly char _wRoad = 'R';
     /// <summary>‰½‚à–³‚µ</summary>
-    readonly string _non = "n";
+    readonly char _non = 'n';
 
     Area[,] _areaMap;
 
@@ -48,8 +48,20 @@ public class AreaGenerator : MonoBehaviour
     /// 7*7‚Ì‹æˆæ‚ğ¶¬‚·‚é
     /// “¹˜H‚Ì‚İ¶¬‚·‚é
     /// </summary>
-    public Area[,] Generate()
+    public Area[,] Generate(Area[,] areas)
     {
+        // \š‚Ì“¹˜H‚ğİ’u‚·‚é
+        for (int z = 0; z < MapHeight; z++)
+            for (int x = 0; x < MapWidth; x++)
+            {
+                areas[z, x].GetSectionFromNumKey(2).SetCharAll(_road);
+                areas[z, x].GetSectionFromNumKey(4).SetCharAll(_road);
+                areas[z, x].GetSectionFromNumKey(5).SetCharAll(_road);
+                areas[z, x].GetSectionFromNumKey(6).SetCharAll(_road);
+                areas[z, x].GetSectionFromNumKey(8).SetCharAll(_road);
+                areas[z, x].GetSectionFromNumKey(9).SetCharAll(_road);
+            }
+
         //_areaMap = new Area[5, 5];
 
         //for (int z = 0; z < 5; z++)
@@ -80,7 +92,7 @@ public class AreaGenerator : MonoBehaviour
         //SetWideRoadOnGround(RightCenter, BottomCenter);
         //SetWideRoadOnGround(BottomCenter, TopCenter);
 
-        return null; // <- ‘‚­
+        return areas; // <- ‘‚­
     }
 
     /// <summary>³•ûŒ`‚Ì‹æˆæ(•¶š—ñ‚Ì“ñŸŒ³”z—ñ)‚ğì‚èA‰½‚à‚È‚µ‚Ì•¶š‚Å–„‚ß‚é</summary>

@@ -2,42 +2,65 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>マップ上の1マス</summary>
+/// <summary>
+/// マップ上の1マス
+/// </summary>
 public class Mass
 {
-    /// <summary>マップ上での座標、区画内での番号とは違うので注意</summary>
+    /// <summary>区域上での座標、区画内での番号とは違うので注意</summary>
     (int z, int x) _pos;
     char _char;
+
+    public Mass(int z, int x)
+    {
+        _pos.z = z;
+        _pos.x = x;
+    }
 
     public (int z, int x) Pos { get => _pos; }
     public char Char { get => _char; set => _char = value; }
 }
 
-/// <summary>区域を構成する区画</summary>
+/// <summary>
+/// 区域を構成する区画
+/// </summary>
 public class Section
 {
+    // 区画の左上と右下を保存する => 各マスに割り当てるため
     readonly int _height;
-    readonly int _widht;
+    readonly int _width;
+    (int z, int x) _upperLeft;
+    (int z, int x) _bottomRight;
     Mass[,] _masses;
 
-    public Section(int height, int width)
+    public Section(int height, int width, (int z, int x) upperLeft, (int z, int x) bottomRight)
     {
         _masses = new Mass[height, width];
+        _height = height;
+        _width = width;
+        _upperLeft = upperLeft;
+        _bottomRight = bottomRight;
+
+        for (int z = 0, areaZ = _upperLeft.z; z < height; z++, areaZ++)
+            for (int x = 0, areaX = _upperLeft.x; x < width; x++, areaX++)
+            {
+                _masses[z, x] = new Mass(areaZ, areaX);
+            }
     }
 
     public Mass[,] Masses { get => _masses; }
     public int Height { get => _height; }
-    public int Widht { get => _widht; }
+    public int Widht { get => _width; }
 
     /// <summary>区画内の番号を渡すと対応した対応したマスを返す</summary>
     public Mass GetMass(int z, int x) => _masses[z, x];
 
-    /// <summary>この区画を文字列二次元配列にして返す。</summary>
-    public char[,] GetStringArray()
+    /// <summary>この区画を文字の二次元配列にして返す。</summary>
+    public char[,] GetCharArray()
     {
-        char[,] array = new char[_height, _widht];
+        char[,] array = new char[_height, _width];
         for (int z = 0; z < _height; z++)
-            for (int x = 0; x < _widht; x++)
+            for (int x = 0; x < _width; x++)
             {
                 array[z, x] = _masses[z, x].Char;
             }
@@ -45,46 +68,66 @@ public class Section
         return array;
     }
 
-    /// <summary>文字列二次元配列を区画に反映させる</summary>
-    public void SetStringArray(char[,] array)
+    /// <summary>区画を渡された文字で埋める</summary>
+    public void SetCharAll(char c)
+    {
+        for (int z = 0; z < _height; z++)
+            for (int x = 0; x < _width; x++)
+            {
+                _masses[z, x].Char = c;
+            }
+    }
+
+    /// <summary>文字の二次元配列を区画に反映させる</summary>
+    public void SetCharArray(char[,] array)
     {
         if (array.GetLength(0) != _height || 
-            array.GetLength(1) != _widht)
+            array.GetLength(1) != _width)
         {
             Debug.LogWarning("渡された配列が区画の大きさと違います。");
             return;
         }
 
         for (int z = 0; z < _height; z++)
-            for (int x = 0; x < _widht; x++)
+            for (int x = 0; x < _width; x++)
             {
                 _masses[z, x].Char = array[z, x];
             }
     }
 }
 
-/// <summary>マップを構成する区域</summary>
+/// <summary>
+/// マップを構成する区域
+/// </summary>
 public class Area
 {
     readonly int _height = 7;
     readonly int _widht = 7;
 
     /// <summary>各区画はテンキーの番号に対応している</summary>
-    Section[] _sections = new Section[]
-    {
-        new Section(3,3),   // 左下
-        new Section(3,1),   // 下
-        new Section(3,3),   // 右下
-        new Section(1,3),   // 左
-        new Section(1,1),   // 真ん中
-        new Section(1,3),   // 右
-        new Section(3,3),   // 左上
-        new Section(3,1),   // 上
-        new Section(3,3),   // 右上
-    };
+    Section[] _sections;
 
-    // 各区画を合体させて1つの文字列型の二次元配列にして返す
-    public char[,] GetStringArray()
+    public Area()
+    {
+        _sections = new Section[]
+        {
+            new Section(3,3,(4,0),(6,2)),   // 左下
+            new Section(3,1,(4,3),(6,3)),   // 下
+            new Section(3,3,(4,4),(6,6)),   // 右下
+            new Section(1,3,(3,0),(3,2)),   // 左
+            new Section(1,1,(3,3),(3,3)),   // 真ん中
+            new Section(1,3,(3,4),(3,6)),   // 右
+            new Section(3,3,(0,0),(2,2)),   // 左上
+            new Section(3,1,(0,3),(2,3)),   // 上
+            new Section(3,3,(0,4),(0,6)),   // 右上
+         };
+    }
+
+    /// <summary>テンキーに対応した区画を返す</summary>
+    public Section GetSectionFromNumKey(int numKey) => _sections[numKey - 1];
+
+    /// <summary>各区画を合体させて1つの文字型の二次元配列にして返す</summary>
+    public char[,] GetCharArray()
     {
         char[,] mapArray = new char[_height, _widht];
         foreach (Section sct in _sections)
@@ -97,7 +140,7 @@ public class Area
                     mapArray[mass.Pos.z, mass.Pos.x] = mass.Char;
                 }
         }
-
+        // バグ:文字が格納されていない
         return mapArray;
     }
 }
@@ -108,6 +151,9 @@ public class Area
 /// </summary>
 public class Map
 {
+    readonly int _height = 5;
+    readonly int _width = 5;
+
     public Area[,] Areas { get; set; }
 
     public Map(int height, int width)

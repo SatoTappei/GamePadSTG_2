@@ -39,7 +39,7 @@ public class ObjectConverter : MonoBehaviour
 
         // 高さと幅を指定してマップを作成
         Map map = new Map(MapHeight, MapWidth);
-        _areaGenerator.Generate();
+        map.Areas = _areaGenerator.Generate(map.Areas);
 
         /* マップの生成処理ここまで */
 
@@ -47,7 +47,7 @@ public class ObjectConverter : MonoBehaviour
         for (int z = 0; z < MapHeight; z++)
             for (int x = 0; x < MapWidth; x++)
             {
-                char[,] strMap = map.Areas[z, x].GetStringArray();
+                char[,] strMap = map.Areas[z, x].GetCharArray();
                 GameObject areaRoot = BuildingFromArray(strMap);
                 areaRoot.transform.position = new Vector3(z * AreaWide, 0, x * AreaWide);
             }
