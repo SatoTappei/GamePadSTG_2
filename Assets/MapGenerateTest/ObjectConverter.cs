@@ -15,7 +15,7 @@ public class ObjectConverter : MonoBehaviour
         public GameObject _object;
     }   
 
-    AreaGenerator _areaGenerator;
+    AreaRoadGenerator _areaGenerator;
     BuildingGenerator _buildingGenerator;
     /// <summary>マップ上に設置する建築物のリスト</summary>
     [SerializeField] List<Building> _buildingList;
@@ -28,7 +28,7 @@ public class ObjectConverter : MonoBehaviour
 
     void Awake()
     {
-        _areaGenerator = GetComponent<AreaGenerator>();
+        _areaGenerator = GetComponent<AreaRoadGenerator>();
         _buildingGenerator = GetComponent<BuildingGenerator>();
         _buildingList.ForEach(b => _buildingDic.Add(b._char, b));
     }

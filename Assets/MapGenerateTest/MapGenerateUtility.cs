@@ -125,16 +125,32 @@ public class Area
     /// <summary>渡された方向に道路を伸ばしているかチェックする</summary>
     public bool CheckExtendToDir(int dir)
     {
-        if ((dir) % 2 == 1 || dir == 0)
+        if (dir % 2 == 1 || dir == 0)
         {
             Debug.LogWarning("チェックする方向は上下左右の中から選んでください。");
             return false;
         }
 
-        char[,] array = GetSectionFromNumKey(dir).GetCharArray();
-        
         // 道路になっている区画は途中で途切れることがないので先頭だけ調べればよい。
-        return array[0, 0] != 'n';
+        Mass mass = GetSectionFromNumKey(dir).GetMass(0, 0);
+
+        return mass.Char == 'r' || mass.Char == 'R';
+    }
+
+    /// <summary>道路を伸ばしている数を返す</summary>
+    public int GetExtendCount()
+    {
+        int count = 0;
+        // 道路は途中で途切れることがないので
+        // 上下左右の区画の先頭のマスが道路になっているか調べればよい
+        for (int i = 2; i <= 8; i += 2)
+        {
+            Mass mass = GetSectionFromNumKey(i).GetMass(0, 0);
+            
+            if (mass.Char != 'n') count++;
+        }
+
+        return count;
     }
 
     /// <summary>各区画を合体させて1つの文字型の二次元配列にして返す</summary>
