@@ -40,7 +40,7 @@ public class ObjectConverter : MonoBehaviour
         // 高さと幅を指定してマップを作成
         Map map = new Map(Map.Height, Map.Width);
         _areaGenerator.Generate(map.Areas);
-
+        _buildingGenerator.Generate(map.Areas);
         /* マップの生成処理ここまで */
 
         // 文字型の二次元配列から区域を生成する
@@ -77,8 +77,11 @@ public class ObjectConverter : MonoBehaviour
                     // 区域の中央と区域内の真ん中のオブジェクトの位置を合わせるためオフセットを足す
                     int offsetZ = -1 * (Map.Height / 2) - 1;
                     int offsetX =  -1 * (Map.Width / 2) - 1;
-                    GameObject go = Instantiate(value._object, new Vector3(i + offsetX, 0, j + offsetZ), Quaternion.identity);
-                    go.transform.SetParent(root.transform);
+                    Vector3 pos = new Vector3(i + offsetX, 0, j + offsetZ);
+                    Quaternion rot = Quaternion.identity;
+                    Transform parent = root.transform;
+
+                    Instantiate(value._object, pos, rot, parent);
                 }
             }
 

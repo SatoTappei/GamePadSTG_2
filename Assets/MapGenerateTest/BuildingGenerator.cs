@@ -18,33 +18,23 @@ public class BuildingGenerator : MonoBehaviour
     }
 
     /// <summary>Œš•¨‚ğ¶¬‚·‚é</summary>
-    //public void Generate(Area[,] _areas)
-    //{
-    //    // “¹˜H‰ˆ‚¢‚ÉŒš•¨‚ğ¶¬‚·‚é
-    //    for (int z = 0; z < 5; z++)
-    //        for (int x = 0; x < 5; x++)
-    //        {
-    //            // ‚»‚Ì‹æˆæ‚Ì‹ó‚¢‚Ä‚¢‚é•ûŒü‚ğ’²‚×‚é
-    //            //_areas[z, x]._roadStrs[0, 0] = "b";
-    //            // “¹˜H‰ˆ‚¢‚ÉŒš•¨‚ğŒš‚Ä‚éA2‚©4‚ªŠÜ‚Ü‚ê‚Ä‚¢‚éƒ}ƒX‚ªnon‚¾‚Á‚½‚ç
-    //            for (int i = 0; i < 7; i++)
-    //                for (int j = 0; j < 7; j++)
-    //                {
-    //                    if (i == 2 || i == 4 || j == 2 || j == 4)
-    //                    {
-    //                        if (_areas[z, x]._roadStrs[i, j] == "n" &&
-    //                           (_areas[z, x]._roadStrs[i + 1, j] == "r" ||
-    //                            _areas[z, x]._roadStrs[i + 1, j] == "R" ||
-    //                            _areas[z, x]._roadStrs[i - 1, j] == "r" ||
-    //                            _areas[z, x]._roadStrs[i - 1, j] == "R" ||
-    //                            _areas[z, x]._roadStrs[i, j + 1] == "r" ||
-    //                            _areas[z, x]._roadStrs[i, j + 1] == "R" ||
-    //                            _areas[z, x]._roadStrs[i, j - 1] == "r" ||
-    //                            _areas[z, x]._roadStrs[i, j - 1] == "R" ))
-    //                            _areas[z, x]._roadStrs[i, j] = "b";
-    //                    }
-    //                }
+    public void Generate(Area[,] _areas)
+    {
+        // “¹˜H‰ˆ‚¢‚ÉŒš•¨‚ğ¶¬‚·‚é
+        for (int z = 0; z < Map.Height; z++)
+            for (int x = 0; x < Map.Width; x++)
+            {
+                char[,] build =
+                {
+                    {'n', 'n', 'n'},
+                    {'n', 'b', 'n'},
+                    {'n', 'n', 'n'},
+                };
 
-    //        }
-    //}
+                _areas[z, x].GetSectionFromNumKey(1).SetCharArray(build);
+                _areas[z, x].GetSectionFromNumKey(3).SetCharArray(build);
+                _areas[z, x].GetSectionFromNumKey(7).SetCharArray(build);
+                _areas[z, x].GetSectionFromNumKey(9).SetCharArray(build);
+            }
+    }
 }
