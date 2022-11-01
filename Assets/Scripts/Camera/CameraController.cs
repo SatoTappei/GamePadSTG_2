@@ -10,7 +10,7 @@ using DG.Tweening;
 /// プレイヤーを映すカメラを制御する汎用的カメラコントローラー
 /// Cinemachineを用いず、CameraParentにアタッチして使う
 /// </summary> 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class CameraController : MonoBehaviour
 {
     /// <summary>
@@ -47,6 +47,11 @@ public class CameraController : MonoBehaviour
 
     /// <summary>設定したパラメーターを外部から参照するためのプロパティ</summary>
     public Parameter Param => _parameter;
+
+    void Start()
+    {
+        _parameter.position = _parameter._target.position;
+    }
 
     void Update()
     {

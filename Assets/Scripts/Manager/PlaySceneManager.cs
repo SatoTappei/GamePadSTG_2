@@ -10,8 +10,6 @@ using UniRx.Triggers;
 public class PlaySceneManager : MonoBehaviour
 {
     PlaySceneUIManager _psUIm;
-    /// <summary>キューブが触れるとプレイヤーへのダメージとなるコライダー</summary>
-    [SerializeField] Collider _damageZone;
     /// <summary>プレイヤーの最大体力</summary>
     [SerializeField] int _maxLife;
     /// <summary>プレイヤーの現在の体力</summary>
@@ -27,10 +25,6 @@ public class PlaySceneManager : MonoBehaviour
         _currentLife.Value = _maxLife;
         _psUIm = GetComponent<PlaySceneUIManager>();
 
-        _damageZone.OnTriggerEnterAsObservable()
-            .Where(collider => collider.CompareTag("Cube"))
-            .Subscribe(_ => Debug.Log("ヒットした"));
-
         _currentLife.Subscribe(life => _psUIm.SetLifeGauge(_maxLife, life));
         _currentLife.Where(life => life <= 0).Subscribe(_ => GameOver());
         _currentScore.Subscribe(score => _psUIm.SetScore(score));
@@ -38,7 +32,9 @@ public class PlaySceneManager : MonoBehaviour
 
     void Start()
     {
-
+        // TODO:ゲーム開始の演出後に敵が動くようにする
+        // 敵のAIのスクリプトはこの処理に対応できるよう作ってある。
+        // スタート演出後にメッセージを発行して全ての敵をアクティブにする
     }
 
     void Update()
