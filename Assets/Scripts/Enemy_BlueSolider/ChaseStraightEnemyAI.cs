@@ -9,12 +9,12 @@ using UnityEngine;
 /// ターゲットに向かって真っ直ぐ近づいて近接攻撃してくる敵
 /// 現在の状態における行動を実行する
 /// </summary>
-public class ChaseStraightEnemyAI : MonoBehaviour
+public class ChaseStraightEnemyAI : EnemyAIBase
 {
     /// <summary>現在のステートに対応したクラス</summary>
     ChaseStraightEnemyBase _currentStateClass;
 
-    void Start()
+    public override void Init()
     {
         // ターゲットは現状Playerのみ、タグを変えることでターゲットを変えることが出来る
         Transform target = GameObject.FindGameObjectWithTag("Player").transform;
@@ -22,7 +22,7 @@ public class ChaseStraightEnemyAI : MonoBehaviour
         _currentStateClass = new ChaseStraightEnemyIdle(gameObject, target, anim);
     }
 
-    void Update()
+    public override void Stay()
     {
         _currentStateClass = _currentStateClass.Process();
     }

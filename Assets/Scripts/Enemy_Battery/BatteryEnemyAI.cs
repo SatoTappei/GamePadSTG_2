@@ -9,7 +9,7 @@ using UnityEngine;
 /// その場から動かず発見次第撃ってくる敵
 /// 現在の状態における行動を実行する
 /// </summary>
-public class BatteryEnemyAI : MonoBehaviour
+public class BatteryEnemyAI : EnemyAIBase
 {
     // 回転砲塔、子オブジェクトにMuzzleという名前のオブジェクトが無いと
     // BatteryEnemyIdleのコンストラクタを呼んだ時点でエラーになるので注意
@@ -18,7 +18,7 @@ public class BatteryEnemyAI : MonoBehaviour
     /// <summary>現在のステートに対応したクラス</summary>
     BatteryEnemyBase _currentStateClass;
 
-    void Start()
+    public override void Init()
     {
         // ターゲットは現状Playerのみ、タグを変えることでターゲットを変えることが出来る
         Transform target = GameObject.FindGameObjectWithTag("Player").transform;
@@ -26,7 +26,7 @@ public class BatteryEnemyAI : MonoBehaviour
         _currentStateClass = new BatteryEnemyIdle(gameObject, target, anim, _turret);
     }
 
-    void Update()
+    public override void Stay()
     {
         _currentStateClass = _currentStateClass.Process();
     }
