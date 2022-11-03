@@ -10,8 +10,6 @@ using Cysharp.Threading.Tasks;
 /// </summary>
 public class GameStartStag : MonoBehaviour
 {
-    
-
     void Start()
     {
 

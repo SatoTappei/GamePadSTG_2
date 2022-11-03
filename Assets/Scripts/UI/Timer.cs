@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using System;
+using UnityEngine.UI;
+using UnityEngine.Events;
 
 /// <summary>
 /// カウントが0になったときにコールバックが呼ばれるタイマー
@@ -14,7 +15,7 @@ public class Timer : MonoBehaviour
     [SerializeField] int _limitMinutes;
 
     /// <summary>タイムアップ時に呼ばれるイベント</summary>
-    public Action TimeUpEvent { private get; set; }
+    public UnityAction TimeUpEvent { get; set; }
     /// <summary>trueの間はタイマーが止まる</summary>
     bool _isPause = true;
 
@@ -36,7 +37,7 @@ public class Timer : MonoBehaviour
         // デバッグ用
         //if (Input.GetKeyDown(KeyCode.T)) IsPause = !IsPause;
      
-        if (_isPause || TimeUpEvent == null) return;
+        if (_isPause) return;
 
         _count -= Time.deltaTime;
         if (ToText() == 0)

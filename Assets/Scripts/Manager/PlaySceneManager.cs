@@ -39,6 +39,7 @@ public class PlaySceneManager : MonoBehaviour
     async void Start()
     {
         await _uiMgr.PlayGameStartStag();
+        _uiMgr.TimerStart(()=>Debug.Log("ここにタイムアップ時の処理を入れる"));
         _playerMv.WakeUp();
         _enemyMgr.WakeUpEnemyAll();
         //タイムアップでガメオベラになるようにする

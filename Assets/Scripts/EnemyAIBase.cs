@@ -16,10 +16,6 @@ public abstract class EnemyAIBase : MonoBehaviour
 
     protected async void Start()
     {
-        // 機能させるかどうかを管理してもらうために自身を登録する
-        // 他のところで使いまわす場合は下の行を消せば良い
-        FindObjectOfType<EnemyManager>().AddEnemyList(this);
-
         await UniTask.WaitUntil(() => _isWakeUp);
         Init();
 

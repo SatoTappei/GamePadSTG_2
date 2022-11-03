@@ -2017,9 +2017,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b2c29da61df9254ab38ca945698f54a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _gsStag: {fileID: 1522154744}
+  _timer: {fileID: 906269097}
   _damageGauge: {fileID: 753312029}
   _scoreText: {fileID: 906269095}
-  _gsStag: {fileID: 1522154744}
 --- !u!114 &1193072858
 MonoBehaviour:
   m_ObjectHideFlags: 0

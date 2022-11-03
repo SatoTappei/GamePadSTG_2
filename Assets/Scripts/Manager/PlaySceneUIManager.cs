@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.Events;
 using Cysharp.Threading.Tasks;
 
 /// <summary>
@@ -10,11 +11,12 @@ using Cysharp.Threading.Tasks;
 /// </summary>
 public class PlaySceneUIManager : MonoBehaviour
 {
+    [SerializeField] GameStartStag _gsStag;
+    [SerializeField] Timer _timer;
     /// <summary>ダメージを受けた割合を示すゲージ</summary>
     [SerializeField] Transform _damageGauge;
     /// <summary>スコアを表示するテキスト</summary>
     [SerializeField] Text _scoreText;
-    [SerializeField] GameStartStag _gsStag;
     
     void Start()
     {
@@ -52,5 +54,12 @@ public class PlaySceneUIManager : MonoBehaviour
     public async UniTask PlayGameStartStag()
     {
         await _gsStag.Play();
+    }
+
+    /// <summary>コールバックを渡してタイマーをスタートさせる</summary>
+    public void TimerStart(UnityAction action = null)
+    {
+        _timer.TimeUpEvent += action;
+        _timer.TimerStart();
     }
 }
