@@ -38,6 +38,9 @@ public class PlayerMove : MonoBehaviour
     /// <summary>ジャンプ可能かを判定するRayがヒットするレイヤー</summary>
     [SerializeField] LayerMask _mask;
 
+    /// <summary>動くことが出来るかどうか</summary>
+    bool _canMove;
+
     void Awake()
     {
         _rb = GetComponent<Rigidbody>();
@@ -49,7 +52,7 @@ public class PlayerMove : MonoBehaviour
         //_inputVec.Where(v => v != Vector3.zero).Subscribe(_ => _anim.SetFloat("Speed", 1));
 
         this.UpdateAsObservable()
-            .Where(_ => Input.GetButtonDown("Jump"))
+            .Where(_ => Input.GetButtonDown("Jump") && _canMove)
             .BatchFrame(0, FrameCountType.FixedUpdate)
             .Subscribe(_ => FixedUpdateJump());
     }
@@ -61,6 +64,8 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
+        if (!_canMove) return;
+
         // 移動の入力を受け取る
         float hori = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");
@@ -90,6 +95,9 @@ public class PlayerMove : MonoBehaviour
         // Rigidbodyのvelocityに弄った移動速度を反映
         _rb.velocity = veloVec;
     }
+
+    /// <summary>動かせるようにする</summary>
+    public void WakeUp() => _canMove = true;
 
     /// <summary>ジャンプの入力があった際にジャンプさせる</summary>
     void FixedUpdateJump()

@@ -1,0 +1,64 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using System;
+
+/// <summary>
+/// カウントが0になったときにコールバックが呼ばれるタイマー
+/// </summary>
+public class Timer : MonoBehaviour
+{
+    [SerializeField] Text _counter;
+    /// <summary>制限時間(分)</summary>
+    [SerializeField] int _limitMinutes;
+
+    /// <summary>タイムアップ時に呼ばれるイベント</summary>
+    public Action TimeUpEvent { private get; set; }
+    /// <summary>trueの間はタイマーが止まる</summary>
+    bool _isPause = true;
+
+    float _count;
+
+    void Awake()
+    {
+        _count = _limitMinutes * 60;
+        ToText();
+    }
+
+    void Start()
+    {
+
+    }
+
+    void Update()
+    {
+        // デバッグ用
+        //if (Input.GetKeyDown(KeyCode.T)) IsPause = !IsPause;
+     
+        if (_isPause || TimeUpEvent == null) return;
+
+        _count -= Time.deltaTime;
+        if (ToText() == 0)
+        {
+            TimeUpEvent?.Invoke();
+            TimeUpEvent = null;
+            _isPause = true;
+        }
+    }
+
+    /// <summary>タイマーのカウントを開始する、二回目以降に呼び出した場合は再開になる</summary>
+    public void TimerStart() => _isPause = false;
+    /// <summary>タイマーのカウントを止める</summary>
+    public void TimerPause() => _isPause = true;
+
+    /// <summary>分:秒の形でテキストに表示してint型にキャストしたCountを返す</summary>
+    int ToText()
+    {
+        int iCount = (int)_count;
+        TimeSpan ts = new TimeSpan(0, 0, iCount);
+        _counter.text = ts.ToString(@"mm\:ss");
+
+        return iCount;
+    }
+}

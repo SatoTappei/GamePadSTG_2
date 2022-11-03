@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 /// <summary>
 /// ゲーム本編のUIを管理する
@@ -13,6 +14,7 @@ public class PlaySceneUIManager : MonoBehaviour
     [SerializeField] Transform _damageGauge;
     /// <summary>スコアを表示するテキスト</summary>
     [SerializeField] Text _scoreText;
+    [SerializeField] GameStartStag _gsStag;
     
     void Start()
     {
@@ -44,5 +46,11 @@ public class PlaySceneUIManager : MonoBehaviour
     {
         int prev = int.Parse(_scoreText.text.Replace(",", ""));
         _scoreText.DOCounter(prev, score, 0.5f);
+    }
+
+    /// <summary>ゲーム開始時の演出を行う</summary>
+    public async UniTask PlayGameStartStag()
+    {
+        await _gsStag.Play();
     }
 }
