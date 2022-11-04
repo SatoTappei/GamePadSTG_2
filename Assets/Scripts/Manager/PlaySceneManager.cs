@@ -38,10 +38,16 @@ public class PlaySceneManager : MonoBehaviour
 
     async void Start()
     {
+        // ターゲットの数とそのアイコンを取得
+        List<GameObject> target = _enemyMgr.GetTarget(EnemyTag.BlueSoldier);
+        Sprite icon = _enemyMgr.GetTargetIcon(EnemyTag.BlueSoldier);
+        _uiMgr.SetTargetLabel(target.Count, icon);
+
         await _uiMgr.PlayGameStartStag();
         _uiMgr.TimerStart(()=>Debug.Log("ここにタイムアップ時の処理を入れる"));
         _playerMv.WakeUp();
         _enemyMgr.WakeUpEnemyAll();
+        // playSceneUIManagerにアイコンと数をセットするメソッドを作成済み
         //タイムアップでガメオベラになるようにする
     }
 

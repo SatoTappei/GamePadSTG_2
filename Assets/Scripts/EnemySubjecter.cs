@@ -17,9 +17,12 @@ public enum EnemyTag
 public class EnemySubjecter : MonoBehaviour
 {
     EnemyAIBase _aiBase;
-    [SerializeField] EnemyTag _tag;
+    // 敵のアイコン、現在はここに書いているが後々敵のデータをまとめた別の場所に移すことを考慮する
+    [SerializeField] Sprite _icon;
+    [SerializeField] EnemyTag _enemyTag;
 
-    public EnemyTag Tag { get; private set; }
+    public EnemyTag EnemyTag { get => _enemyTag; }
+    public Sprite Icon { get => _icon; }
 
     void Awake()
     {

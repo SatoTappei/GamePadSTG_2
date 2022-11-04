@@ -28,7 +28,12 @@ public class EnemyManager : MonoBehaviour
     /// <summary>全ての敵を起こす</summary>
     public void WakeUpEnemyAll() => _enemyList.ForEach(e => e.WakeUp());
 
-    // TODO:作れたので実際にテストする、本番での使い方はターゲットの残り人数を表示するのに使う
-    // 敵を識別するタグが渡されるので、そのタグにあった敵の数をリストで返すメソッド
-    public int AmountFromTag(EnemyTag tag) => _enemyList.Count(e => e.Tag == tag);
+    /// <summary>ステージ内の敵からタグで倒すターゲットを取得する</summary>
+    public List<GameObject> GetTarget(EnemyTag tag) => _enemyList.Where(e => e.EnemyTag == tag)
+                                                                 .Select(e => e.gameObject)
+                                                                 .ToList();
+
+    /// <summary>タグでターゲットのアイコンを取得する</summary>
+    public Sprite GetTargetIcon(EnemyTag tag) => _enemyList.Where(e => e.EnemyTag == tag)
+                                                           .FirstOrDefault().Icon;
 }
