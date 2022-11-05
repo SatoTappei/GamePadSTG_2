@@ -272,8 +272,9 @@ GameObject:
   - component: {fileID: 267403630}
   - component: {fileID: 267403632}
   - component: {fileID: 267403631}
+  - component: {fileID: 267403633}
   m_Layer: 5
-  m_Name: 'TargetLabel '
+  m_Name: 'TargetViewLabel '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -342,6 +343,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 267403629}
   m_CullTransparentMesh: 1
+--- !u!114 &267403633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267403629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91483945747b4e44eb318b778938348e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _counter: {fileID: 1976213936}
+  _icon: {fileID: 1454480301}
 --- !u!1 &270192821
 GameObject:
   m_ObjectHideFlags: 0
@@ -2020,10 +2035,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gsStag: {fileID: 1522154744}
   _timer: {fileID: 906269097}
+  _targetView: {fileID: 267403633}
   _damageGauge: {fileID: 753312029}
   _scoreText: {fileID: 906269095}
-  _targetLabelCount: {fileID: 1976213936}
-  _targetLabelIcon: {fileID: 1454480301}
 --- !u!114 &1193072858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3555,7 +3569,7 @@ GameObject:
   - component: {fileID: 1976213937}
   - component: {fileID: 1976213936}
   m_Layer: 5
-  m_Name: Counter
+  m_Name: Count
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -13,14 +13,11 @@ public class PlaySceneUIManager : MonoBehaviour
 {
     [SerializeField] GameStartStag _gsStag;
     [SerializeField] Timer _timer;
+    [SerializeField] TargetView _targetView;
     /// <summary>ダメージを受けた割合を示すゲージ</summary>
     [SerializeField] Transform _damageGauge;
     /// <summary>スコアを表示するテキスト</summary>
     [SerializeField] Text _scoreText;
-    /// <summary>ターゲットの情報を表示するUI(カウンター)</summary>
-    [SerializeField] Text _targetLabelCount;
-    /// <summary>ターゲットの情報を表示するUI(アイコン)</summary>
-    [SerializeField] Image _targetLabelIcon;
     
     void Start()
     {
@@ -54,12 +51,10 @@ public class PlaySceneUIManager : MonoBehaviour
         _scoreText.DOCounter(prev, score, 0.5f);
     }
 
-    /// <summary>ターゲットの数とそのアイコンをセットする</summary>
-    public void SetTargetLabel(int count, Sprite icon)
-    {
-        _targetLabelCount.text = count.ToString();
-        _targetLabelIcon.sprite = icon;
-    }
+    /// <summary>ターゲットのカウンターを初期化する</summary>
+    public void InitTargetView(int count, Sprite icon) => _targetView.Init(count, icon);
+    /// <summary>ターゲットのカウンターの値を変更する</summary>
+    public void SetTargetViewValue(int count) => _targetView.SetValue(count);
 
     /// <summary>ゲーム開始時の演出を行う</summary>
     public async UniTask PlayGameStartStag()
