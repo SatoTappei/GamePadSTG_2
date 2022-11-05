@@ -17,11 +17,14 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     [SerializeField] float _invincibleTime = 2.0f;
     /// <summary>ダメージを受けた際のエフェクトのプレハブ</summary>
     [SerializeField] GameObject _damageEffectPrefab;
+    /// <summary>最大HP</summary>
+    [SerializeField] int _MaxHP; // 現在はインスペクタから設定するがいずれは別のデータ箇所から設定するようにすることを考慮する
     /// <summary>表示非表示を切り替えて使いまわすダメージエフェクト</summary>
     GameObject _damageEffect;
     /// <summary>無敵時間中かどうかのフラグ</summary>
     bool _isInvincible;
-
+    /// <summary>現在のHP</summary>
+    int _currentHp;
     /// <summary>ダメージを受けたときに行う追加の処理</summary>
     public UnityAction OnDamageReceived;
 
@@ -33,6 +36,8 @@ public class DamageReceiver : MonoBehaviour, IDamageable
             _damageEffect = Instantiate(_damageEffectPrefab);
             _damageEffect.SetActive(false);
         }
+
+        _currentHp = _MaxHP;
     }
 
     /// <summary>攻撃を受けたときの処理</summary>
@@ -52,6 +57,15 @@ public class DamageReceiver : MonoBehaviour, IDamageable
 
         // ヒットストップの後、ノックバックさせる
         DOVirtual.DelayedCall(ConstValue.HitStopTime, () => KnockBack(hitPos, _knockBackPower));
+
+        // ダメージ処理
+        _currentHp -= damageValue;
+        if(_currentHp <= 0)
+        {
+            // 死亡演出、こっちからEnemyManager側に通知することをしたくないので
+            // こっちの状態を監視させておいてこのオブジェクトが消えるなり死亡アニメーションするなり
+            // したときにカウントを減らすようにする
+        }
 
         OnDamageReceived?.Invoke();
     }
