@@ -18,12 +18,12 @@ public class EnemyManager : MonoBehaviour
     Dictionary<CharacterTag, ActorDataSO> _enemyDataDic = new Dictionary<CharacterTag, ActorDataSO>();
 
     /// <summary>ステージ上に存在する敵のリスト</summary>
-    List<EnemySubjecter> _enemyList = new List<EnemySubjecter>();
+    List<EnemyUnit> _enemyList = new List<EnemyUnit>();
     /// <summary>生存しているターゲットのリスト</summary>
-    ReactiveCollection<EnemySubjecter> _targets = new ReactiveCollection<EnemySubjecter>();
+    ReactiveCollection<EnemyUnit> _targets = new ReactiveCollection<EnemyUnit>();
 
     /// <summary>ターゲットが"減ったら"行う処理を登録する</summary>
-    public IObservable<CollectionRemoveEvent<EnemySubjecter>> TargetsObservable => _targets.ObserveRemove();
+    public IObservable<CollectionRemoveEvent<EnemyUnit>> TargetsObservable => _targets.ObserveRemove();
 
     void Awake()
     {
@@ -50,7 +50,7 @@ public class EnemyManager : MonoBehaviour
         // TODO:現状タグで検索してコンポーネントを取得しているので他の方法がないか模索する
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("Enemy"))
         {
-            EnemySubjecter es = go.GetComponent<EnemySubjecter>();
+            EnemyUnit es = go.GetComponent<EnemyUnit>();
             _enemyList.Add(es);
 
             // 渡されたタグと同じだったらターゲットのリストに追加し
@@ -71,21 +71,4 @@ public class EnemyManager : MonoBehaviour
 
     /// <summary>全ての敵を起こす</summary>
     public void WakeUpEnemyAll() => _enemyList.ForEach(e => e.WakeUp());
-
-    ///// <summary>生成された敵側がこのメソッドを呼んで自身を登録する</summary>
-    //public void AddEnemyList(EnemySubjecter enemy) => _enemyList.Add(enemy);
-
-    /// <summary>ステージ内の敵からタグで倒すターゲットを取得する</summary>
-    //public List<GameObject> GetTarget(CharacterTag tag)
-    //{
-    //    _targetList = _enemyList
-    //        .Where(e => e.EnemyTag == tag).Select(e => e.gameObject).ToList();
-
-    //    // ターゲットが減ったらの処理をここに書いておくが後で適切な場所に置く
-    //    _targetList.ForEach(go => go.OnDisableAsObservable().Subscribe(_=> DecreaseTargetCount()));
-
-    //    _rem.Value = _targetList.Count;
-
-    //    return _targetList;
-    //}
 }

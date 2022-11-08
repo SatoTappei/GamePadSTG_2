@@ -58,12 +58,4 @@ public class PlaySceneManager : MonoBehaviour
     {
 
     }
-
-    // ゲームオーバーの演出を行う
-    void GameOver()
-    {
-        Debug.Log("がめおべら");
-        // 使わなくなったタイミング = 死亡なのでDisposeする。
-        //_currentLife.Dispose();
-    }
 }

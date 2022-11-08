@@ -4,23 +4,22 @@ using UnityEngine;
 using DG.Tweening;
 
 /// <summary>
-/// プレイヤーのステータスを管理する
+/// DamageReceiverとDamageSenderに
+/// プレイヤーがダメージを受けた与えたときの処理を登録する
+/// 現在未使用、消さないこと
 /// </summary>
-public class PlayerStatus : MonoBehaviour
+public class PlayerDamageSubscriber : MonoBehaviour
 {
     [SerializeField] DamageReceiver _damageReciever;
     [SerializeField] DamageSender _damageSender;
 
     [Header("各種ダメージ演出に必要")]
     [SerializeField] Animator _anim;
-    /// <summary>プレイヤーの体力</summary>
-    [SerializeField] int _maxLife;
-    int _currentLife;
-
-    void Start()
-    {
-        
-    }
+    /// <summary>
+    /// ヒットストップ実装のテスト用
+    /// これを消してもヒットストップが無くなるだけで他に影響はない
+    /// </summary>
+    //[SerializeField] Animator _anim;
 
     void OnEnable()
     {
@@ -32,11 +31,6 @@ public class PlayerStatus : MonoBehaviour
     {
         _damageReciever.OnDamageReceived -= OnDamageReceived;
         _damageSender.OnDamageSended -= OnDamageSended;
-    }
-
-    void Update()
-    {
-        
     }
 
     /// <summary>ダメージを受けた際の演出</summary>
@@ -51,11 +45,11 @@ public class PlayerStatus : MonoBehaviour
         // アニメーションを一時停止する
         _anim.speed = 0;
         Sequence sequence = DOTween.Sequence();
-        sequence.SetDelay(ConstValue.HitStopTime);
+        sequence.SetDelay(InGameUtility.HitStopTime);
         sequence.AppendCallback(() => _anim.speed = 1.0f);
 
         // カメラを揺らす
-        float duration = ConstValue.HitStopTime;
+        float duration = InGameUtility.HitStopTime;
         Vector3 strength = new Vector3(1f, 1f, 0);
         int vibratio = 20;
         CameraController.Shake(duration, strength, vibratio);

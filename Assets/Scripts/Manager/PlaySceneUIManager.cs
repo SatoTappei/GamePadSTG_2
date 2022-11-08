@@ -29,11 +29,7 @@ public class PlaySceneUIManager : MonoBehaviour
         
     }
 
-    /// <summary>
-    /// HPゲージを変化させる
-    /// </summary>
-    /// <param name="max">プレイヤーの最大体力</param>
-    /// <param name="current">プレイヤーの現在の体力</param>
+    /// <summary>HPゲージを変化させる</summary>
     public void SetLifeGauge(int max, int current)
     {
         float xValue = 1 - (current * 1.0f / max * 1.0f);
@@ -41,10 +37,7 @@ public class PlaySceneUIManager : MonoBehaviour
         _damageGauge.DOScaleX(xValue, 0.5f);
     }
 
-    /// <summary>
-    /// スコアをセットする
-    /// </summary>
-    /// <param name="score">セットするスコア</param>
+    /// <summary>スコアをセットする</summary>
     public void SetScore(int score)
     {
         int prev = int.Parse(_scoreText.text.Replace(",", ""));
@@ -55,10 +48,7 @@ public class PlaySceneUIManager : MonoBehaviour
     public void SetTargetView(int count, Sprite icon) => _targetView.Set(count, icon);
 
     /// <summary>ゲーム開始時の演出を行う</summary>
-    public async UniTask PlayGameStartStag()
-    {
-        await _gsStag.Play();
-    }
+    public async UniTask PlayGameStartStag() => await _gsStag.Play();
 
     /// <summary>コールバックを渡してタイマーをスタートさせる</summary>
     public void TimerStart(UnityAction action = null)

@@ -28,7 +28,7 @@ public class EnemyDamageSubscriber : MonoBehaviour
     /// <summary>ダメージを受けた際の演出</summary>
     void OnDamageReceived()
     {
-        transform.DOShakePosition(ConstValue.HitStopTime, 0.15f, 25, fadeOut: false);
+        transform.DOShakePosition(InGameUtility.HitStopTime, 0.15f, 25, fadeOut: false);
         // ダメージを受けたときに死んだかどうか判定したい
         // HPを減らして0以下だったらと否かで分岐する
     }
@@ -37,5 +37,10 @@ public class EnemyDamageSubscriber : MonoBehaviour
     void OnDamageSended()
     {
         // 未実装
+    }
+
+    private void Update()
+    {
+        Debug.Log("つかってにあ");
     }
 }

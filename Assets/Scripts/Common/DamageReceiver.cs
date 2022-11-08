@@ -35,6 +35,15 @@ public class DamageReceiver : MonoBehaviour, IDamageable
         }
     }
 
+    // TODO:レイキャストを使用したヒットバックのキャンセルをしたい
+    //void Update()
+    //{
+    //    Vector3 rayPos = transform.position + new Vector3(0, 5f, 0);
+    //    Ray ray = new Ray(rayPos, Vector3.down);
+
+    //    bool isHit = Physics.Raycast(ray,)
+    //}
+
     /// <summary>攻撃を受けたときの処理</summary>
     public void OnDamage(int _, Vector3 hitPos)
     {
@@ -51,7 +60,7 @@ public class DamageReceiver : MonoBehaviour, IDamageable
             EnabledDamageEffect(hitPos);
 
         // ヒットストップの後、ノックバックさせる
-        DOVirtual.DelayedCall(ConstValue.HitStopTime, () => KnockBack(hitPos, _knockBackPower));
+        DOVirtual.DelayedCall(InGameUtility.HitStopTime, () => KnockBack(hitPos, _knockBackPower));
 
         // ダメージ処理
         OnDamageReceived?.Invoke();

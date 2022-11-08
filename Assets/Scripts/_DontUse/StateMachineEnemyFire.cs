@@ -11,6 +11,6 @@ public class StateMachineEnemyFire : MonoBehaviour
 
     void Update()
     {
-        
+        Debug.Log("‚Â‚©‚Á‚Ä‚È‚¢‚æ");
     }
 }

@@ -59,6 +59,8 @@ public class CameraController : MonoBehaviour
         float horiR = Input.GetAxis("Horizontal_R");
         float vertR = Input.GetAxis("Vertical_R");
         Vector3 camVec = new Vector3(vertR, horiR, 0) * 3;
+        /* 任意のカメラ操作方法ここまで */
+
         _parameter.angles += camVec;
     }
 
@@ -71,20 +73,25 @@ public class CameraController : MonoBehaviour
         if (_parameter._target != null)
             UpdateTargetBlend(_parameter);
 
-        // パラメータを各種オブジェクトに反映
+        SetParamToObject();
+    }
+
+    /// <summary>パラメータを各種オブジェクトに反映</summary>
+    void SetParamToObject()
+    {
         _parent.position = _parameter.position;
         _parent.eulerAngles = _parameter.angles;
 
         var childPos = _child.localPosition;
         childPos.z = -1.0f * _parameter.distance;
         _child.localPosition = childPos;
-        
+
         _camera.fieldOfView = _parameter.fieldOfView;
         _camera.transform.localPosition = _parameter.offsetPosition;
         _camera.transform.localEulerAngles = _parameter.offsetAngles + _shakeAngles;
     }
 
-    // 少し遅れて追いかけてくるカメラを作るために線形補完を利用する
+    /// <summary>少し遅れて追いかけてくるカメラを作るために線形補完を利用する</summary>
     public static void UpdateTargetBlend(Parameter parameter)
     {
         Vector3 start = parameter.position;

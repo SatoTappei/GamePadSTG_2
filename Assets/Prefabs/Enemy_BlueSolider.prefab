@@ -1233,6 +1233,7 @@ GameObject:
   - component: {fileID: 7370901653707363918}
   - component: {fileID: 2081600433907874058}
   - component: {fileID: 4170465061078369410}
+  - component: {fileID: 1686106375293481168}
   m_Layer: 0
   m_Name: HitBox
   m_TagString: Untagged
@@ -1330,6 +1331,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damage: 5
   _hitTag: Player
+--- !u!114 &1686106375293481168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5411616234956776762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29b9226193b570b46bad096c0c501d8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5520576439600318509
 GameObject:
   m_ObjectHideFlags: 0
@@ -1848,7 +1861,6 @@ GameObject:
   - component: {fileID: -1380828205000200306}
   - component: {fileID: 8211013611174312536}
   - component: {fileID: -2431091626857092125}
-  - component: {fileID: -4482760282949413008}
   m_Layer: 0
   m_Name: Enemy_BlueSolider
   m_TagString: Enemy
@@ -1897,7 +1909,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a335af4e7a4baf840824015f40dd7a9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damageReceiver: {fileID: -2431091626857092125}
+  _damageReciever: {fileID: -2431091626857092125}
   _damageSender: {fileID: 4170465061078369410}
   _enemyTag: 1
 --- !u!114 &8211013611174312536
@@ -1927,20 +1939,6 @@ MonoBehaviour:
   _knockBackPower: 3
   _invincibleTime: 2
   _damageEffectPrefab: {fileID: 1844881388747771113, guid: 598ba070c25b09843afba08c7d418a32, type: 3}
---- !u!114 &-4482760282949413008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8211013611174312534}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb9f1be55f4a6a841a142b4f3a358671, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _damageReceiver: {fileID: -2431091626857092125}
-  _damageSender: {fileID: 4170465061078369410}
 --- !u!1 &8376226580271511264
 GameObject:
   m_ObjectHideFlags: 0

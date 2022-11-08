@@ -3,27 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-// 後々良い感じの場所に移す
-/// <summary>キャラクターを識別するためのタグとして使う</summary>
-public enum CharacterTag
-{
-    Player,
-    BlueSoldier,
-    Tank,
-    BossTank,
-}
-
 /// <summary>
-/// 敵の情報をEnemyManagerに登録する
+/// 敵キャラクターの制御を行う
 /// </summary>
-public class EnemySubjecter : MonoBehaviour
+public class EnemyUnit : ActorUnit
 {
     EnemyAIBase _aiBase;
     ActorDataSO _actorData;
     int _currentHP;
 
-    [SerializeField] DamageReceiver _damageReceiver;
-    [SerializeField] DamageSender _damageSender;
     [SerializeField] CharacterTag _enemyTag;
 
     public CharacterTag EnemyTag { get => _enemyTag; }
@@ -32,31 +20,11 @@ public class EnemySubjecter : MonoBehaviour
     void Awake()
     {
         _aiBase = GetComponent<EnemyAIBase>();
-        //_currentHP = /*_actorData.MaxHP*/100;
-    }
-
-    void OnEnable()
-    {
-        if (_damageSender != null)
-            _damageSender.OnDamageSended += OnDamageSended;
-        _damageReceiver.OnDamageReceived += OnDamageReceived;
-
-    }
-
-    void OnDisable()
-    {
-        if (_damageSender != null)
-            _damageSender.OnDamageSended -= OnDamageSended;
-        _damageReceiver.OnDamageReceived -= OnDamageReceived;
     }
 
     void Start()
     {
-        //// TODO:現在は敵を増やした時のためにこっちから管理するよう登録しているが
-        ////      EnemyManagerから登録するように変更できないか模索する
         EnemyManager em = FindObjectOfType<EnemyManager>();
-        //// 機能させるかどうかを管理してもらうために自身を登録する
-        //em.AddEnemyList(this);
         //// 共通したデータの参照先を取得する
         _actorData = em.GetEnemyData(EnemyTag);
         _currentHP = _actorData.MaxHP;
@@ -74,9 +42,9 @@ public class EnemySubjecter : MonoBehaviour
     }
 
     /// <summary>ダメージを受けた際の演出</summary>
-    void OnDamageReceived()
+    protected override void OnDamageReceived()
     {
-        transform.DOShakePosition(ConstValue.HitStopTime, 0.15f, 25, fadeOut: false);
+        transform.DOShakePosition(InGameUtility.HitStopTime, 0.15f, 25, fadeOut: false);
         // ダメージを受けたときに死んだかどうか判定したい
         // HPを減らして0以下だったらと否かで分岐する
         _currentHP -= 30; // テスト固定値
@@ -88,7 +56,7 @@ public class EnemySubjecter : MonoBehaviour
     }
 
     /// <summary>ダメージを与えた際の演出</summary>
-    void OnDamageSended()
+    protected override void OnDamageSended()
     {
         // 未実装
     }
