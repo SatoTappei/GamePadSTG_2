@@ -13,12 +13,12 @@ public class PlaySceneManager : MonoBehaviour
     PlaySceneUIManager _uiMgr;
     EnemyManager _enemyMgr;
     PlayerMove _playerMv;
-    /// <summary>プレイヤーの最大体力</summary>
-    [SerializeField] int _maxLife;
-    /// <summary>プレイヤーの現在の体力</summary>
-    IntReactiveProperty _currentLife = new IntReactiveProperty();
-    /// <summary>現在のスコア</summary>
-    IntReactiveProperty _currentScore = new IntReactiveProperty();
+    ///// <summary>プレイヤーの最大体力</summary>
+    //[SerializeField] int _maxLife;
+    ///// <summary>プレイヤーの現在の体力</summary>
+    //IntReactiveProperty _currentLife = new IntReactiveProperty();
+    ///// <summary>現在のスコア</summary>
+    //IntReactiveProperty _currentScore = new IntReactiveProperty();
 
     void Awake()
     {
@@ -26,23 +26,26 @@ public class PlaySceneManager : MonoBehaviour
         _enemyMgr = GetComponent<EnemyManager>();
         _playerMv = FindObjectOfType<PlayerMove>();
 
-        // 現在のスコアに0をセット
-        _currentScore.Value = 0;
-        // 最大体力を現在の体力としてセット
-        _currentLife.Value = _maxLife;
+        //// 現在のスコアに0をセット
+        //_currentScore.Value = 0;
+        //// 最大体力を現在の体力としてセット
+        //_currentLife.Value = _maxLife;
 
-        _currentLife.Subscribe(life => _uiMgr.SetLifeGauge(_maxLife, life));
-        _currentLife.Where(life => life <= 0).Subscribe(_ => GameOver());
+        //_currentLife.Subscribe(life => _uiMgr.SetLifeGauge(_maxLife, life));
+        //_currentLife.Where(life => life <= 0).Subscribe(_ => GameOver());
         //_currentScore.Subscribe(score => _uiMgr.SetScore(score));
     }
 
     async void Start()
     {
-        // ターゲットの数とそのアイコンを取得
-        List<GameObject> target = _enemyMgr.GetTarget(EnemyTag.BlueSoldier);
-        Sprite icon = _enemyMgr.GetTargetIcon(EnemyTag.BlueSoldier);
-        _uiMgr.InitTargetView(target.Count, icon);
+        _enemyMgr.Init(CharacterTag.BlueSoldier);
 
+        // ReactiveCollectionはSubscribe時に処理が実行されないので
+        // 一度手動でターゲットビューをセットしてから残りはターゲットが減るたびに更新させる。
+        _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(),_enemyMgr.GetEnemyData(CharacterTag.BlueSoldier).Icon);
+        _enemyMgr.TargetsObservable.Subscribe(t => _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), t.Value.Icon)).AddTo(_enemyMgr);
+
+        // ゲームスタートの演出後にタイマーをスタートさせ、プレイヤーと敵をアクティブにする。
         await _uiMgr.PlayGameStartStag();
         _uiMgr.TimerStart(()=>Debug.Log("ここにタイムアップ時の処理を入れる"));
         _playerMv.WakeUp();
@@ -53,11 +56,7 @@ public class PlaySceneManager : MonoBehaviour
 
     void Update()
     {
-        //if (Input.anyKeyDown)
-        //{
-        //    _currentLife.Value--;
-        //    _currentScore.Value += 100;
-        //}
+
     }
 
     // ゲームオーバーの演出を行う
@@ -65,6 +64,6 @@ public class PlaySceneManager : MonoBehaviour
     {
         Debug.Log("がめおべら");
         // 使わなくなったタイミング = 死亡なのでDisposeする。
-        _currentLife.Dispose();
+        //_currentLife.Dispose();
     }
 }

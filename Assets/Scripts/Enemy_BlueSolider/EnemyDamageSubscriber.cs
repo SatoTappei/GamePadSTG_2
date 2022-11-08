@@ -6,6 +6,7 @@ using DG.Tweening;
 /// <summary>
 /// DamageReceiverとDamageSenderに
 /// 敵がダメージを受けた与えたときの処理を登録する
+/// 現在未使用、消さないこと
 /// </summary>
 public class EnemyDamageSubscriber : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class EnemyDamageSubscriber : MonoBehaviour
     void OnDamageReceived()
     {
         transform.DOShakePosition(ConstValue.HitStopTime, 0.15f, 25, fadeOut: false);
+        // ダメージを受けたときに死んだかどうか判定したい
+        // HPを減らして0以下だったらと否かで分岐する
     }
 
     /// <summary>ダメージを与えた際の演出</summary>

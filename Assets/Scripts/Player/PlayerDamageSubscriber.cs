@@ -6,6 +6,7 @@ using DG.Tweening;
 /// <summary>
 /// DamageReceiverとDamageSenderに
 /// プレイヤーがダメージを受けた与えたときの処理を登録する
+/// 現在未使用、消さないこと
 /// </summary>
 public class PlayerDamageSubscriber : MonoBehaviour
 {

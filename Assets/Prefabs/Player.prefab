@@ -1235,7 +1235,6 @@ GameObject:
   - component: {fileID: 4383829582165228294}
   - component: {fileID: 4383829582165228295}
   - component: {fileID: 4383829582165228291}
-  - component: {fileID: 4383829582165228409}
   - component: {fileID: 4383829582165228410}
   m_Layer: 0
   m_Name: Player
@@ -1302,6 +1301,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3baf655a9db0aa34ead4ac220f41eb6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _damageReciever: {fileID: 4383829582165228410}
+  _damageSender: {fileID: 2304364332634371736}
+  _anim: {fileID: 78033073383052485}
   _maxLife: 0
 --- !u!114 &4383829582165228295
 MonoBehaviour:
@@ -1336,21 +1338,6 @@ MonoBehaviour:
   _mask:
     serializedVersion: 2
     m_Bits: 64
---- !u!114 &4383829582165228409
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4383829582165228288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 98622088b8a90254596439e9ffa2491c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _damageReciever: {fileID: 4383829582165228410}
-  _damageSender: {fileID: 2304364332634371736}
-  _anim: {fileID: 78033073383052485}
 --- !u!114 &4383829582165228410
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -16,6 +16,8 @@ public class Shell : MonoBehaviour
     [SerializeField] float _initVelo = 3.0f;
     /// <summary>生存時間</summary>
     [SerializeField] float _lifeTime = 3.0f;
+    /// <summary>ダメージを与えた際の処理を登録する</summary>
+    [SerializeField] DamageSender _damageSender;
     /// <summary>速度</summary>
     float _velocity;
     /// <summary>重力加速度</summary>
@@ -23,22 +25,14 @@ public class Shell : MonoBehaviour
 
     void OnEnable()
     {
-        // 速度を初速にする
-        _velocity = _initVelo;
-        
-        DOVirtual.DelayedCall(_lifeTime, () =>
-        {
-            gameObject.SetActive(false);
-        }, ignoreTimeScale: false); // Unityのタイムスケールに依存させる
+        _damageSender.OnDamageSended += OnDamageSended;
+        Init();
     }
 
     void OnDisable()
     {
-        transform.position = default;
-        transform.rotation = default;
-
-        // 重力加速度を重力に戻す
-        _gravity = _gravityScale;
+        Return();
+        _damageSender.OnDamageSended -= OnDamageSended;
     }
 
     void Start()
@@ -58,5 +52,34 @@ public class Shell : MonoBehaviour
         transform.position += moveVec;
 
         transform.forward = transform.position - prevVec;
+    }
+
+    /// <summary>オブジェクトがプールから取り出されたときに呼ばれる</summary>
+    void Init()
+    {
+        // 速度を初速にする
+        _velocity = _initVelo;
+
+        DOVirtual.DelayedCall(_lifeTime, () =>
+        {
+            gameObject.SetActive(false);
+        }, ignoreTimeScale: false); // Unityのタイムスケールに依存させる
+    }
+
+    /// <summary>オブジェクトがプールに返却されるときに呼ばれる</summary>
+    void Return()
+    {
+        transform.position = default;
+        transform.rotation = default;
+
+        // 重力加速度を重力に戻す
+        _gravity = _gravityScale;
+    }
+
+    // ダメージを与えた際の処理
+    void OnDamageSended()
+    {
+        gameObject.SetActive(false);
+        Debug.Log("弾が消えました");
     }
 }

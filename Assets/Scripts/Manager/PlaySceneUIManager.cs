@@ -51,10 +51,8 @@ public class PlaySceneUIManager : MonoBehaviour
         _scoreText.DOCounter(prev, score, 0.5f);
     }
 
-    /// <summary>ターゲットのカウンターを初期化する</summary>
-    public void InitTargetView(int count, Sprite icon) => _targetView.Init(count, icon);
-    /// <summary>ターゲットのカウンターの値を変更する</summary>
-    public void SetTargetViewValue(int count) => _targetView.SetValue(count);
+    /// <summary>ターゲットビューの値を変更する</summary>
+    public void SetTargetView(int count, Sprite icon) => _targetView.Set(count, icon);
 
     /// <summary>ゲーム開始時の演出を行う</summary>
     public async UniTask PlayGameStartStag()
