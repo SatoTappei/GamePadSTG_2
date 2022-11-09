@@ -11,7 +11,7 @@ using DG.Tweening;
 /// í‚ÉƒJƒƒ‰‚ÌŒü‚¢‚Ä‚¢‚é•ûŒü‚ğ³–Ê‚Æ‚µ‚Ä‘€ì‚·‚é‚±‚Æ‚ªo—ˆ‚éB
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerMove : MonoBehaviour
+public class PlayerMove : MonoBehaviour, IAttackAnimControl
 {
     Rigidbody _rb;
     Animator _anim;
@@ -65,11 +65,7 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        if (!_canMove)
-        {
-            Debug.Log("“®‚©‚¹‚Ü‚¹‚ñ");
-            return;
-        }
+        if (!_canMove) return;
 
         // ˆÚ“®‚Ì“ü—Í‚ğó‚¯æ‚é
         float hori = Input.GetAxis("Horizontal");
@@ -140,5 +136,16 @@ public class PlayerMove : MonoBehaviour
             Vector3 hitPos = collision.gameObject.transform.position - transform.position;
             if (hitPos.y < -0.5) Bounce(hitPos);
         }
+    }
+
+    public void OnAnimEnter()
+    {
+        _canMove = false;
+        _inputVec.Value = Vector3.zero;
+    }
+
+    public void OnAnimExit()
+    {
+        _canMove = true;
     }
 }

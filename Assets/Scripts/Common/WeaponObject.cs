@@ -7,7 +7,7 @@ using UnityEngine;
 /// 武器のコライダーのオンオフのメソッドが宣言された
 /// インターフェースを実装したクラス
 /// </summary>
-public class WeaponObject : MonoBehaviour, IWeaponControl
+public class WeaponObject : MonoBehaviour, IAttackAnimControl
 {
     Collider _weaponCollider;
 
@@ -23,14 +23,14 @@ public class WeaponObject : MonoBehaviour, IWeaponControl
     }
 
     /// <summary>コライダーを有効にして当たり判定を出す</summary>
-    public void EnableCollider()
+    public void OnAnimEnter()
     {
         if (_weaponCollider != null)
             _weaponCollider.enabled = true;
     }
 
     /// <summary>コライダーを無効にして当たり判定を消す</summary>
-    public void DisableCollider()
+    public void OnAnimExit()
     {
         if (_weaponCollider != null)
             _weaponCollider.enabled = false;
