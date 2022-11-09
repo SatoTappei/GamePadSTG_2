@@ -57,10 +57,10 @@ public class DamageReceiver : MonoBehaviour, IDamageable
         // 無敵時間中は攻撃を受けない
         if (_isInvincible) return;
         // 無敵時間を設定する
-        Sequence sequence = DOTween.Sequence()
-            .AppendInterval(_invincibleTime)
-            .OnStart(() => _isInvincible = true)
-            .OnComplete(() => _isInvincible = false);
+        DOTween.Sequence()
+               .AppendInterval(_invincibleTime)
+               .OnStart(() => _isInvincible = true)
+               .OnComplete(() => _isInvincible = false);
 
         // 衝突位置にパーティクルを発生させる
         if (_damageEffect != null) 

@@ -4,6 +4,7 @@ using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 
 /// <summary>
 /// プレイヤーの移動を行う
@@ -64,7 +65,11 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        if (!_canMove) return;
+        if (!_canMove)
+        {
+            Debug.Log("動かせません");
+            return;
+        }
 
         // 移動の入力を受け取る
         float hori = Input.GetAxis("Horizontal");
@@ -108,6 +113,32 @@ public class PlayerMove : MonoBehaviour
             Vector3 vec = new Vector3(_rb.velocity.x, 0, _rb.velocity.z);
             _rb.velocity = vec;
             _rb.AddForce(Vector3.up * 5, ForceMode.Impulse);
+        }
+    }
+
+    /// <summary>跳ね返る</summary>
+    void Bounce(Vector3 hitPos)
+    {
+        // 逆方向に力を加える
+        Vector3 dir = hitPos * -1;
+        dir.y = 0;
+        _rb.velocity = Vector3.zero;
+        _rb.AddForce(dir.normalized * 30, ForceMode.VelocityChange);
+
+        // 一定時間操作できないようにする
+        DOTween.Sequence()
+               .AppendInterval(0.5f)
+               .OnStart(() => _canMove = false)
+               .OnComplete(() => _canMove = true);
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        // 上の方からぶつかった場合は跳ね返る
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            Vector3 hitPos = collision.gameObject.transform.position - transform.position;
+            if (hitPos.y < -0.5) Bounce(hitPos);
         }
     }
 }
