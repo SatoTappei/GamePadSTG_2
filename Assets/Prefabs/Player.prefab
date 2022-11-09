@@ -757,8 +757,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff2511aed05bdd4f9ee79213e92855c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 10
-  _hitTag: Enemy
 --- !u!1 &2321790375795243262
 GameObject:
   m_ObjectHideFlags: 0
@@ -1303,8 +1301,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damageReciever: {fileID: 4383829582165228410}
   _damageSender: {fileID: 2304364332634371736}
+  _characterTag: 0
+  _targetTag: Enemy
   _anim: {fileID: 78033073383052485}
-  _maxLife: 0
 --- !u!114 &4383829582165228295
 MonoBehaviour:
   m_ObjectHideFlags: 0

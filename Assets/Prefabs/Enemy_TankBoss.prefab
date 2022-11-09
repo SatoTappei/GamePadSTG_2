@@ -358,6 +358,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damageReciever: {fileID: 6566755707870622842}
   _damageSender: {fileID: 0}
+  _characterTag: 3
+  _targetTag: Player
   _enemyTag: 3
 --- !u!114 &2981858467652674506
 MonoBehaviour:

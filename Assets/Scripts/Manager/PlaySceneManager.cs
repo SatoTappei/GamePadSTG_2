@@ -12,6 +12,7 @@ public class PlaySceneManager : MonoBehaviour
 {
     PlaySceneUIManager _uiMgr;
     EnemyManager _enemyMgr;
+    ActorDataManager _actorDataMgr;
     PlayerMove _playerMv;
     ///// <summary>プレイヤーの最大体力</summary>
     //[SerializeField] int _maxLife;
@@ -24,6 +25,7 @@ public class PlaySceneManager : MonoBehaviour
     {
         _uiMgr = GetComponent<PlaySceneUIManager>();
         _enemyMgr = GetComponent<EnemyManager>();
+        _actorDataMgr = GetComponent<ActorDataManager>();
         _playerMv = FindObjectOfType<PlayerMove>();
 
         //// 現在のスコアに0をセット
@@ -42,8 +44,8 @@ public class PlaySceneManager : MonoBehaviour
 
         // ReactiveCollectionはSubscribe時に処理が実行されないので
         // 一度手動でターゲットビューをセットしてから残りはターゲットが減るたびに更新させる。
-        _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(),_enemyMgr.GetEnemyData(CharacterTag.BlueSoldier).Icon);
-        _enemyMgr.TargetsObservable.Subscribe(t => _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), t.Value.Icon)).AddTo(_enemyMgr);
+        _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), _actorDataMgr.GetEnemyData(CharacterTag.BlueSoldier).Icon);
+        _enemyMgr.TargetsObservable.Subscribe(t => _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), t.Value.ActorData.Icon)).AddTo(_enemyMgr);
 
         // ゲームスタートの演出後にタイマーをスタートさせ、プレイヤーと敵をアクティブにする。
         await _uiMgr.PlayGameStartStag();

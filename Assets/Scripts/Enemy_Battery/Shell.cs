@@ -37,7 +37,8 @@ public class Shell : MonoBehaviour
 
     void Start()
     {
-        
+        // ‰¼
+        _damageSender.Init(10, "Player");
     }
 
     void Update()

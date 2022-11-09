@@ -11,11 +11,6 @@ public class PlayerUnit : ActorUnit
     [Header("各種ダメージ演出に必要")]
     [SerializeField] Animator _anim;
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         

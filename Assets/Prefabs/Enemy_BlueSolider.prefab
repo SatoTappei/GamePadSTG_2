@@ -1329,8 +1329,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff2511aed05bdd4f9ee79213e92855c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _damage: 5
-  _hitTag: Player
 --- !u!114 &1686106375293481168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1911,6 +1909,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damageReciever: {fileID: -2431091626857092125}
   _damageSender: {fileID: 4170465061078369410}
+  _characterTag: 1
+  _targetTag: Player
   _enemyTag: 1
 --- !u!114 &8211013611174312536
 MonoBehaviour:

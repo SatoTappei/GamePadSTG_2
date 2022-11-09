@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
 
-// コライダーが付いたオブジェクトにアタッチするだけ
-// プレイヤーと敵で共通の演出はこっちに書いてある
 /// <summary>
 /// DamageSenderからダメージを受けたことを受信する
 /// HPの管理はこのクラスが担う
@@ -20,8 +18,10 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     [SerializeField] GameObject _damageEffectPrefab;
     /// <summary>表示非表示を切り替えて使いまわすダメージエフェクト</summary>
     GameObject _damageEffect;
+    /// <summary>現在の体力</summary>
+    int _currentHP = 0;
     /// <summary>無敵時間中かどうかのフラグ</summary>
-    bool _isInvincible;
+    bool _isInvincible = true;
     /// <summary>ダメージを受けたときに行う追加の処理</summary>
     public UnityAction OnDamageReceived;
 
@@ -44,8 +44,15 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     //    bool isHit = Physics.Raycast(ray,)
     //}
 
+    /// <summary>初期化処理、これが呼ばれるまで敵が無敵状態のまま</summary>
+    public void Init(int maxHP)
+    {
+        _currentHP = maxHP;
+        _isInvincible = false;
+    }
+
     /// <summary>攻撃を受けたときの処理</summary>
-    public void OnDamage(int _, Vector3 hitPos)
+    public void OnDamage(int damage, Vector3 hitPos)
     {
         // 無敵時間中は攻撃を受けない
         if (_isInvincible) return;
@@ -62,8 +69,18 @@ public class DamageReceiver : MonoBehaviour, IDamageable
         // ヒットストップの後、ノックバックさせる
         DOVirtual.DelayedCall(InGameUtility.HitStopTime, () => KnockBack(hitPos, _knockBackPower));
 
-        // ダメージ処理
-        OnDamageReceived?.Invoke();
+        // ダメージを反映させる
+        _currentHP -= damage;
+        if(_currentHP < 0)
+        {
+            // 倒されたら非表示になる
+            // TODO:死亡時の演出を作る
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            OnDamageReceived?.Invoke();
+        }
     }
 
     /// <summary>ダメージエフェクトを発生させる</summary>

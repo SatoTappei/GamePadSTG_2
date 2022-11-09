@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
-// コライダーが付いたオブジェクトにアタッチするだけ
 /// <summary>
 /// このスクリプトが付いたオブジェクトのコライダーが対象とぶつかった場合
 /// 対象についているDamageReceiverにダメージを与えたことを通知する
@@ -12,12 +11,19 @@ using UnityEngine.Events;
 public class DamageSender : MonoBehaviour
 {
     /// <summary>ダメージの値</summary>
-    [SerializeField] int _damage;
+    int _damage;
     /// <summary>判定するタグ</summary>
-    [SerializeField] string _hitTag;
+    string _hitTag;
 
     /// <summary>ダメージを与えた時に行う追加の処理</summary>
     public UnityAction OnDamageSended;
+
+    /// <summary>初期化処理、これを呼ぶまでダメージを与えることが出来ない</summary>
+    public void Init(int damage, string tag)
+    {
+        _damage = damage;
+        _hitTag = tag;
+    }
 
     void OnTriggerEnter(Collider other)
     {

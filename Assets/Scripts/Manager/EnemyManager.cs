@@ -11,12 +11,6 @@ using System;
 /// </summary>
 public class EnemyManager : MonoBehaviour
 {
-    // SO周りの処理だけ抜き出して別のスクリプトで管理することも考慮しておく
-    /// <summary>敵の種類ごとの共通したデータの参照先のSO</summary>
-    [SerializeField] ActorDataSO[] _enemyDatas;
-    /// <summary>敵の共通したデータの参照先となるSOを値として保存する辞書型</summary>
-    Dictionary<CharacterTag, ActorDataSO> _enemyDataDic = new Dictionary<CharacterTag, ActorDataSO>();
-
     /// <summary>ステージ上に存在する敵のリスト</summary>
     List<EnemyUnit> _enemyList = new List<EnemyUnit>();
     /// <summary>生存しているターゲットのリスト</summary>
@@ -24,14 +18,6 @@ public class EnemyManager : MonoBehaviour
 
     /// <summary>ターゲットが"減ったら"行う処理を登録する</summary>
     public IObservable<CollectionRemoveEvent<EnemyUnit>> TargetsObservable => _targets.ObserveRemove();
-
-    void Awake()
-    {
-        foreach(ActorDataSO so in _enemyDatas)
-        {
-            _enemyDataDic.Add(so.Tag, so);
-        }
-    }
 
     void Start()
     {
@@ -55,7 +41,7 @@ public class EnemyManager : MonoBehaviour
 
             // 渡されたタグと同じだったらターゲットのリストに追加し
             // 非表示になった(倒された)らリストから削除されるようにすることでターゲットビューの更新を呼ぶ
-            if (es.EnemyTag == tag)
+            if (es.ActorData.Tag == tag)
             {
                 _targets.Add(es);
                 es.gameObject.OnDisableAsObservable().Subscribe(_ => _targets.Remove(es));
@@ -65,9 +51,6 @@ public class EnemyManager : MonoBehaviour
 
     /// <summary>残りのターゲット数を返す</summary>
     public int GetTargetAmount() => _targets.Count;
-
-    /// <summary>タグを渡すと対応したSOを返す</summary>
-    public ActorDataSO GetEnemyData(CharacterTag tag) => _enemyDataDic[tag];
 
     /// <summary>全ての敵を起こす</summary>
     public void WakeUpEnemyAll() => _enemyList.ForEach(e => e.WakeUp());
