@@ -98,7 +98,6 @@ public class DamageReceiver : MonoBehaviour, IDamageable
             // 非表示になることが死亡の検知トリガーになっているのでここは変えてはいけない
             // TODO:死亡時の演出を作る
             gameObject.SetActive(false);
-            FindObjectOfType<CameraController>().enabled = false;
         }
         else
         {

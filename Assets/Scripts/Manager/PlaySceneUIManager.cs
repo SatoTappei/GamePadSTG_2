@@ -12,12 +12,11 @@ using Cysharp.Threading.Tasks;
 public class PlaySceneUIManager : MonoBehaviour
 {
     [SerializeField] GameStartStag _gsStag;
+    [SerializeField] GameOverStag _goStag;
     [SerializeField] Timer _timer;
     [SerializeField] TargetView _targetView;
     /// <summary>ダメージを受けた割合を示すゲージ</summary>
     [SerializeField] Transform _damageGauge;
-    /// <summary>スコアを表示するテキスト</summary>
-    [SerializeField] Text _scoreText;
     
     void Start()
     {
@@ -32,18 +31,9 @@ public class PlaySceneUIManager : MonoBehaviour
     /// <summary>HPゲージを変化させる</summary>
     public void SetLifeGauge(int max, int current)
     {
-        Debug.Log($"最大値{max} 現在値{current}");
         float xValue = 1 - (current * 1.0f / max * 1.0f);
-        Debug.Log("xスケール " + xValue);
         xValue = Mathf.Clamp01(xValue);
         _damageGauge.DOScaleX(xValue, 0.5f);
-    }
-
-    /// <summary>スコアをセットする</summary>
-    public void SetScore(int score)
-    {
-        int prev = int.Parse(_scoreText.text.Replace(",", ""));
-        _scoreText.DOCounter(prev, score, 0.5f);
     }
 
     /// <summary>ターゲットビューの値を変更する</summary>
@@ -51,6 +41,9 @@ public class PlaySceneUIManager : MonoBehaviour
 
     /// <summary>ゲーム開始時の演出を行う</summary>
     public async UniTask PlayGameStartStag() => await _gsStag.Play();
+
+    /// <summary>ゲームオーバー時の演出を行う</summary>
+    public void PlayGameOverStag() => _goStag.Play();
 
     /// <summary>コールバックを渡してタイマーをスタートさせる</summary>
     public void TimerStart(UnityAction action = null)
