@@ -47,7 +47,6 @@ public class StateMachinePlayerFire : StateMachineBehaviour
 
     public override void OnStateExit(Animator _, AnimatorStateInfo __, int ___)
     {
-        // PlayerMove‚ÌUŒ‚‚ªI‚í‚Á‚ÄˆÚ“®‚Å‚«‚é‚æ‚¤‚É‚È‚éˆ—‚ªŒÄ‚Î‚ê‚é 
-        //ExecuteEvents.Execute<IAttackAnimControl>(_playerFire.gameObject, null, (reciever, _) => reciever.OnAnimExit());
+
     }
 }

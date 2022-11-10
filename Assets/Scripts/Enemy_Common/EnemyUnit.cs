@@ -9,7 +9,7 @@ using DG.Tweening;
 public class EnemyUnit : ActorUnit
 {
     EnemyAIBase _aiBase;
-    ActorDataSO _actorData;
+    //ActorDataSO _actorData;
     //int _currentHP;
 
     //[SerializeField] CharacterTag _enemyTag;
@@ -24,7 +24,7 @@ public class EnemyUnit : ActorUnit
 
     void Update()
     {
-        
+
     }
 
     /// <summary>“G‚ð‹N‚±‚·</summary>

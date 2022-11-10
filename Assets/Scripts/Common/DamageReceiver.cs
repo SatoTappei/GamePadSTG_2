@@ -25,6 +25,10 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     /// <summary>ダメージを受けたときに行う追加の処理</summary>
     public UnityAction OnDamageReceived;
 
+    // レイキャストのテスト、消しても問題なし
+    //Vector3 _rayDir = Vector3.up;
+    //Vector3 _prevPos;
+
     void Awake()
     {
         // 使いまわせるようにダメージエフェクトをインスタンス化して非アクティブにしておく
@@ -36,13 +40,25 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     }
 
     // TODO:レイキャストを使用したヒットバックのキャンセルをしたい
-    //void Update()
-    //{
-    //    Vector3 rayPos = transform.position + new Vector3(0, 5f, 0);
-    //    Ray ray = new Ray(rayPos, Vector3.down);
+    // レイキャストのテストしか書いていないのでUpdateを消しても問題なし
+    void Update()
+    {
+        //Vector3 rayPos = transform.position + new Vector3(0, 1f, 0);
+        //Ray ray = new Ray(rayPos, _rayDir);
 
-    //    bool isHit = Physics.Raycast(ray,)
-    //}
+        //RaycastHit hit;
+        //bool isHit = Physics.Raycast(ray, out hit,0.2f);
+        //// 壁にレイがヒットしたら前フレームの座標に戻す
+        //if (isHit)
+        //{
+        //    transform.position = _prevPos;
+        //}
+        //else
+        //{
+        //    _prevPos = transform.position;
+        //}
+        //Debug.DrawRay(rayPos, _rayDir * 0.2f, Color.red);
+    }
 
     /// <summary>初期化処理、これが呼ばれるまで敵が無敵状態のまま</summary>
     public void Init(int maxHP)
@@ -101,5 +117,8 @@ public class DamageReceiver : MonoBehaviour, IDamageable
 
         // ノックバック
         transform.DOMove(dir * power, 0.5f).SetRelative();
+
+        // テスト:レイを設定する
+        //_rayDir = dir;
     }
 }

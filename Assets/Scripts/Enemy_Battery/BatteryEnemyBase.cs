@@ -13,7 +13,7 @@ public class BatteryEnemyBase
     /// <summary>キャラクターの状態</summary>
     public enum State
     {
-        Idle, Search, Capture
+        Idle, Search, Capture, Completed
     };
 
     /// <summary>ステート内のイベント</summary>
@@ -85,6 +85,13 @@ public class BatteryEnemyBase
         _event = Event.Exit;
     }
 
+    /// <summary>動作を完全に止める</summary>
+    public void ChangeCompleted()
+    {
+        _nextState = new BatteryEnemyCompleted(_character, _target, _anim, _turret);
+        _event = Event.Exit;
+    }
+
     /// <summary>ターゲットが視界に入っているか</summary>
     //protected bool FindTarget()
     //{
@@ -152,8 +159,6 @@ public class BatteryEnemyIdle : BatteryEnemyBase
 
     public override void Update()
     {
-        Debug.Log("アイドル状態です");
-
         CheckFloor(out float y);
         SetCharacterPosY(y);
         ChangeState(new BatteryEnemySearch(_character, _target, _anim, _turret));
@@ -270,4 +275,23 @@ public class BatteryEnemyCapture : BatteryEnemyBase
     {
         _disposable.Dispose();
     }
+}
+
+/// <summary>
+/// 完全に停止:これ以上動かさない状態のクラス
+/// </summary>
+public class BatteryEnemyCompleted : BatteryEnemyBase
+{
+    public BatteryEnemyCompleted(GameObject character, Transform target, Animator anim, Transform turret)
+        : base(character, target, anim, turret)
+    {
+        CurrentState = State.Completed;
+    }
+
+    /// <summary>Stateに推移した際、1度だけ呼ばれる</summary>
+    public override void Enter() => _event = Event.Stay;
+    /// <summary>Enterが呼ばれた後、Exitになるまで毎フレーム呼ばれる</summary>
+    public override void Update() => _event = Event.Stay;
+    /// <summary>次のStateに推移する際、1度だけ呼ばれる</summary>
+    public override void Exit() => _event = Event.Exit;
 }

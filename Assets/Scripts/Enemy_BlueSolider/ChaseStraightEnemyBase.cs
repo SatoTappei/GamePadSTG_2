@@ -13,7 +13,7 @@ public class ChaseStraightEnemyBase
     /// <summary>キャラクターの状態</summary>
     public enum State
     {
-        Idle, Wander, Chase, Attack
+        Idle, Wander, Chase, Attack, Completed
     };
 
     /// <summary>ステート内のイベント</summary>
@@ -81,6 +81,13 @@ public class ChaseStraightEnemyBase
     protected void ChangeState(ChaseStraightEnemyBase next)
     {
         _nextState = next;
+        _event = Event.Exit;
+    }
+
+    /// <summary>動作を完全に止める</summary>
+    public void ChangeCompleted()
+    {
+        _nextState = new ChaseStraightEnemyCompleted(_character, _target, _anim);
         _event = Event.Exit;
     }
 
@@ -332,4 +339,23 @@ public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase
 
         _event = Event.Exit;
     }
+}
+
+/// <summary>
+/// 完全に停止:これ以上動かさない状態のクラス
+/// </summary>
+public class ChaseStraightEnemyCompleted : ChaseStraightEnemyBase
+{
+    public ChaseStraightEnemyCompleted(GameObject character, Transform target, Animator anim)
+        : base(character, target, anim)
+    {
+        CurrentState = State.Completed;
+    }
+
+    /// <summary>Stateに推移した際、1度だけ呼ばれる</summary>
+    public override void Enter() => _event = Event.Stay;
+    /// <summary>Enterが呼ばれた後、Exitになるまで毎フレーム呼ばれる</summary>
+    public override void Update() => _event = Event.Stay;
+    /// <summary>次のStateに推移する際、1度だけ呼ばれる</summary>
+    public override void Exit() => _event = Event.Exit;
 }

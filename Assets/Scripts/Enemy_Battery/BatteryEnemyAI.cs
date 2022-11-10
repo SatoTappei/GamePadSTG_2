@@ -30,4 +30,9 @@ public class BatteryEnemyAI : EnemyAIBase
     {
         _currentStateClass = _currentStateClass.Process();
     }
+
+    public override void Exit()
+    {
+        _currentStateClass.ChangeCompleted();
+    }
 }
