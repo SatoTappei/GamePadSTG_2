@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UniRx;
+using UniRx.Triggers;
 using DG.Tweening;
+using System;
 
 /// <summary>
 /// DamageSenderからダメージを受けたことを受信する
@@ -19,11 +22,13 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     /// <summary>表示非表示を切り替えて使いまわすダメージエフェクト</summary>
     GameObject _damageEffect;
     /// <summary>現在の体力</summary>
-    int _currentHP = 0;
+    ReactiveProperty<int> _currentHP = new ReactiveProperty<int>(0);
     /// <summary>無敵時間中かどうかのフラグ</summary>
     bool _isInvincible = true;
     /// <summary>ダメージを受けたときに行う追加の処理</summary>
     public UnityAction OnDamageReceived;
+
+    public ReactiveProperty<int> CurrentHP { get => _currentHP; }
 
     // レイキャストのテスト、消しても問題なし
     //Vector3 _rayDir = Vector3.up;
@@ -63,7 +68,7 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     /// <summary>初期化処理、これが呼ばれるまで敵が無敵状態のまま</summary>
     public void Init(int maxHP)
     {
-        _currentHP = maxHP;
+        _currentHP.Value = maxHP;
         _isInvincible = false;
     }
 
@@ -86,12 +91,14 @@ public class DamageReceiver : MonoBehaviour, IDamageable
         DOVirtual.DelayedCall(InGameUtility.HitStopTime, () => KnockBack(hitPos, _knockBackPower));
 
         // ダメージを反映させる
-        _currentHP -= damage;
-        if(_currentHP < 0)
+        _currentHP.Value -= damage;
+        if(_currentHP.Value < 0)
         {
-            // 倒されたら非表示になる
+            // 倒されたら非表示になってカメラの追従を無効化する
+            // 非表示になることが死亡の検知トリガーになっているのでここは変えてはいけない
             // TODO:死亡時の演出を作る
             gameObject.SetActive(false);
+            FindObjectOfType<CameraController>().enabled = false;
         }
         else
         {

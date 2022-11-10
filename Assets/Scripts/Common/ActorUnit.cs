@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
+using UniRx.Triggers;
+using System;
 
 /// <summary>
 /// 各Unitクラス(EnemyUnit,PlayerUnit)の基底クラス
@@ -12,6 +15,9 @@ public abstract class ActorUnit : MonoBehaviour
     [SerializeField] CharacterTag _characterTag;
     [Header("Unityの機能のタグ")] // TODO:ここをCharacterTagに直したい、staticメソッドで判定して…みたいな
     [SerializeField] string _targetTag;
+
+    /// <summary>ダメージを受けて体力が減った際にUI等に反映するため</summary>
+    public IObservable<int> OnDamageObservable => _damageReciever.CurrentHP;
 
     public ActorDataSO ActorData { get; private set; }
 

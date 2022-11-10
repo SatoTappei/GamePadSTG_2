@@ -32,7 +32,9 @@ public class PlaySceneUIManager : MonoBehaviour
     /// <summary>HPゲージを変化させる</summary>
     public void SetLifeGauge(int max, int current)
     {
+        Debug.Log($"最大値{max} 現在値{current}");
         float xValue = 1 - (current * 1.0f / max * 1.0f);
+        Debug.Log("xスケール " + xValue);
         xValue = Mathf.Clamp01(xValue);
         _damageGauge.DOScaleX(xValue, 0.5f);
     }

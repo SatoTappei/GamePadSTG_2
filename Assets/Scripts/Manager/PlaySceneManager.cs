@@ -13,7 +13,9 @@ public class PlaySceneManager : MonoBehaviour
     PlaySceneUIManager _uiMgr;
     EnemyManager _enemyMgr;
     ActorDataManager _actorDataMgr;
+    // TODO: 2つコンポーネント取ってくるの無駄、直すべき
     PlayerMove _playerMv;
+    PlayerUnit _playerUnit;
     ///// <summary>プレイヤーの最大体力</summary>
     //[SerializeField] int _maxLife;
     ///// <summary>プレイヤーの現在の体力</summary>
@@ -27,6 +29,7 @@ public class PlaySceneManager : MonoBehaviour
         _enemyMgr = GetComponent<EnemyManager>();
         _actorDataMgr = GetComponent<ActorDataManager>();
         _playerMv = FindObjectOfType<PlayerMove>();
+        _playerUnit = FindObjectOfType<PlayerUnit>();
 
         //// 現在のスコアに0をセット
         //_currentScore.Value = 0;
@@ -46,6 +49,9 @@ public class PlaySceneManager : MonoBehaviour
         // 一度手動でターゲットビューをセットしてから残りはターゲットが減るたびに更新させる。
         _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), _actorDataMgr.GetEnemyData(CharacterTag.BlueSoldier).Icon);
         _enemyMgr.TargetsObservable.Subscribe(t => _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), t.Value.ActorData.Icon)).AddTo(_enemyMgr);
+
+        // プレイヤーの体力が減るたびにUIに反映させる
+        _playerUnit.OnDamageObservable.Subscribe(i => _uiMgr.SetLifeGauge(_playerUnit.ActorData.MaxHP, i));
 
         // ゲームスタートの演出後にタイマーをスタートさせ、プレイヤーと敵をアクティブにする。
         await _uiMgr.PlayGameStartStag();

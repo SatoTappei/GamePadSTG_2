@@ -23,15 +23,12 @@ public class DamageSender : MonoBehaviour
     {
         _damage = damage;
         _hitTag = tag;
-        Debug.Log("しょきか");
     }
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("よばれた");
         if (other.gameObject.CompareTag(_hitTag))
         {
-            Debug.Log("たげっとに当たった");
             // コライダーがぶつかった位置を取得
             Vector3 hitPos = other.ClosestPointOnBounds(transform.position);
             // ダメージを与えた時の処理を呼び出す
