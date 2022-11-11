@@ -13,6 +13,7 @@ public class PlaySceneUIManager : MonoBehaviour
 {
     [SerializeField] GameStartStag _gsStag;
     [SerializeField] GameOverStag _goStag;
+    [SerializeField] GameClearStag _gcStag;
     [SerializeField] Timer _timer;
     [SerializeField] TargetView _targetView;
     /// <summary>ダメージを受けた割合を示すゲージ</summary>
@@ -44,6 +45,9 @@ public class PlaySceneUIManager : MonoBehaviour
 
     /// <summary>ゲームオーバー時の演出を行う</summary>
     public void PlayGameOverStag() => _goStag.Play();
+
+    /// <summary>クリアタイムを渡してゲームクリアの演出を行う</summary>
+    public void PlayGameClearStag(int time) => _gcStag.Play(time);
 
     /// <summary>コールバックを渡してタイマーをスタートさせる</summary>
     public void TimerStart(UnityAction action = null)

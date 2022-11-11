@@ -54,10 +54,12 @@ public class PlaySceneManager : MonoBehaviour
         // 一度手動でターゲットビューをセットしてから残りはターゲットが減るたびに更新させる。
         _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), _actorDataMgr.GetEnemyData(CharacterTag.BlueSoldier).Icon);
         _enemyMgr.TargetsObservable.Subscribe(t => _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), t.Value.ActorData.Icon)).AddTo(_enemyMgr);
-        _enemyMgr.TargetsObservable.Where(_ => _enemyMgr.GetTargetAmount() == 0).Subscribe(_ => Debug.Log("がめくりあ"));
+        
+        // 敵の数が0になったらゲームクリアの処理を行う
+        _enemyMgr.TargetsObservable.Where(_ => _enemyMgr.GetTargetAmount() == 0).Subscribe(_ => GameClear()).AddTo(_enemyMgr);
 
         // プレイヤーが非表示(死んだ)になったらがめおべらの処理を呼ぶ
-        _playerUnit.gameObject.OnDisableAsObservable().Subscribe(_ => GameOver());
+        _playerUnit.gameObject.OnDisableAsObservable().Subscribe(_ => GameOver()).AddTo(_playerUnit);
 
         // プレイヤーの体力が減るたびにUIに反映させる
         _playerUnit.OnDamageObservable.Subscribe(i => _uiMgr.SetLifeGauge(_playerUnit.ActorData.MaxHP, i)).AddTo(_playerUnit);
@@ -67,8 +69,6 @@ public class PlaySceneManager : MonoBehaviour
         _uiMgr.TimerStart(() => GameOver());
         _playerMv.WakeUp();
         _enemyMgr.WakeUpEnemyAll();
-
-        //タイムアップでがめおべらになるようにする
     }
 
     void Update()
@@ -76,7 +76,15 @@ public class PlaySceneManager : MonoBehaviour
 
     }
 
-    // ゲームオーバーの処理を行う
+    /// <summary>ゲームクリアの処理を行う</summary>
+    void GameClear()
+    {
+        FindObjectOfType<CameraController>().enabled = false;
+        _playerMv.enabled = false;
+        _uiMgr.PlayGameClearStag(100); // TODO:仮のクリアタイムが渡されているので直す
+    }
+
+    /// <summary>ゲームオーバーの処理を行う</summary>
     void GameOver()
     {
         FindObjectOfType<CameraController>().enabled = false;
