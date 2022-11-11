@@ -1667,7 +1667,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _counter: {fileID: 565414469}
-  _limitMinutes: 1
+  _limitMinutes: 9
 --- !u!1 &909851071
 GameObject:
   m_ObjectHideFlags: 0

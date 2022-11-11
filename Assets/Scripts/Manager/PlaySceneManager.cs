@@ -54,6 +54,7 @@ public class PlaySceneManager : MonoBehaviour
         // 一度手動でターゲットビューをセットしてから残りはターゲットが減るたびに更新させる。
         _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), _actorDataMgr.GetEnemyData(CharacterTag.BlueSoldier).Icon);
         _enemyMgr.TargetsObservable.Subscribe(t => _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), t.Value.ActorData.Icon)).AddTo(_enemyMgr);
+        _enemyMgr.TargetsObservable.Where(_ => _enemyMgr.GetTargetAmount() == 0).Subscribe(_ => Debug.Log("がめくりあ"));
 
         // プレイヤーが非表示(死んだ)になったらがめおべらの処理を呼ぶ
         _playerUnit.gameObject.OnDisableAsObservable().Subscribe(_ => GameOver());
