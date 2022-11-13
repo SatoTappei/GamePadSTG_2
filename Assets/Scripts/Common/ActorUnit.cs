@@ -39,7 +39,10 @@ public abstract class ActorUnit : MonoBehaviour
     void OnEnable()
     {
         if(_damageReciever != null)
+        {
             _damageReciever.OnDamageReceived += OnDamageReceived;
+            _damageReciever.OnDeath += OnDeath;
+        }
         if (_damageSender != null)
             _damageSender.OnDamageSended += OnDamageSended;
     }
@@ -47,11 +50,15 @@ public abstract class ActorUnit : MonoBehaviour
     void OnDisable()
     {
         if (_damageReciever != null)
+        {
             _damageReciever.OnDamageReceived -= OnDamageReceived;
+            _damageReciever.OnDeath -= OnDeath;
+        }
         if (_damageSender != null)
             _damageSender.OnDamageSended -= OnDamageSended;
     }
 
     protected abstract void OnDamageReceived();
+    protected abstract void OnDeath();
     protected abstract void OnDamageSended();
 }

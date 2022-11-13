@@ -34,5 +34,9 @@ public class BatteryEnemyAI : EnemyAIBase
     public override void Exit()
     {
         _currentStateClass.ChangeCompleted();
+        _currentStateClass.Process();
     }
+
+    // TODO:戦車の死亡時のプレファブが常に正面を向いてしまうので死亡時に向いていた方向に生成されるよう直す
+    // TODO:敵のラグドールがプレイヤーとの当たり判定をもたないに直す。レイヤーで設定する。
 }

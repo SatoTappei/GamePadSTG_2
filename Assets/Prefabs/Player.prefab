@@ -1234,7 +1234,6 @@ GameObject:
   - component: {fileID: 4383829582165228295}
   - component: {fileID: 4383829582165228291}
   - component: {fileID: 4383829582165228410}
-  - component: {fileID: 115291163924959427}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1353,19 +1352,7 @@ MonoBehaviour:
   _knockBackPower: 3
   _invincibleTime: 2
   _damageEffectPrefab: {fileID: 1844881388747771113, guid: 598ba070c25b09843afba08c7d418a32, type: 3}
---- !u!114 &115291163924959427
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4383829582165228288}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d616454d6e42e3a40a30f275020ba6a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _Effect: {fileID: 5337509658344242847, guid: 65135d58473616a4b9635fa59dab1c1d, type: 3}
+  _defeatedEffectPrefab: {fileID: 5337509658344242847, guid: 65135d58473616a4b9635fa59dab1c1d, type: 3}
 --- !u!1 &4383829582522483754
 GameObject:
   m_ObjectHideFlags: 0

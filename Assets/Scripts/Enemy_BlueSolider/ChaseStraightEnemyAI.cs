@@ -30,5 +30,6 @@ public class ChaseStraightEnemyAI : EnemyAIBase
     public override void Exit()
     {
         _currentStateClass.ChangeCompleted();
+        _currentStateClass.Process();
     }
 }

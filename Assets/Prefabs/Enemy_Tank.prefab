@@ -295,7 +295,6 @@ GameObject:
   - component: {fileID: 2981858467652674506}
   - component: {fileID: 2981858467652674508}
   - component: {fileID: 4886320694625462319}
-  - component: {fileID: 3903663112756085324}
   m_Layer: 0
   m_Name: Enemy_Tank
   m_TagString: Enemy
@@ -403,20 +402,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _knockBackPower: 3
   _invincibleTime: 2
-  _damageEffectPrefab: {fileID: 0}
---- !u!114 &3903663112756085324
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2981858467652674507}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d616454d6e42e3a40a30f275020ba6a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _Effect: {fileID: 2981858467652674507, guid: d38d5df0a9e888f4882032717330d776, type: 3}
+  _damageEffectPrefab: {fileID: 1844881388747771113, guid: 598ba070c25b09843afba08c7d418a32, type: 3}
+  _defeatedEffectPrefab: {fileID: 2981858467652674507, guid: d38d5df0a9e888f4882032717330d776, type: 3}
 --- !u!1 &2981858467652674509
 GameObject:
   m_ObjectHideFlags: 0

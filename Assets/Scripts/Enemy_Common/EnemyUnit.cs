@@ -39,6 +39,14 @@ public class EnemyUnit : ActorUnit
         transform.DOShakePosition(InGameUtility.HitStopTime, 0.15f, 25, fadeOut: false);
     }
 
+    /// <summary>死亡した際の処理</summary>
+    protected override void OnDeath()
+    {
+        _aiBase.Exit();
+        // 非表示になることが死亡判定のトリガーなのでここは変えない
+        gameObject.SetActive(false);
+    }
+
     /// <summary>ダメージを与えた際の演出</summary>
     protected override void OnDamageSended()
     {

@@ -164,7 +164,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &111284692
 GameObject:
@@ -2469,7 +2469,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _gsStag: {fileID: 1522154744}
   _goStag: {fileID: 1897217367}
-  _gcStag: {fileID: 0}
+  _gcStag: {fileID: 1459030355}
   _timer: {fileID: 906269097}
   _targetView: {fileID: 267403633}
   _damageGauge: {fileID: 753312029}
@@ -4814,7 +4814,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8211013611174312535, guid: 9a6d0b60129ea864bbe6389859d59e13, type: 3}
       propertyPath: m_RootOrder
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8211013611174312535, guid: 9a6d0b60129ea864bbe6389859d59e13, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5006,7 +5006,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4383829582165228410, guid: 782bff55f746b6b448c8678e8c5b5e81, type: 3}
+      propertyPath: _defeatedEffectPrefab
+      value: 
+      objectReference: {fileID: 5337509658344242847, guid: 65135d58473616a4b9635fa59dab1c1d, type: 3}
+    m_RemovedComponents:
+    - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 782bff55f746b6b448c8678e8c5b5e81, type: 3}
 --- !u!4 &4443823000471975180 stripped
 Transform:

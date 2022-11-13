@@ -25,6 +25,11 @@ public class PlayerUnit : ActorUnit
         // 未実装
     }
 
+    protected override void OnDeath()
+    {
+        // 未実装
+    }
+
     /// <summary>ダメージを与えた際の演出</summary>
     protected override void OnDamageSended()
     {

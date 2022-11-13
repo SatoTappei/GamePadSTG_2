@@ -19,6 +19,8 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     [SerializeField] float _invincibleTime = 2.0f;
     /// <summary>ダメージを受けた際のエフェクトのプレハブ</summary>
     [SerializeField] GameObject _damageEffectPrefab;
+    /// <summary>死亡時に生成する演出のプレファブ</summary>
+    [SerializeField] GameObject _defeatedEffectPrefab;
     /// <summary>表示非表示を切り替えて使いまわすダメージエフェクト</summary>
     GameObject _damageEffect;
     /// <summary>現在の体力</summary>
@@ -27,6 +29,8 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     bool _isInvincible = true;
     /// <summary>ダメージを受けたときに行う追加の処理</summary>
     public UnityAction OnDamageReceived;
+    /// <summary>死亡時に行う追加の処理</summary>
+    public UnityAction OnDeath;
 
     public ReactiveProperty<int> CurrentHP { get => _currentHP; }
 
@@ -94,10 +98,8 @@ public class DamageReceiver : MonoBehaviour, IDamageable
         _currentHP.Value -= damage;
         if(_currentHP.Value < 0)
         {
-            // 倒されたら非表示になってカメラの追従を無効化する
-            // 非表示になることが死亡の検知トリガーになっているのでここは変えてはいけない
-            // TODO:死亡時の演出を作る
-            gameObject.SetActive(false);
+            Instantiate(_defeatedEffectPrefab, transform.position, Quaternion.identity);
+            OnDeath?.Invoke();
         }
         else
         {
@@ -128,3 +130,5 @@ public class DamageReceiver : MonoBehaviour, IDamageable
         //_rayDir = dir;
     }
 }
+
+// TODO: アニメーターがどうたらの警告とぬるぽを直す。

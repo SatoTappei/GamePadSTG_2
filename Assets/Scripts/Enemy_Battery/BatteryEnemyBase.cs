@@ -289,9 +289,9 @@ public class BatteryEnemyCompleted : BatteryEnemyBase
     }
 
     /// <summary>Stateに推移した際、1度だけ呼ばれる</summary>
-    public override void Enter() => _event = Event.Stay;
+    public override void Enter() => base.Enter();
     /// <summary>Enterが呼ばれた後、Exitになるまで毎フレーム呼ばれる</summary>
-    public override void Update() => _event = Event.Stay;
+    public override void Update() => base.Update();
     /// <summary>次のStateに推移する際、1度だけ呼ばれる</summary>
-    public override void Exit() => _event = Event.Exit;
+    public override void Exit() => base.Exit();
 }
