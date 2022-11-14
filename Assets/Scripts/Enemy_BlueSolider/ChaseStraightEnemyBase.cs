@@ -316,7 +316,10 @@ public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase, IDisposable
         _anim.Play(AttackAnim);
         _disposable = Observable.Interval(TimeSpan.FromSeconds(2.0f)).Subscribe(_ =>
         {
-            _anim.Play(AttackAnim);
+            if(_anim != null)
+            {
+                _anim.Play(AttackAnim);
+            }
         });
 
         _event = Event.Stay;

@@ -10,7 +10,7 @@ public class DestroyedTankControl : MonoBehaviour
 {
     [SerializeField] Rigidbody _rbTurret;
 
-    async void Start()
+    IEnumerator Start()
     {
         // x,z²•ûŒü‚Éƒ‰ƒ“ƒ_ƒ€«‚ğ‚½‚¹‚é
         Vector3 sideDir = Vector3.right * Random.Range(-1.5f, 1.5f);
@@ -19,7 +19,7 @@ public class DestroyedTankControl : MonoBehaviour
         _rbTurret.AddForce(Vector3.up * 10 + sideDir + forwardDir, ForceMode.Impulse);
 
         // ˆ—•‰‰×ŒyŒ¸‚Ìˆ×‚É3•bŒã‚É‚Í•¨—‹““®‚ğƒIƒt‚É‚·‚é
-        await UniTask.DelayFrame(3000);
+        yield return new WaitForSeconds(3.0f);
         _rbTurret.Sleep();
     }
 

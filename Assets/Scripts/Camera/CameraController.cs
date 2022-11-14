@@ -39,6 +39,10 @@ public class CameraController : MonoBehaviour
     [SerializeField] Transform _child;
     [SerializeField] Camera _camera;
     [SerializeField] Parameter _parameter;
+
+    /// <summary>カメラの追従を一時停止させる</summary>
+    public bool IsPause;
+
     /// <summary>
     /// カメラを振動させる用のベクトル
     /// 参照無しでShakeを呼べるようにするためstaticにしているが不都合があったら直す
@@ -55,6 +59,8 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
+        if (IsPause) return;
+
         /* ここに任意のカメラ操作方法を書く */
         float horiR = Input.GetAxis("Horizontal_R");
         float vertR = Input.GetAxis("Vertical_R");
@@ -66,6 +72,8 @@ public class CameraController : MonoBehaviour
 
     void LateUpdate()
     {
+        if (IsPause) return;
+
         // 被写体の更新が済んだ後にカメラを更新する必要があるのでLateUpdateを使う
         if (_parent == null || _child == null || _camera == null)
             return;

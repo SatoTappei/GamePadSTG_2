@@ -13,15 +13,28 @@ public class RagdollControl : MonoBehaviour
     /// <summary>ˆê’èŠÔŒo‚Á‚½‚ç•¨—‰‰Z‚ğ‚â‚ß‚é‚½‚ß‚Ì‘¼‚ÌRigidBody</summary>
     [SerializeField] Rigidbody[] _rbOther;
 
-    async void Start()
+    //async void Start()
+    //{
+    //    _rbSpine.AddForce(Vector3.up * 100, ForceMode.Impulse);
+        
+    //    // ˆ—•‰‰×‚ÌŒyŒ¸‚Ì‚½‚ß‚É3•bŒã‚É‘S‚Ä‚Ì•¨—‰‰Z‚ğ‚â‚ß‚é
+    //    await UniTask.Delay(3000);
+        
+    //    _rbSpine.Sleep();
+    //    foreach(Rigidbody rb in _rbOther)
+    //    {
+    //        rb.Sleep();
+    //    }
+    //}
+    IEnumerator Start()
     {
         _rbSpine.AddForce(Vector3.up * 100, ForceMode.Impulse);
-        
+
         // ˆ—•‰‰×‚ÌŒyŒ¸‚Ì‚½‚ß‚É3•bŒã‚É‘S‚Ä‚Ì•¨—‰‰Z‚ğ‚â‚ß‚é
-        await UniTask.Delay(3000);
-        
+        yield return new WaitForSeconds(3.0f);
+
         _rbSpine.Sleep();
-        foreach(Rigidbody rb in _rbOther)
+        foreach (Rigidbody rb in _rbOther)
         {
             rb.Sleep();
         }

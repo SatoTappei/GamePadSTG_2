@@ -38,16 +38,28 @@ public class PlaySceneUIManager : MonoBehaviour
     }
 
     /// <summary>ターゲットビューの値を変更する</summary>
-    public void SetTargetView(int count, Sprite icon) => _targetView.Set(count, icon);
+    public void SetTargetView(int count, Sprite icon)
+    {
+        if(_targetView != null) _targetView.Set(count, icon);
+    }
 
     /// <summary>ゲーム開始時の演出を行う</summary>
-    public async UniTask PlayGameStartStag() => await _gsStag.Play();
+    public IEnumerator PlayGameStartStag()
+    {
+        yield return _gsStag.Play();
+    }
 
     /// <summary>ゲームオーバー時の演出を行う</summary>
-    public void PlayGameOverStag() => _goStag.Play();
+    public void PlayGameOverStag()
+    {
+        if (_goStag != null) _goStag.Play();
+    }
 
     /// <summary>クリアタイムを渡してゲームクリアの演出を行う</summary>
-    public void PlayGameClearStag(int time) => _gcStag.Play(time);
+    public void PlayGameClearStag(int time)
+    {
+        if (_gcStag != null) _gcStag.Play(time);
+    }
 
     /// <summary>コールバックを渡してタイマーをスタートさせる</summary>
     public void TimerStart(UnityAction action = null)

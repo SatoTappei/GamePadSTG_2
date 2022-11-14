@@ -225,7 +225,7 @@ public class BatteryEnemySearch : BatteryEnemyBase
 /// <summary>
 /// •ß‘¨:“G‚ğ‘_‚Á‚ÄUŒ‚‚·‚éó‘Ô‚ÌƒNƒ‰ƒX
 /// </summary>
-public class BatteryEnemyCapture : BatteryEnemyBase
+public class BatteryEnemyCapture : BatteryEnemyBase, System.IDisposable
 {
     ObjectPool _pool;
     System.IDisposable _disposable;
@@ -243,11 +243,14 @@ public class BatteryEnemyCapture : BatteryEnemyBase
         _pool = _character.GetComponent<ObjectPool>();
         _disposable = Observable.Interval(System.TimeSpan.FromSeconds(2.0f)).Subscribe(_ =>
         {
-            // UŒ‚ˆ—
-            GameObject go = _pool.GetPooledObject();
-            go.SetActive(true);
-            go.transform.position = _muzzle.position;
-            go.transform.forward = _muzzle.forward;
+            if(_pool != null)
+            {
+                // UŒ‚ˆ—
+                GameObject go = _pool.GetPooledObject();
+                go.SetActive(true);
+                go.transform.position = _muzzle.position;
+                go.transform.forward = _muzzle.forward;
+            }
         });
 
         _event = Event.Stay;
@@ -272,6 +275,11 @@ public class BatteryEnemyCapture : BatteryEnemyBase
     }
 
     public override void Exit()
+    {
+        _disposable.Dispose();
+    }
+
+    public void Dispose()
     {
         _disposable.Dispose();
     }

@@ -46,8 +46,10 @@ public class PlaySceneManager : MonoBehaviour
         //_currentScore.Subscribe(score => _uiMgr.SetScore(score));
     }
 
-    async void Start()
+    IEnumerator Start()
     {
+        // 他のStart()メソッドが終わるのを待つために1フレーム遅らせる
+        yield return null;
         _enemyMgr.Init(CharacterTag.BlueSoldier);
 
         // ReactiveCollectionはSubscribe時に処理が実行されないので
@@ -65,7 +67,7 @@ public class PlaySceneManager : MonoBehaviour
         _playerUnit.OnDamageObservable.Subscribe(i => _uiMgr.SetLifeGauge(_playerUnit.ActorData.MaxHP, i)).AddTo(_playerUnit);
 
         // ゲームスタートの演出後にタイマーをスタートさせ、プレイヤーと敵をアクティブにする。
-        await _uiMgr.PlayGameStartStag();
+        yield return StartCoroutine(_uiMgr.PlayGameStartStag());
         _uiMgr.TimerStart(() => GameOver());
         _playerMv.WakeUp();
         _enemyMgr.WakeUpEnemyAll();
@@ -79,7 +81,13 @@ public class PlaySceneManager : MonoBehaviour
     /// <summary>ゲームクリアの処理を行う</summary>
     void GameClear()
     {
-        FindObjectOfType<CameraController>().enabled = false;
+        if (_playerMv == null) return;
+
+        CameraController cc = FindObjectOfType<CameraController>();
+        if (cc != null)
+        {
+            cc.IsPause = true;
+        }
         _playerMv.enabled = false;
         _uiMgr.PlayGameClearStag(_uiMgr.GetTimerCount());
         _uiMgr.TimerPause();
@@ -88,13 +96,17 @@ public class PlaySceneManager : MonoBehaviour
     /// <summary>ゲームオーバーの処理を行う</summary>
     void GameOver()
     {
-        FindObjectOfType<CameraController>().enabled = false;
-       _uiMgr.PlayGameOverStag();
+        CameraController cc = FindObjectOfType<CameraController>();
+        if (cc != null)
+        {
+            cc.IsPause = true;
+        }
+        _uiMgr.PlayGameOverStag();
         _uiMgr.TimerPause();
     }
 
     /// <summary>ゲームをリトライする</summary>
-    void RetryGame()
+    public void RetryGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }

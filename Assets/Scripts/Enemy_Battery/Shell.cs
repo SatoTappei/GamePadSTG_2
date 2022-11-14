@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 
 /// <summary>
 /// 撃ちだされた弾を制御する
@@ -61,10 +60,10 @@ public class Shell : MonoBehaviour
         // 速度を初速にする
         _velocity = _initVelo;
 
-        DOVirtual.DelayedCall(_lifeTime, () =>
-        {
-            gameObject.SetActive(false);
-        }, ignoreTimeScale: false); // Unityのタイムスケールに依存させる
+        //DOVirtual.DelayedCall(_lifeTime, () =>
+        //{
+        //    gameObject.SetActive(false);
+        //}, ignoreTimeScale: false); // Unityのタイムスケールに依存させる
     }
 
     /// <summary>オブジェクトがプールに返却されるときに呼ばれる</summary>
@@ -81,6 +80,5 @@ public class Shell : MonoBehaviour
     void OnDamageSended()
     {
         gameObject.SetActive(false);
-        Debug.Log("弾が消えました");
     }
 }
