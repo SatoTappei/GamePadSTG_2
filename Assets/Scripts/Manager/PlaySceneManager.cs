@@ -81,7 +81,8 @@ public class PlaySceneManager : MonoBehaviour
     {
         FindObjectOfType<CameraController>().enabled = false;
         _playerMv.enabled = false;
-        _uiMgr.PlayGameClearStag(100); // TODO:仮のクリアタイムが渡されているので直す
+        _uiMgr.PlayGameClearStag(_uiMgr.GetTimerCount());
+        _uiMgr.TimerPause();
     }
 
     /// <summary>ゲームオーバーの処理を行う</summary>
@@ -89,6 +90,7 @@ public class PlaySceneManager : MonoBehaviour
     {
         FindObjectOfType<CameraController>().enabled = false;
        _uiMgr.PlayGameOverStag();
+        _uiMgr.TimerPause();
     }
 
     /// <summary>ゲームをリトライする</summary>

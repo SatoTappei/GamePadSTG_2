@@ -50,16 +50,25 @@ public class Timer : MonoBehaviour
 
     /// <summary>タイマーのカウントを開始する、二回目以降に呼び出した場合は再開になる</summary>
     public void TimerStart() => _isPause = false;
+    
     /// <summary>タイマーのカウントを止める</summary>
     public void TimerPause() => _isPause = true;
+
+    /// <summary>現在のタイマーの経過時間を返す</summary>
+    public int GetCount() => _limitMinutes * 60 - (int)_count;
+
+    /// <summary>タイマー形式の文字列にして返す</summary>
+    public static string Convert(int count)
+    {
+        TimeSpan ts = new TimeSpan(0, 0, count);
+        return ts.ToString(@"mm\:ss");
+    }
 
     /// <summary>分:秒の形でテキストに表示してint型にキャストしたCountを返す</summary>
     int ToText()
     {
         int iCount = (int)_count;
-        TimeSpan ts = new TimeSpan(0, 0, iCount);
-        _counter.text = ts.ToString(@"mm\:ss");
-
+        _counter.text = Convert(iCount);
         return iCount;
     }
 }

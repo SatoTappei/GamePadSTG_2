@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using System;
 
 /// <summary>
 /// 敵の行動をStateパターンで実装する
@@ -166,7 +167,7 @@ public class ChaseStraightEnemyIdle : ChaseStraightEnemyBase
         }
         // ターゲットが視界に入っていない場合
         // 3％の確率でうろうろし始める
-        else if (Random.Range(0, 100) == 3)
+        else if (UnityEngine.Random.Range(0, 100) == 3)
         {
             ChangeState(new ChaseStraightEnemyWander(_character, _target, _anim));
         }
@@ -193,8 +194,8 @@ public class ChaseStraightEnemyWander : ChaseStraightEnemyBase
 
     public override void Enter()
     {
-        float x = Random.Range(-1.0f, 1.0f);
-        float z = Random.Range(-1.0f, 1.0f);
+        float x = UnityEngine.Random.Range(-1.0f, 1.0f);
+        float z = UnityEngine.Random.Range(-1.0f, 1.0f);
         _dir = new Vector3(x, 0, z).normalized;
         _anim.Play(WalkAnim);
         _prevPos = _character.transform.position;
@@ -205,7 +206,7 @@ public class ChaseStraightEnemyWander : ChaseStraightEnemyBase
     public override void Update()
     {
         // 1％の確率で停止し、アイドル状態に戻す
-        if (Random.Range(0, 100) <= 1)
+        if (UnityEngine.Random.Range(0, 100) <= 1)
         {
             ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim));
             return;
@@ -299,9 +300,9 @@ public class ChaseStraightEnemyChase : ChaseStraightEnemyBase
 /// <summary>
 /// 攻撃:その場に立ち止まってターゲットに攻撃をする状態のクラス
 /// </summary>
-public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase
+public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase, IDisposable
 {
-    System.IDisposable _disposable;
+    IDisposable _disposable;
 
     public ChaseStraightEnemyAttack(GameObject character, Transform target, Animator anim)
         : base(character, target, anim)
@@ -313,7 +314,7 @@ public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase
     {
         // 攻撃状態になった時に一度攻撃して以後2秒に1回攻撃する
         _anim.Play(AttackAnim);
-        _disposable = Observable.Interval(System.TimeSpan.FromSeconds(2.0f)).Subscribe(_ =>
+        _disposable = Observable.Interval(TimeSpan.FromSeconds(2.0f)).Subscribe(_ =>
         {
             _anim.Play(AttackAnim);
         });
@@ -335,9 +336,16 @@ public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase
 
     public override void Exit()
     {
-        _disposable.Dispose();
+        // アニメーターの警告を防ぐため <= ぬるぽが出るコメントアウトしておく
+        //if (_anim.gameObject.activeSelf)
+        //    _disposable.Dispose();
 
         _event = Event.Exit;
+    }
+
+    public void Dispose()
+    {
+        _disposable.Dispose();
     }
 }
 

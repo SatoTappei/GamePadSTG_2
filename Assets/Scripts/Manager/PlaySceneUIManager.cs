@@ -55,4 +55,10 @@ public class PlaySceneUIManager : MonoBehaviour
         _timer.TimeUpEvent += action;
         _timer.TimerStart();
     }
+
+    /// <summary>タイマーを停止させる</summary>
+    public void TimerPause() => _timer.TimerPause();
+
+    /// <summary>タイマーの経過時間を取得する</summary>
+    public int GetTimerCount() => _timer.GetCount();
 }

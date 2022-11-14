@@ -29,6 +29,6 @@ public class GameClearStag : MonoBehaviour
     public void Play(int time)
     {
         transform.localScale = Vector3.one;
-        _time.text = time.ToString();
+        _time.text = Timer.Convert(time);
     }
 }
