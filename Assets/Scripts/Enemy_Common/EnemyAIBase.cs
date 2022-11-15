@@ -14,6 +14,8 @@ public abstract class EnemyAIBase : MonoBehaviour
 {
     /// <summary>敵を機能させるかどうかを判断する</summary>
     protected bool _isWakeUp;
+    /// <summary>現在のステートに対応したクラス</summary>
+    protected StateMachineBase _currentStateClass;
 
     protected async void Start()
     {
@@ -27,10 +29,12 @@ public abstract class EnemyAIBase : MonoBehaviour
     
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    Exit();
-        //}
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Exit();
+        }
+#endif
     }
 
     /// <summary>敵として機能させる</summary>
@@ -38,10 +42,20 @@ public abstract class EnemyAIBase : MonoBehaviour
     
     /// <summary>敵として機能させた時に最初の一回だけ呼ばれる</summary>
     public abstract void Init();
-    
+
     /// <summary>敵として機能している間毎フレーム呼ばれる</summary>
-    public abstract void Stay();
+    public void Stay()
+    {
+        _currentStateClass = _currentStateClass.Process();
+    }
 
     /// <summary>これ以上動かないように敵を止める時に他のスクリプトから呼ぶ</summary>
-    public abstract void Exit();
+    public void Exit()
+    {
+        if (_currentStateClass != null)
+        {
+            _currentStateClass.ToCompleted();
+            _currentStateClass.Process();
+        }
+    }
 }

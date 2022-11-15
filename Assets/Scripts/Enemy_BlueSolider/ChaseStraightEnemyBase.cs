@@ -9,45 +9,24 @@ using System;
 /// プレイヤーに向かって真っ直ぐ近づいて近接攻撃してくる敵
 /// の各ステートの基底クラス
 /// </summary>
-public class ChaseStraightEnemyBase
+public class ChaseStraightEnemyBase : StateMachineBase
 {
     /// <summary>キャラクターの状態</summary>
-    public enum State
+    public  enum State
     {
         Idle, Wander, Chase, Attack, Completed
     };
 
-    /// <summary>ステート内のイベント</summary>
-    public enum Event
-    {
-        Enter, Stay, Exit
-    };
-
     public State CurrentState;
-    protected Event _event;
-    protected GameObject _character;
-    protected Transform _target;
-    protected ChaseStraightEnemyBase _nextState;
-    protected Animator _anim;
-    protected GameObject _findIcon;
 
     // 各アニメーション名
     protected readonly string WalkAnim = "Run";
     protected readonly string AttackAnim = "Slash";
     protected readonly string IdleAnim = "Idle";
 
-    // CharacterのY座標を決めるためのRay
-    protected readonly LayerMask Mask = 1 << 6;
-    readonly float RayRadius = 0.01f;
-    readonly float RayDistance = 10.0f;
-    readonly Vector3 RayOffset = new Vector3(0.0f, 2.5f, 0.0f);
-
-    /// <summary>視界の距離</summary>
-    readonly float SightRange = 10.0f;
-    /// <summary>視界の角度</summary>
-    readonly float SightAngle = 100.0f;
-    /// <summary>攻撃してくる距離</summary>
-    readonly float AttackRange = 1.0f;
+    protected override float SightRange => 10.0f;
+    protected override float SightAngle => 100.0f;
+    protected override float AttackRange => 1.0f;
 
     public ChaseStraightEnemyBase(GameObject character, Transform target, Animator anim, GameObject findIcon)
     {
@@ -57,61 +36,19 @@ public class ChaseStraightEnemyBase
         _findIcon = findIcon;
     }
 
-    /// <summary>Stateに推移した際、1度だけ呼ばれる</summary>
-    public virtual void Enter() => _event = Event.Stay;
-    /// <summary>Enterが呼ばれた後、Exitになるまで毎フレーム呼ばれる</summary>
-    public virtual void Update() => _event = Event.Stay;
-    /// <summary>次のStateに推移する際、1度だけ呼ばれる</summary>
-    public virtual void Exit() => _event = Event.Exit;
-
-    /// <summary>
-    /// 現在のイベントに対応したメソッドを呼び出して
-    /// 次フレームでの状態クラスを返す
-    /// </summary>
-    public ChaseStraightEnemyBase Process()
+    protected override bool FindTarget()
     {
-        if (_event == Event.Enter) Enter();
-        else if (_event == Event.Stay) Update();
-        else if (_event == Event.Exit)
-        {
-            Exit();
-            return _nextState;
-        }
-        return this;
+        // キャラクターの前向きを基準に角度内にターゲットがいるか調べる
+        Vector3 diff = _target.position - _character.transform.position;
+        float angle = Vector3.Angle(diff, _character.transform.forward);
+        bool inSight = diff.magnitude <= SightRange && angle <= SightAngle;
+        return inSight;
     }
 
-    /// <summary>ステートを変える</summary>
-    protected void ChangeState(ChaseStraightEnemyBase next)
-    {
-        _nextState = next;
-        _event = Event.Exit;
-    }
-
-    /// <summary>動作を完全に止める</summary>
-    public void ChangeCompleted()
+    public override void ToCompleted()
     {
         _nextState = new ChaseStraightEnemyCompleted(_character, _target, _anim, _findIcon);
         _event = Event.Exit;
-    }
-
-    /// <summary>ターゲット発見アイコンの表示を切り替える</summary>
-    protected void ActiveFindIcon(bool value)
-    {
-        if (_findIcon != null)
-            _findIcon.SetActive(value);
-        // TODO: 音を鳴らす
-    }
-
-    /// <summary>ターゲットが視界に入っているか</summary>
-    protected bool FindTarget()
-    {
-        // ターゲットと自身の距離ベクトルを求める
-        Vector3 diff = _target.position - _character.transform.position;
-        // ターゲットとの角度を計算
-        float angle = Vector3.Angle(diff, _character.transform.forward);
-        // ターゲットが視界内にいるかを返す
-        bool inSight = diff.magnitude <= SightRange && angle <= SightAngle;
-        return inSight;
     }
 
     /// <summary>対象との距離が攻撃可能か調べる</summary>
@@ -119,23 +56,6 @@ public class ChaseStraightEnemyBase
     {
         Vector3 diff = _target.position - _character.transform.position;
         return diff.magnitude <= AttackRange;
-    }
-
-    /// <summary>Y座標をセットする</summary>
-    protected void SetCharacterPosY()
-    {
-        Vector3 rayPos = _character.transform.position + RayOffset;
-        Ray ray = new Ray(rayPos, Vector3.down);
-        if (Physics.SphereCast(ray, RayRadius, out RaycastHit hit, RayDistance, Mask))
-        {
-            Vector3 pos = _character.transform.position;
-            pos.y = hit.point.y;
-            _character.transform.position = pos;
-        }
-        else
-        {
-            // 何もしない
-        }
     }
 }
 
@@ -298,7 +218,7 @@ public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase, IDisposable
 {
     IDisposable _disposable;
 
-    public ChaseStraightEnemyAttack(GameObject character, Transform target, Animator anim, GameObject findIcon = null)
+    public ChaseStraightEnemyAttack(GameObject character, Transform target, Animator anim, GameObject findIcon)
         : base(character, target, anim, findIcon)
     {
         CurrentState = State.Attack;
@@ -329,12 +249,14 @@ public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase, IDisposable
     public override void Exit()
     {
         ActiveFindIcon(false);
-        _disposable.Dispose();
+        if (_disposable != null)
+            _disposable.Dispose();
         _event = Event.Exit;
     }
 
     public void Dispose()
     {
+        // 外部から破棄される事があるのでこっちでもDispose()を呼ぶ
         _disposable.Dispose();
     }
 }

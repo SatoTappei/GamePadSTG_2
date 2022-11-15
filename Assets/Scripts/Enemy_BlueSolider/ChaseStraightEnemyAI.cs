@@ -11,9 +11,6 @@ using UnityEngine;
 /// </summary>
 public class ChaseStraightEnemyAI : EnemyAIBase
 {
-    /// <summary>現在のステートに対応したクラス</summary>
-    ChaseStraightEnemyBase _currentStateClass;
-
     public override void Init()
     {
         // ターゲットは現状Playerのみ、タグを変えることでターゲットを変えることが出来る
@@ -21,19 +18,5 @@ public class ChaseStraightEnemyAI : EnemyAIBase
         Animator anim = GetComponentInChildren<Animator>();
         GameObject findIcon = transform.Find("FindIcon").gameObject;
         _currentStateClass = new ChaseStraightEnemyIdle(gameObject, target, anim, findIcon);
-    }
-
-    public override void Stay()
-    {
-        _currentStateClass = _currentStateClass.Process();
-    }
-
-    public override void Exit()
-    {
-        if (_currentStateClass != null)
-        {
-            _currentStateClass.ChangeCompleted();
-            _currentStateClass.Process();
-        }
     }
 }

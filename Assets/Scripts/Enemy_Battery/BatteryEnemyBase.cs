@@ -8,7 +8,7 @@ using UniRx;
 /// その場から動かず発見次第撃ってくる敵
 /// の各ステートの基底クラス
 /// </summary>
-public class BatteryEnemyBase
+public class BatteryEnemyBase :StateMachineBase
 {
     /// <summary>キャラクターの状態</summary>
     public enum State
@@ -16,18 +16,7 @@ public class BatteryEnemyBase
         Idle, Search, Capture, Completed
     };
 
-    /// <summary>ステート内のイベント</summary>
-    public enum Event
-    {
-        Enter, Stay, Exit,
-    };
-
     public State CurrentState;
-    protected Event _event;
-    protected GameObject _character;
-    protected Transform _target;
-    protected BatteryEnemyBase _nextState;
-    protected Animator _anim;
 
     protected Transform _turret;
     protected Transform _muzzle;
@@ -35,134 +24,59 @@ public class BatteryEnemyBase
     // 各アニメーション名
     protected readonly string IdleAnim = "Idle";
 
-    // CharacterのY座標を決めるためのRay
-    readonly float RayRadius = 0.01f;
-    readonly float RayDistance = 10.0f;
-    readonly Vector3 RayOffset = new Vector3(0.0f, 2.5f, 0.0f);
-    readonly LayerMask RayMask = 1 << 6;
+    protected override float SightRange => 10.0f;
+    protected override float SightAngle => 60.0f;
+    protected override float AttackRange => 1.2f;
 
-    readonly float SightRange = 10.0f;
-    readonly float SightAngle = 60.0f;
-    readonly float AttackRange = 1.2f;
-
-    public BatteryEnemyBase(GameObject character, Transform target, Animator anim, Transform turret)
+    public BatteryEnemyBase(GameObject character, Transform target, Animator anim, Transform turret, GameObject findIcon)
     {
         _character = character;
         _target = target;
         _anim = anim;
         _turret = turret;
+        _findIcon = findIcon;
         // タレットの子オブジェクトにMuzzleという名前のオブジェクトが必要
         if(_turret != null)
             _muzzle = _turret.Find("Muzzle");
     }
 
-    /// <summary>Stateに推移した際、1度だけ呼ばれる</summary>
-    public virtual void Enter() => _event = Event.Stay;
-    /// <summary>Enterが呼ばれた後、Exitになるまで毎フレーム呼ばれる</summary>
-    public virtual void Update() => _event = Event.Stay;
-    /// <summary>次のStateに推移する際、1度だけ呼ばれる</summary>
-    public virtual void Exit() => _event = Event.Exit;
-
-    /// <summary>
-    /// 現在のイベントに対応したメソッドを呼び出して
-    /// 次フレームでの状態クラスを返す
-    /// </summary>
-    public BatteryEnemyBase Process()
+    protected override bool FindTarget()
     {
-        if (_event == Event.Enter) Enter();
-        else if (_event == Event.Stay) Update();
-        else if (_event == Event.Exit)
-        {
-            Exit();
-            return _nextState;
-        }
-        return this;
-    }
-
-    /// <summary>ステートを変える</summary>
-    protected void ChangeState(BatteryEnemyBase next)
-    {
-        _nextState = next;
-        _event = Event.Exit;
-    }
-
-    /// <summary>動作を完全に止める</summary>
-    public void ChangeCompleted()
-    {
-        _nextState = new BatteryEnemyCompleted(_character, _target, _anim, _turret);
-        _event = Event.Exit;
-    }
-
-    /// <summary>ターゲットが視界に入っているか</summary>
-    //protected bool FindTarget()
-    //{
-    //    // ターゲットと自身の距離ベクトルを求める
-    //    Vector3 diff = _target.position - _character.transform.position;
-    //    // ターゲットとの角度を計算
-    //    float angle = Vector3.Angle(diff, _character.transform.forward);
-    //    // ターゲットが視界内にいるかを返す
-    //    bool inSight = diff.magnitude <= SightRange && angle <= SightAngle;
-    //    return inSight;
-    //}
-    protected bool FindTarget()
-    {
+        // 砲塔の前向きを基準に角度内にターゲットがいるか調べる
         Vector3 diff = _target.position - _character.transform.position;
         float angle = Vector3.Angle(diff, _turret.transform.forward);
         bool isSight = diff.magnitude <= SightRange && angle <= SightAngle;
         return isSight;
     }
 
-    /// <summary>対象との距離が攻撃可能か調べる</summary>
-    //protected bool CheckCanAttack()
-    //{
-    //    Vector3 diff = _target.position - _character.transform.position;
-    //    return diff.magnitude <= AttackRange;
-    //}
-
-    /// <summary>レイを真下に飛ばして下に地面があるか調べる</summary>
-    protected bool CheckFloor(out float y)
+    public override void ToCompleted()
     {
-        Vector3 rayPos = _character.transform.position + RayOffset;
-        Ray ray = new Ray(rayPos, Vector3.down);
-        if (Physics.SphereCast(ray, RayRadius, out RaycastHit hit, RayDistance, RayMask))
-        {
-            y = hit.point.y;
-            return true;
-        }
-        else
-        {
-            y = _character.transform.position.y;
-            return false;
-        }
-    }
-
-    /// <summary>Y座標をセットする</summary>
-    protected void SetCharacterPosY(float y)
-    {
-        Vector3 pos = _character.transform.position;
-        pos.y = y;
-        _character.transform.position = pos;
+        _nextState = new BatteryEnemyCompleted(_character, _target, _anim, _turret, _findIcon);
+        _event = Event.Exit;
     }
 }
 
 /// <summary>
-/// アイドル:視線を動かさず、弾も撃たない状態のクラス
+/// アイドル:砲塔を動かさず、弾も撃たない状態のクラス
 /// </summary>
 public class BatteryEnemyIdle : BatteryEnemyBase
 {
-    public BatteryEnemyIdle(GameObject character, Transform target, Animator anim, Transform turret)
-        : base(character, target, anim, turret)
+    public BatteryEnemyIdle(GameObject character, Transform target, Animator anim, Transform turret, GameObject findIcon)
+        : base(character, target, anim, turret, findIcon)
     {
         CurrentState = State.Idle;
     }
 
-    public override void Enter() => base.Enter();
+    public override void Enter()
+    {
+        ActiveFindIcon(false);
+        _event = Event.Stay;
+    }
 
     public override void Update()
     {
-        CheckFloor(out float y);
-        SetCharacterPosY(y);
-        ChangeState(new BatteryEnemySearch(_character, _target, _anim, _turret));
+        SetCharacterPosY();
+        ChangeState(new BatteryEnemySearch(_character, _target, _anim, _turret, _findIcon));
     }
 
     public override void Exit() => base.Exit();
@@ -178,8 +92,8 @@ public class BatteryEnemySearch : BatteryEnemyBase
     /// <summary>砲塔を回転させるために使う三角関数用のカウント</summary>
     float _count;
 
-    public BatteryEnemySearch(GameObject character, Transform target, Animator anim, Transform turret)
-        : base(character, target, anim, turret)
+    public BatteryEnemySearch(GameObject character, Transform target, Animator anim, Transform turret, GameObject findIcon)
+        : base(character, target, anim, turret, findIcon)
     {
         CurrentState = State.Search;
     }
@@ -188,8 +102,7 @@ public class BatteryEnemySearch : BatteryEnemyBase
 
     public override void Update()
     {
-        CheckFloor(out float y);
-        SetCharacterPosY(y);
+        SetCharacterPosY();
 
         // 探索状態になったらまず砲塔を正面を向かせる
         if (!_lookedFront)
@@ -216,7 +129,7 @@ public class BatteryEnemySearch : BatteryEnemyBase
 
         if (FindTarget())
         {
-            ChangeState(new BatteryEnemyCapture(_character, _target, _anim, _turret));
+            ChangeState(new BatteryEnemyCapture(_character, _target, _anim, _turret, _findIcon));
         }
     }
 
@@ -231,8 +144,8 @@ public class BatteryEnemyCapture : BatteryEnemyBase, System.IDisposable
     ObjectPool _pool;
     System.IDisposable _disposable;
 
-    public BatteryEnemyCapture(GameObject character, Transform target, Animator anim, Transform turret)
-        : base(character, target, anim, turret)
+    public BatteryEnemyCapture(GameObject character, Transform target, Animator anim, Transform turret, GameObject findIcon)
+        : base(character, target, anim, turret, findIcon)
     {
         CurrentState = State.Capture;
     }
@@ -254,13 +167,13 @@ public class BatteryEnemyCapture : BatteryEnemyBase, System.IDisposable
             }
         });
 
+        ActiveFindIcon(true);
         _event = Event.Stay;
     }
 
     public override void Update()
     {
-        CheckFloor(out float y);
-        SetCharacterPosY(y);
+        SetCharacterPosY();
 
         // ターゲットの方向を計算して、Y軸方向の回転を防ぐためにYを0にする
         Vector3 dir = _target.position - _character.transform.position;
@@ -271,17 +184,21 @@ public class BatteryEnemyCapture : BatteryEnemyBase, System.IDisposable
 
         if (!FindTarget())
         {
-            ChangeState(new BatteryEnemySearch(_character, _target, _anim, _turret));
+            ChangeState(new BatteryEnemySearch(_character, _target, _anim, _turret, _findIcon));
         }
     }
 
     public override void Exit()
     {
-        _disposable.Dispose();
+        if (_disposable != null)
+            _disposable.Dispose();
+        ActiveFindIcon(false);
+        _event = Event.Exit;
     }
 
     public void Dispose()
     {
+        // 外部から破棄されることがあるのでここでも呼ぶ
         _disposable.Dispose();
     }
 }
@@ -291,8 +208,8 @@ public class BatteryEnemyCapture : BatteryEnemyBase, System.IDisposable
 /// </summary>
 public class BatteryEnemyCompleted : BatteryEnemyBase
 {
-    public BatteryEnemyCompleted(GameObject character, Transform target, Animator anim, Transform _)
-        : base(character, target, anim, null)
+    public BatteryEnemyCompleted(GameObject character, Transform target, Animator anim, Transform _, GameObject findIcon)
+        : base(character, target, anim, null, findIcon)
     {
         CurrentState = State.Completed;
     }
