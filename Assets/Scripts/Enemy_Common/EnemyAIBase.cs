@@ -27,7 +27,10 @@ public abstract class EnemyAIBase : MonoBehaviour
     
     void Update()
     {
-        
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    Exit();
+        //}
     }
 
     /// <summary>“G‚Æ‚µ‚Ä‹@”\‚³‚¹‚é</summary>

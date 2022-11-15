@@ -54,4 +54,7 @@ public class EnemyManager : MonoBehaviour
 
     /// <summary>‘S‚Ä‚Ì“G‚ð‹N‚±‚·</summary>
     public void WakeUpEnemyAll() => _enemyList.ForEach(e => e.WakeUp());
+
+    /// <summary>‘S‚Ä‚Ì“G‚Ì“®‚«‚ðŽ~‚ß‚é</summary>
+    public void ExitEnemyAll() => _enemyList.ForEach(e => e.Exit());
 }

@@ -91,6 +91,7 @@ public class PlaySceneManager : MonoBehaviour
         _playerMv.enabled = false;
         _uiMgr.PlayGameClearStag(_uiMgr.GetTimerCount());
         _uiMgr.TimerPause();
+        _enemyMgr.ExitEnemyAll();
     }
 
     /// <summary>ゲームオーバーの処理を行う</summary>
@@ -103,6 +104,7 @@ public class PlaySceneManager : MonoBehaviour
         }
         _uiMgr.PlayGameOverStag();
         _uiMgr.TimerPause();
+        _enemyMgr.ExitEnemyAll();
     }
 
     /// <summary>ゲームをリトライする</summary>

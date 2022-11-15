@@ -52,7 +52,8 @@ public class BatteryEnemyBase
         _anim = anim;
         _turret = turret;
         // タレットの子オブジェクトにMuzzleという名前のオブジェクトが必要
-        _muzzle = _turret.Find("Muzzle");
+        if(_turret != null)
+            _muzzle = _turret.Find("Muzzle");
     }
 
     /// <summary>Stateに推移した際、1度だけ呼ばれる</summary>
@@ -290,8 +291,8 @@ public class BatteryEnemyCapture : BatteryEnemyBase, System.IDisposable
 /// </summary>
 public class BatteryEnemyCompleted : BatteryEnemyBase
 {
-    public BatteryEnemyCompleted(GameObject character, Transform target, Animator anim, Transform turret)
-        : base(character, target, anim, turret)
+    public BatteryEnemyCompleted(GameObject character, Transform target, Animator anim, Transform _)
+        : base(character, target, anim, null)
     {
         CurrentState = State.Completed;
     }

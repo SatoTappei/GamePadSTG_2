@@ -1349,7 +1349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e123791c1b58951498bb0e4b845b7385, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _knockBackPower: 3
+  _knockBackPower: 0.5
   _invincibleTime: 2
   _damageEffectPrefab: {fileID: 1844881388747771113, guid: 598ba070c25b09843afba08c7d418a32, type: 3}
   _defeatedEffectPrefab: {fileID: 5337509658344242847, guid: 65135d58473616a4b9635fa59dab1c1d, type: 3}

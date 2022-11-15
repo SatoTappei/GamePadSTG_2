@@ -28,10 +28,10 @@ public class EnemyUnit : ActorUnit
     }
 
     /// <summary>敵を起こす</summary>
-    public void WakeUp()
-    {
-        _aiBase.WakeUp();
-    }
+    public void WakeUp() => _aiBase.WakeUp();
+
+    /// <summary>敵を動かなくする</summary>
+    public void Exit() => _aiBase.Exit();
 
     /// <summary>ダメージを受けた際の演出</summary>
     protected override void OnDamageReceived()

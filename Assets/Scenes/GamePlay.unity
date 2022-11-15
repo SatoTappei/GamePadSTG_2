@@ -4982,6 +4982,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: _muzzle
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4383829582165228288, guid: 782bff55f746b6b448c8678e8c5b5e81, type: 3}
       propertyPath: m_Name
       value: Player
@@ -5035,6 +5039,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 5337509658344242847, guid: 65135d58473616a4b9635fa59dab1c1d, type: 3}
     m_RemovedComponents:
+    - {fileID: 0}
     - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 782bff55f746b6b448c8678e8c5b5e81, type: 3}
 --- !u!4 &4443823000471975180 stripped

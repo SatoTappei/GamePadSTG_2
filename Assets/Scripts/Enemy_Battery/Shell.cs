@@ -22,6 +22,9 @@ public class Shell : MonoBehaviour
     /// <summary>重力加速度</summary>
     float _gravity = 0;
 
+    /// <summary>現在の生存時間のタイマー</summary>
+    float _timer;
+
     void OnEnable()
     {
         _damageSender.OnDamageSended += OnDamageSended;
@@ -42,6 +45,11 @@ public class Shell : MonoBehaviour
 
     void Update()
     {
+        // 時間がきたら消える
+        _timer += Time.deltaTime;
+        if (_timer > _lifeTime)
+            gameObject.SetActive(false);
+
         Vector3 prevVec = transform.position;
 
         // 重力に従って落下するような挙動を計算する
@@ -59,11 +67,7 @@ public class Shell : MonoBehaviour
     {
         // 速度を初速にする
         _velocity = _initVelo;
-
-        //DOVirtual.DelayedCall(_lifeTime, () =>
-        //{
-        //    gameObject.SetActive(false);
-        //}, ignoreTimeScale: false); // Unityのタイムスケールに依存させる
+        _timer = 0;
     }
 
     /// <summary>オブジェクトがプールに返却されるときに呼ばれる</summary>
