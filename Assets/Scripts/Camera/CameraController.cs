@@ -54,7 +54,10 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
-        _parameter.position = _parameter._target.position;
+        if (_parameter._target != null)
+        {
+            _parameter.position = _parameter._target.position;
+        }
     }
 
     void Update()

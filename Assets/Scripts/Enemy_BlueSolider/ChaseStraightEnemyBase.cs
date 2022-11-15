@@ -29,6 +29,7 @@ public class ChaseStraightEnemyBase
     protected Transform _target;
     protected ChaseStraightEnemyBase _nextState;
     protected Animator _anim;
+    protected GameObject _findIcon;
 
     // 各アニメーション名
     protected readonly string WalkAnim = "Run";
@@ -36,23 +37,24 @@ public class ChaseStraightEnemyBase
     protected readonly string IdleAnim = "Idle";
 
     // CharacterのY座標を決めるためのRay
+    protected readonly LayerMask Mask = 1 << 6;
     readonly float RayRadius = 0.01f;
     readonly float RayDistance = 10.0f;
     readonly Vector3 RayOffset = new Vector3(0.0f, 2.5f, 0.0f);
-    readonly LayerMask RayMask = 1 << 6;
 
     /// <summary>視界の距離</summary>
     readonly float SightRange = 10.0f;
     /// <summary>視界の角度</summary>
     readonly float SightAngle = 100.0f;
     /// <summary>攻撃してくる距離</summary>
-    readonly float AttackRange = 1.2f;
+    readonly float AttackRange = 1.0f;
 
-    public ChaseStraightEnemyBase(GameObject character, Transform target, Animator anim)
+    public ChaseStraightEnemyBase(GameObject character, Transform target, Animator anim, GameObject findIcon)
     {
         _character = character;
         _target = target;
         _anim = anim;
+        _findIcon = findIcon;
     }
 
     /// <summary>Stateに推移した際、1度だけ呼ばれる</summary>
@@ -88,8 +90,16 @@ public class ChaseStraightEnemyBase
     /// <summary>動作を完全に止める</summary>
     public void ChangeCompleted()
     {
-        _nextState = new ChaseStraightEnemyCompleted(_character, _target, _anim);
+        _nextState = new ChaseStraightEnemyCompleted(_character, _target, _anim, _findIcon);
         _event = Event.Exit;
+    }
+
+    /// <summary>ターゲット発見アイコンの表示を切り替える</summary>
+    protected void ActiveFindIcon(bool value)
+    {
+        if (_findIcon != null)
+            _findIcon.SetActive(value);
+        // TODO: 音を鳴らす
     }
 
     /// <summary>ターゲットが視界に入っているか</summary>
@@ -111,29 +121,21 @@ public class ChaseStraightEnemyBase
         return diff.magnitude <= AttackRange;
     }
 
-    /// <summary>レイを真下に飛ばして下に地面があるか調べる</summary>
-    protected bool CheckFloor(out float y)
+    /// <summary>Y座標をセットする</summary>
+    protected void SetCharacterPosY()
     {
         Vector3 rayPos = _character.transform.position + RayOffset;
         Ray ray = new Ray(rayPos, Vector3.down);
-        if (Physics.SphereCast(ray, RayRadius, out RaycastHit hit, RayDistance, RayMask))
+        if (Physics.SphereCast(ray, RayRadius, out RaycastHit hit, RayDistance, Mask))
         {
-            y = hit.point.y;
-            return true;
+            Vector3 pos = _character.transform.position;
+            pos.y = hit.point.y;
+            _character.transform.position = pos;
         }
         else
         {
-            y = _character.transform.position.y;
-            return false;
+            // 何もしない
         }
-    }
-
-    /// <summary>Y座標をセットする</summary>
-    protected void SetCharacterPosY(float y)
-    {
-        Vector3 pos = _character.transform.position;
-        pos.y = y;
-        _character.transform.position = pos;
     }
 }
 
@@ -142,8 +144,8 @@ public class ChaseStraightEnemyBase
 /// </summary>
 public class ChaseStraightEnemyIdle : ChaseStraightEnemyBase
 {
-    public ChaseStraightEnemyIdle(GameObject character, Transform target, Animator anim)
-        : base(character, target, anim)
+    public ChaseStraightEnemyIdle(GameObject character, Transform target, Animator anim, GameObject findIcon)
+        : base(character, target, anim, findIcon)
     {
         CurrentState = State.Idle;
     }
@@ -151,25 +153,24 @@ public class ChaseStraightEnemyIdle : ChaseStraightEnemyBase
     public override void Enter()
     {
         _anim.Play(IdleAnim);
-
+        ActiveFindIcon(false);
         _event = Event.Stay;
     }
     
     public override void Update()
     {
-        CheckFloor(out float y);
-        SetCharacterPosY(y);
+        SetCharacterPosY();
 
         // ターゲットが視界に入っていれば追跡を始める
         if (FindTarget())
         {
-            ChangeState(new ChaseStraightEnemyChase(_character, _target, _anim));
+            ChangeState(new ChaseStraightEnemyChase(_character, _target, _anim, _findIcon));
         }
         // ターゲットが視界に入っていない場合
         // 3％の確率でうろうろし始める
         else if (UnityEngine.Random.Range(0, 100) == 3)
         {
-            ChangeState(new ChaseStraightEnemyWander(_character, _target, _anim));
+            ChangeState(new ChaseStraightEnemyWander(_character, _target, _anim, _findIcon));
         }
     }
 
@@ -183,11 +184,14 @@ public class ChaseStraightEnemyWander : ChaseStraightEnemyBase
 {
 
     readonly float Speed = 1.5f;
+    readonly float RayDist = 1.5f;
     Vector3 _dir;
-    Vector3 _prevPos;
+    // レイの発射間隔、壁に埋まる場合はここを見直す
+    float _raydist = 0.2f;
+    float _rayCount = 0;
 
-    public ChaseStraightEnemyWander(GameObject character, Transform target, Animator anim)
-        : base(character, target, anim)
+    public ChaseStraightEnemyWander(GameObject character, Transform target, Animator anim, GameObject findIcon)
+        : base(character, target, anim, findIcon)
     {
         CurrentState = State.Wander;
     }
@@ -198,44 +202,38 @@ public class ChaseStraightEnemyWander : ChaseStraightEnemyBase
         float z = UnityEngine.Random.Range(-1.0f, 1.0f);
         _dir = new Vector3(x, 0, z).normalized;
         _anim.Play(WalkAnim);
-        _prevPos = _character.transform.position;
-
         _event = Event.Stay;
     }
 
     public override void Update()
     {
+        _rayCount += Time.deltaTime;
+
         // 1％の確率で停止し、アイドル状態に戻す
         if (UnityEngine.Random.Range(0, 100) <= 1)
         {
-            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim));
+            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim, _findIcon));
             return;
         }
+        // 一定間隔で前方向にRayを飛ばして壁にめり込まないようにする
+        // ノックバックでは壁にめり込まなくなったので歩きで壁にめり込まなければ壁にめり込むことはない
+        else if (_rayCount > _raydist && 
+                 Physics.Raycast(_character.transform.position, _character.transform.forward, RayDist, Mask))
+        {
+            _rayCount = 0;
+            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim, _findIcon));
+            return;
+        }
+        Debug.DrawRay(_character.transform.position, _character.transform.forward * RayDist, Color.red, 0);
 
+        // 座標をセット
         _character.transform.position += _dir * Time.deltaTime * Speed;
         _character.transform.rotation = Quaternion.LookRotation(_dir);
-
-        // 真下に床があるか調べる
-        if (CheckFloor(out float y))
-        {
-            _prevPos = _character.transform.position;
-        }
-        else
-        {
-            // 真下が床ではない場合は前フレームの位置に戻す
-            _character.transform.position = _prevPos;
-            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim));
-            return;
-        }
-
-        // 移動後にYだけ変える
-        SetCharacterPosY(y);
+        SetCharacterPosY();
 
         // ターゲットを見つけた場合は追跡状態にする
         if (FindTarget())
-        {
-            ChangeState(new ChaseStraightEnemyChase(_character, _target, _anim));
-        }
+            ChangeState(new ChaseStraightEnemyChase(_character, _target, _anim, _findIcon));
     }
 
     public override void Exit() => base.Exit();
@@ -247,10 +245,10 @@ public class ChaseStraightEnemyWander : ChaseStraightEnemyBase
 public class ChaseStraightEnemyChase : ChaseStraightEnemyBase
 {
     readonly float Speed = 3.0f;
-    Vector3 _prevPos;
+    readonly float RayDist = 1.5f;
 
-    public ChaseStraightEnemyChase(GameObject character, Transform target, Animator anim)
-        : base(character, target, anim)
+    public ChaseStraightEnemyChase(GameObject character, Transform target, Animator anim, GameObject findIcon)
+        : base(character, target, anim, findIcon)
     {
         CurrentState = State.Chase;
     }
@@ -258,43 +256,39 @@ public class ChaseStraightEnemyChase : ChaseStraightEnemyBase
     public override void Enter()
     {
         _anim.Play(WalkAnim);
-        _prevPos = _character.transform.position;
-
+        ActiveFindIcon(true);
         _event = Event.Stay;
     }
 
     public override void Update()
     {
+        // ターゲットとの差から進行方向を求め、回転させる
         Vector3 diff = _target.position - _character.transform.position;
         Vector3 dir = new Vector3(diff.x, 0, diff.z);
-
-        _character.transform.position += dir.normalized * Time.deltaTime * Speed;
         _character.transform.rotation = Quaternion.LookRotation(dir);
+        SetCharacterPosY();
 
-        if (CheckFloor(out float y))
+        // 前方向にRayを飛ばして壁にめり込まないようにする
+        // ノックバックでは壁にめり込まなくなったので歩きで壁にめり込まなければ壁にめり込むことはない
+        if (!Physics.Raycast(_character.transform.position, _character.transform.forward, RayDist, Mask))
         {
-            _prevPos = _character.transform.position;
+            _character.transform.position += dir.normalized * Time.deltaTime * Speed;
         }
-        else
-        {
-            _character.transform.position = _prevPos;
-        }
-
-        SetCharacterPosY(y);
+        Debug.DrawRay(_character.transform.position, _character.transform.forward * RayDist, Color.red, 0);
 
         // ターゲットとの距離が攻撃可能な距離なら攻撃状態にする
         if (CheckCanAttack())
-        {
-            ChangeState(new ChaseStraightEnemyAttack(_character, _target, _anim));
-        }
+            ChangeState(new ChaseStraightEnemyAttack(_character, _target, _anim, _findIcon));
         // ターゲットを見失ったらアイドル状態に戻す
         else if (!FindTarget())
-        {
-            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim));
-        }
+            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim, _findIcon));
     }
 
-    public override void Exit() => base.Exit();
+    public override void Exit()
+    {
+        ActiveFindIcon(false);
+        _event = Event.Exit;
+    }
 }
 
 /// <summary>
@@ -304,8 +298,8 @@ public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase, IDisposable
 {
     IDisposable _disposable;
 
-    public ChaseStraightEnemyAttack(GameObject character, Transform target, Animator anim)
-        : base(character, target, anim)
+    public ChaseStraightEnemyAttack(GameObject character, Transform target, Animator anim, GameObject findIcon = null)
+        : base(character, target, anim, findIcon)
     {
         CurrentState = State.Attack;
     }
@@ -317,11 +311,9 @@ public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase, IDisposable
         _disposable = Observable.Interval(TimeSpan.FromSeconds(2.0f)).Subscribe(_ =>
         {
             if(_anim != null)
-            {
                 _anim.Play(AttackAnim);
-            }
         });
-
+        ActiveFindIcon(true);
         _event = Event.Stay;
     }
 
@@ -329,20 +321,15 @@ public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase, IDisposable
     {
         // 攻撃範囲外に出たらアイドル状態に戻す
         if (!CheckCanAttack() && !_anim.GetCurrentAnimatorStateInfo(0).IsName(AttackAnim))
-        {
-            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim));
-        }
+            ChangeState(new ChaseStraightEnemyIdle(_character, _target, _anim, _findIcon));
 
-        CheckFloor(out float y);
-        SetCharacterPosY(y);
+        SetCharacterPosY();
     }
 
     public override void Exit()
     {
-        // アニメーターの警告を防ぐため <= ぬるぽが出るコメントアウトしておく
-        //if (_anim.gameObject.activeSelf)
-        //    _disposable.Dispose();
-
+        ActiveFindIcon(false);
+        _disposable.Dispose();
         _event = Event.Exit;
     }
 
@@ -357,8 +344,8 @@ public class ChaseStraightEnemyAttack : ChaseStraightEnemyBase, IDisposable
 /// </summary>
 public class ChaseStraightEnemyCompleted : ChaseStraightEnemyBase
 {
-    public ChaseStraightEnemyCompleted(GameObject character, Transform target, Animator anim)
-        : base(character, target, anim)
+    public ChaseStraightEnemyCompleted(GameObject character, Transform target, Animator anim, GameObject findIcon)
+        : base(character, target, anim, findIcon)
     {
         CurrentState = State.Completed;
     }

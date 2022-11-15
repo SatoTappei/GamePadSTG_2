@@ -48,27 +48,6 @@ public class DamageReceiver : MonoBehaviour, IDamageable
         }
     }
 
-    // TODO:レイキャストを使用したヒットバックのキャンセルをしたい
-    // レイキャストのテストしか書いていないのでUpdateを消しても問題なし
-    void Update()
-    {
-        //Vector3 rayPos = transform.position + new Vector3(0, 1f, 0);
-        //Ray ray = new Ray(rayPos, _rayDir);
-
-        //RaycastHit hit;
-        //bool isHit = Physics.Raycast(ray, out hit,0.2f);
-        //// 壁にレイがヒットしたら前フレームの座標に戻す
-        //if (isHit)
-        //{
-        //    transform.position = _prevPos;
-        //}
-        //else
-        //{
-        //    _prevPos = transform.position;
-        //}
-        //Debug.DrawRay(rayPos, _rayDir * 0.2f, Color.red);
-    }
-
     /// <summary>初期化処理、これが呼ばれるまで敵が無敵状態のまま</summary>
     public void Init(int maxHP)
     {
@@ -92,7 +71,7 @@ public class DamageReceiver : MonoBehaviour, IDamageable
             EnabledDamageEffect(hitPos);
 
         // ヒットストップの後、ノックバックさせる
-        DOVirtual.DelayedCall(InGameUtility.HitStopTime, () => KnockBack(hitPos, _knockBackPower));
+        DOVirtual.DelayedCall(InGameUtility.HitStopTime, () => CalcKnockBack(hitPos, _knockBackPower));
 
         // ダメージを反映させる
         _currentHP.Value -= damage;
@@ -115,7 +94,7 @@ public class DamageReceiver : MonoBehaviour, IDamageable
     }
 
     /// <summary>ノックバックさせる</summary>
-    void KnockBack(Vector3 hit, float power)
+    void CalcKnockBack(Vector3 hit, float power)
     {
         // ノックバックさせる方向を求める
         Vector3 pos = transform.position;
@@ -124,11 +103,43 @@ public class DamageReceiver : MonoBehaviour, IDamageable
         Vector3 dir = Vector3.Normalize(pos - hit);
 
         // ノックバック
-        transform.DOMove(dir * power, 0.5f).SetRelative();
+        Knockback(dir * power, 0.1f);
+    }
 
-        // テスト:レイを設定する
-        //_rayDir = dir;
+    /// <summary>
+    /// ノックバック演出
+    /// </summary>
+    /// <param name="knockbackVector">ノックバックする方向と距離を表すベクトル</param>
+    /// <param name="speed">ノックバックスピード。1mあたり何秒で移動するか？の単位</param>
+    private void Knockback(Vector3 knockbackVector, float speed)
+    {
+        // コライダーの半径を考慮して埋まらないようにする
+        float colR = 0.5f;
+
+        // ベクトルの長さを計算して、ノックバック距離を取得
+        // Vector型の"magnitude"は、ベクトルの長さを計算して返す変数
+        float knockbackDistance = knockbackVector.magnitude;
+
+        // 移動前にノックバック方向に例を飛ばして、"Field"レイヤーのコライダーにヒットするかどうかチェック
+        // "maxDistance"引数にはノックバック距離を渡して、その距離より離れた位置のコライダーは無視する
+        RaycastHit hitInfo;
+        if (Physics.Raycast(transform.position, knockbackVector, out hitInfo, knockbackDistance, LayerMask.GetMask("Ground")))
+        {
+            // "Field"レイヤーのコライダーにヒットしていたら、ノックバックベクトルをヒットした位置までの距離に縮める
+
+            // 現在位置からレイがぶつかった位置までの距離を計算
+            knockbackDistance = Vector3.Distance(transform.position, hitInfo.point);
+
+            // ノックバックベクトルをヒットした位置までの距離に縮める
+            // Vector型の"normalized"は、ベクトルの長さを1にして返す変数
+            // それに距離を乗算することで、ベクトルの方向を維持して長さを買えている
+            knockbackVector = knockbackVector.normalized * (knockbackDistance - colR);
+        }
+
+        // ノックバック距離に合わせて、アニメーション時間を調整する
+        float duration = knockbackDistance * speed;
+
+        // DOMoveを使ってノックバック移動を実施
+        transform.DOMove(transform.position + knockbackVector, duration).SetEase(Ease.OutCubic);
     }
 }
-
-// TODO: アニメーターがどうたらの警告とぬるぽを直す。

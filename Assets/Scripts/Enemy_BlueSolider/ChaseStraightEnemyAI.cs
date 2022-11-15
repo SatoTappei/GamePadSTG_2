@@ -19,7 +19,8 @@ public class ChaseStraightEnemyAI : EnemyAIBase
         // ターゲットは現状Playerのみ、タグを変えることでターゲットを変えることが出来る
         Transform target = GameObject.FindGameObjectWithTag("Player").transform;
         Animator anim = GetComponentInChildren<Animator>();
-        _currentStateClass = new ChaseStraightEnemyIdle(gameObject, target, anim);
+        GameObject findIcon = transform.Find("FindIcon").gameObject;
+        _currentStateClass = new ChaseStraightEnemyIdle(gameObject, target, anim, findIcon);
     }
 
     public override void Stay()
