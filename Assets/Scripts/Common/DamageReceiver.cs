@@ -34,10 +34,6 @@ public class DamageReceiver : MonoBehaviour, IDamageable
 
     public ReactiveProperty<int> CurrentHP { get => _currentHP; }
 
-    // レイキャストのテスト、消しても問題なし
-    //Vector3 _rayDir = Vector3.up;
-    //Vector3 _prevPos;
-
     void Awake()
     {
         // 使いまわせるようにダメージエフェクトをインスタンス化して非アクティブにしておく

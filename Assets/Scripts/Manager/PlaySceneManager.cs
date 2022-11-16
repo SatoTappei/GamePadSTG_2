@@ -15,7 +15,6 @@ public class PlaySceneManager : MonoBehaviour
     PlaySceneUIManager _uiMgr;
     EnemyManager _enemyMgr;
     ActorDataManager _actorDataMgr;
-    [SerializeField] Button _retryButton;
     // TODO: 2つコンポーネント取ってくるの無駄、直すべき
     PlayerMove _playerMv;
     PlayerUnit _playerUnit;
@@ -33,8 +32,6 @@ public class PlaySceneManager : MonoBehaviour
         _actorDataMgr = GetComponent<ActorDataManager>();
         _playerMv = FindObjectOfType<PlayerMove>();
         _playerUnit = FindObjectOfType<PlayerUnit>();
-
-        _retryButton.onClick.AddListener(() => RetryGame());
 
         //// 現在のスコアに0をセット
         //_currentScore.Value = 0;

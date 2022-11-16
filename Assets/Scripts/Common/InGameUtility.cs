@@ -17,5 +17,5 @@ public enum CharacterTag
 public class InGameUtility
 {
     /// <summary>ヒットストップする時間</summary>
-    public static readonly float HitStopTime = 0.23f;
+    public static readonly float HitStopTime = 0.17f;
 }

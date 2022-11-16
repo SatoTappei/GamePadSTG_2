@@ -18,10 +18,16 @@ public class PlaySceneUIManager : MonoBehaviour
     [SerializeField] TargetView _targetView;
     /// <summary>ダメージを受けた割合を示すゲージ</summary>
     [SerializeField] Transform _damageGauge;
-    
+    Image _damageGaugeImg;
+
+    void Awake()
+    {
+        _damageGaugeImg = _damageGauge.GetComponent<Image>();
+    }
+
     void Start()
     {
-
+        
     }
 
     void Update()
@@ -34,7 +40,10 @@ public class PlaySceneUIManager : MonoBehaviour
     {
         float xValue = 1 - (current * 1.0f / max * 1.0f);
         xValue = Mathf.Clamp01(xValue);
-        _damageGauge.DOScaleX(xValue, 0.5f);
+        _damageGauge.DOScaleX(xValue, 0.25f).SetEase(Ease.OutCirc);
+        Sequence seq = DOTween.Sequence();
+        seq.Append(_damageGaugeImg.DOColor(Color.red, 0.25f))
+           .OnComplete(() => _damageGaugeImg.color = Color.black);
     }
 
     /// <summary>ターゲットビューの値を変更する</summary>

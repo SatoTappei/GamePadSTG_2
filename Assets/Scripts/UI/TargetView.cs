@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// ターゲットを表示・カウントするUI
@@ -25,5 +26,7 @@ public class TargetView : MonoBehaviour
     {
         _counter.text = count.ToString();
         _icon.sprite = icon;
+
+        _counter.transform.DOPunchScale(Vector3.one * 1.2f, 0.5f, 1, 1);
     }
 }

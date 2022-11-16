@@ -27,7 +27,7 @@ public class PlayerUnit : ActorUnit
 
     protected override void OnDeath()
     {
-        // 未実装
+        gameObject.SetActive(false);
     }
 
     /// <summary>ダメージを与えた際の演出</summary>
