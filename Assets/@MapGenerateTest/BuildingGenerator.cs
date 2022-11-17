@@ -20,10 +20,18 @@ public class BuildingGenerator : MonoBehaviour
     /// <summary>建物を生成する</summary>
     public void Generate(Area[,] _areas)
     {
+        // 重複しないランダムな座標のリスト
+        List<(int z, int x)> posList = new List<(int, int)>();
+
         // 道路沿いに建物を生成する
         for (int z = 0; z < Map.Height; z++)
             for (int x = 0; x < Map.Width; x++)
             {
+                // 座標のリストに追加しておく
+                if (z < Map.Height - 1 && 0 < x && x < Map.Width)
+                    posList.Add((z, x));
+
+                // 家建てる
                 char[,] build33 =
                 {
                     {'n', 'n', 'n'},
@@ -41,10 +49,42 @@ public class BuildingGenerator : MonoBehaviour
                 {
                     char lead = _areas[z, x].GetSectionFromNumKey(i).GetCharArray()[0, 0];
 
-                    if (lead == 'n')
+                    if (lead == Mass.Default)
                         _areas[z, x].GetSectionFromNumKey(i).Fill('g');
                 }
             }
+
+        // 任意の数の大きな建物を生成する
+        List<char> buildList = new List<char>(new char[] { 'P', 'P', 'F', 'F', 'T', 'T', 'M', 'M' });
+        // 文字の配列の数だけ生成する
+        for(int i = 0; i < 8; i++)
+        {
+            int r1 = Random.Range(0, buildList.Count);
+            char c = buildList[r1];
+            int r2 = Random.Range(0, posList.Count);
+            (int z, int x) pos = posList[r2];
+
+            char[,] build =
+            {
+                {'n', 'n', 'n'},
+                {'n', 'n', 'n'},
+                { c , 'n', 'n'},
+            };
+            char[,] none =
+            {
+                {'n', 'n', 'n'},
+                {'n', 'n', 'n'},
+                {'n', 'n', 'n'},
+            };
+
+            _areas[pos.z, pos.x].GetSectionFromNumKey(1).SetCharArray(build);
+            _areas[pos.z + 1, pos.x].GetSectionFromNumKey(7).SetCharArray(none);
+            _areas[pos.z + 1, pos.x - 1].GetSectionFromNumKey(9).SetCharArray(none);
+            _areas[pos.z, pos.x - 1].GetSectionFromNumKey(3).SetCharArray(none);
+
+            buildList.RemoveAt(r1);
+            posList.RemoveAt(r2);
+        }
 
         // 外周はビルや植え込みなどの移動不可能なもので埋める
         for (int z = 0; z < Map.Height; z++)
