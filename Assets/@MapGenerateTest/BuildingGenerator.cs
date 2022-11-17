@@ -35,6 +35,15 @@ public class BuildingGenerator : MonoBehaviour
                 _areas[z, x].GetSectionFromNumKey(3).SetCharArray(build33);
                 _areas[z, x].GetSectionFromNumKey(7).SetCharArray(build33);
                 _areas[z, x].GetSectionFromNumKey(9).SetCharArray(build33);
+
+                // 2 4 6 8 を調べて道路のない所を草むらにする
+                for (int i = 2; i <= 8; i += 2)
+                {
+                    char lead = _areas[z, x].GetSectionFromNumKey(i).GetCharArray()[0, 0];
+
+                    if (lead == 'n')
+                        _areas[z, x].GetSectionFromNumKey(i).Fill('g');
+                }
             }
 
         // 外周はビルや植え込みなどの移動不可能なもので埋める

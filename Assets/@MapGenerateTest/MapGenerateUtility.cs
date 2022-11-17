@@ -12,13 +12,17 @@ public class Mass
     public readonly (int z, int x) Pos;
     char _char;
 
-    public Mass(int z, int x)
+    public Mass(int z, int x, char c)
     {
         Pos.z = z;
         Pos.x = x;
+        _char = c;
     }
 
     public char Char { get => _char; set => _char = value; }
+
+    /// <summary>デフォルトで割り当てられる文字</summary>
+    public static readonly char Default = 'n';
 }
 
 /// <summary>
@@ -44,7 +48,7 @@ public class Section
         for (int z = 0, areaZ = _upperLeft.z; z < height; z++, areaZ++)
             for (int x = 0, areaX = _upperLeft.x; x < width; x++, areaX++)
             {
-                _masses[z, x] = new Mass(areaZ, areaX);
+                _masses[z, x] = new Mass(areaZ, areaX, Mass.Default);
             }
     }
 

@@ -344,8 +344,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _buildingList:
-  - _char: 95
-    _object: {fileID: 3108949809945332098, guid: d7893f1c5b9f99f4a9ef5894da119c09, type: 3}
   - _char: 114
     _object: {fileID: 7279261701018081150, guid: cfc1fb7c8da12a64babbb073b9614834, type: 3}
   - _char: 82
@@ -356,6 +354,8 @@ MonoBehaviour:
     _object: {fileID: 4923687232896277577, guid: 36c637ba86c9bf3438b9d05b229d01c4, type: 3}
   - _char: 104
     _object: {fileID: 4923687232896277577, guid: 13ea3e60c32ce0a40a9d37f6d142bce5, type: 3}
+  - _char: 103
+    _object: {fileID: 4923687232896277577, guid: 4df44d1afd2dc8242bfa7c4a82b82355, type: 3}
 --- !u!114 &1506926100
 MonoBehaviour:
   m_ObjectHideFlags: 0
