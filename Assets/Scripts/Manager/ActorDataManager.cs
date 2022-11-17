@@ -21,5 +21,5 @@ public class ActorDataManager : MonoBehaviour
     }
 
     /// <summary>ƒ^ƒO‚ð“n‚·‚Æ‘Î‰ž‚µ‚½SO‚ð•Ô‚·</summary>
-    public ActorDataSO GetEnemyData(CharacterTag tag) => _enemyDataDic[tag];
+    public ActorDataSO GetActorDataSO(CharacterTag tag) => _enemyDataDic[tag];
 }

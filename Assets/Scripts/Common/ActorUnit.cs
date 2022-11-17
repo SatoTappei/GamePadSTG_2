@@ -26,7 +26,7 @@ public abstract class ActorUnit : MonoBehaviour
         // TODO:PlaySceneManagerもStart()でメソッドを実行しているので処理順によってはぬるぽ
         // アクターデータを参照先からとってくる、要CharacterTag
         ActorDataManager adm = FindObjectOfType<ActorDataManager>();
-        ActorData = adm.GetEnemyData(_characterTag);
+        ActorData = adm.GetActorDataSO(_characterTag);
 
         // 体力はレシーバーに設定
         if (_damageReciever != null)
