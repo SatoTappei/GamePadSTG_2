@@ -345,7 +345,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _buildingList:
   - _char: 114
-    _object: {fileID: 7279261701018081150, guid: cfc1fb7c8da12a64babbb073b9614834, type: 3}
+    _object: {fileID: 8085063405230960277, guid: ec9d2506a688872419dafcca4cefbbf4, type: 3}
   - _char: 82
     _object: {fileID: 7279261701018081150, guid: 6e380a09b2fd6e543881b832986459ea, type: 3}
   - _char: 98

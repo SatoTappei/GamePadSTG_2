@@ -49,7 +49,7 @@ public class ObjectConverter : MonoBehaviour
             {
                 char[,] strMap = map.Areas[z, x].GetCharArray();
                 GameObject areaRoot = BuildingFromArray(strMap);
-                areaRoot.transform.position = new Vector3(z * Area.Wide, 0, x * Area.Wide);
+                areaRoot.transform.position = new Vector3(z * Area.Wide * 4, 0, x * Area.Wide * 4);
             }
     }
 
@@ -84,6 +84,8 @@ public class ObjectConverter : MonoBehaviour
                     Instantiate(value._object, pos, rot, parent);
                 }
             }
+
+        root.transform.localScale = Vector3.one * 4;
 
         return root;
     }
