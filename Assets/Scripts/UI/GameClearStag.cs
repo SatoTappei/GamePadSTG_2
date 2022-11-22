@@ -34,7 +34,7 @@ public class GameClearStag : MonoBehaviour
         _time.text = Timer.Convert(time);
         _time.transform.localScale = Vector3.zero;
 
-        Sequence seq = DOTween.Sequence()
+        DOTween.Sequence()
             .Append(_clearText.DOScale(Vector3.one * 1.2f, 0.5f).SetEase(Ease.OutBounce))
             .Append(_time.transform.DOScale(Vector3.one,0.25f).SetEase(Ease.OutBounce).SetDelay(0.5f));
     }

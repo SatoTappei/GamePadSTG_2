@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// ƒ}ƒbƒvã‚ÉŒš•¨‚ğ¶¬‚·‚é
 /// </summary>
-public class BuildingGenerator : MonoBehaviour
+public class BuildingGenerator
 {
     void Start()
     {

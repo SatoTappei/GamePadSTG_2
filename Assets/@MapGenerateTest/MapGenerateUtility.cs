@@ -124,7 +124,16 @@ public class Area
     }
 
     /// <summary>テンキーに対応した区画を返す</summary>
-    public Section GetSectionFromNumKey(int numKey) => _sections[numKey - 1];
+    public Section GetSectionFromNumKey(int numKey)
+    {
+        if (numKey < 1 || 9 < numKey)
+        {
+            Debug.LogError("区画番号は1~9です: " + numKey);
+            return null;
+        }
+
+        return _sections[numKey - 1];
+    }
 
     /// <summary>渡された方向に道路を伸ばしているかチェックする</summary>
     public bool CheckExtendToDir(int dir)
@@ -186,6 +195,7 @@ public class Map
     public static readonly int Width = 5;
 
     public Area[,] Areas { get; set; }
+    public Area[,] Props { get; set; }
 
     public Map(int height, int width)
     {
@@ -194,5 +204,11 @@ public class Map
         for (int z = 0; z < height; z++)
             for (int x = 0; x < width; x++)
                 Areas[z, x] = new Area();
+
+        Props = new Area[height, width];
+
+        for (int z = 0; z < height; z++)
+            for (int x = 0; x < width; x++)
+                Props[z, x] = new Area();
     }
 }

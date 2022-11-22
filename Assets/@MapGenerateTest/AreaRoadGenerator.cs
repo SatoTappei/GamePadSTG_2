@@ -5,7 +5,7 @@ using System.Linq;
 /// <summary>
 /// ‚»‚ê‚¼‚ê‚Ì‹æˆæ‚É“¹˜H‚ğ¶¬‚·‚é
 /// </summary>
-public class AreaRoadGenerator : MonoBehaviour
+public class AreaRoadGenerator
 {
     /// <summary>’Êí‚Ì“¹˜H</summary>
     readonly char Road = 'r';

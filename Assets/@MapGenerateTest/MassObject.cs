@@ -39,7 +39,7 @@ public class MassObject : MonoBehaviour
     {
         int r = Random.Range(0, _objects.Length);
         for (int i = 0; i < _objects.Length; i++)
-            _objects[i].SetActive(i == r ? true : false);
+            _objects[i].SetActive(i == r);
     }
 
     /// <summary>90‹‚İ‚Åƒ‰ƒ“ƒ_ƒ€‚É‰ñ“]‚³‚¹‚é</summary>
@@ -51,12 +51,12 @@ public class MassObject : MonoBehaviour
         pos.y = 0;
 
         Vector3 diff = parent - pos;
-        (int x, int z) anglePair = (0, 0);
+        (int x, int z) rot = (0, 0);
 
-        anglePair.x = diff.x > 0 ? 90 : -90;
-        anglePair.z = diff.z > 0 ? 0 : 180;
+        rot.x = diff.x > 0 ? 90 : -90;
+        rot.z = diff.z > 0 ? 0 : 180;
 
-        int angle = Random.Range(0, 2) == 1 ? anglePair.x : anglePair.z;
+        int angle = Random.Range(0, 2) == 1 ? rot.x : rot.z;
         transform.eulerAngles = new Vector3(0, angle, 0);
     }
 

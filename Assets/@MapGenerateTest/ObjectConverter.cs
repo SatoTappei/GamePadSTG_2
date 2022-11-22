@@ -17,6 +17,7 @@ public class ObjectConverter : MonoBehaviour
 
     AreaRoadGenerator _areaGenerator;
     BuildingGenerator _buildingGenerator;
+    PropGenerator _propGenerator;
     /// <summary>マップ上に設置する建築物のリスト</summary>
     [SerializeField] List<Building> _buildingList;
     /// <summary>建築物を検索する用の辞書型</summary>
@@ -28,8 +29,9 @@ public class ObjectConverter : MonoBehaviour
 
     void Awake()
     {
-        _areaGenerator = GetComponent<AreaRoadGenerator>();
-        _buildingGenerator = GetComponent<BuildingGenerator>();
+        _areaGenerator = new AreaRoadGenerator();
+        _buildingGenerator = new BuildingGenerator();
+        _propGenerator = new PropGenerator();
         _buildingList.ForEach(b => _buildingDic.Add(b._char, b));
     }
 
@@ -41,15 +43,17 @@ public class ObjectConverter : MonoBehaviour
         Map map = new Map(Map.Height, Map.Width);
         _areaGenerator.Generate(map.Areas);
         _buildingGenerator.Generate(map.Areas);
+        _propGenerator.Generate(map.Props, map.Areas);
         /* マップの生成処理ここまで */
 
         // 文字型の二次元配列から区域を生成する
         for (int z = 0; z < Map.Height; z++)
             for (int x = 0; x < Map.Width; x++)
             {
-                char[,] strMap = map.Areas[z, x].GetCharArray();
-                GameObject areaRoot = BuildingFromArray(strMap);
+                GameObject areaRoot = BuildingFromArray(map.Areas[z, x].GetCharArray());
+                GameObject propRoot = BuildingFromArray(map.Props[z, x].GetCharArray());
                 areaRoot.transform.position = new Vector3(z * Area.Wide * 4, 0, x * Area.Wide * 4);
+                propRoot.transform.position = new Vector3(z * Area.Wide * 4, 1, x * Area.Wide * 4);
             }
     }
 
@@ -59,11 +63,11 @@ public class ObjectConverter : MonoBehaviour
     }
 
     /// <summary>文字列型の二次元配列から建築物を生成して、区域として返す</summary>
-    GameObject BuildingFromArray(char[,] strMap)
+    GameObject BuildingFromArray(char[,] strMap, string name = "AreaRoot")
     {
         // 生成した建築物を区域として設定する
         GameObject root = new GameObject();
-        root.name = "AreaRoot";
+        root.name = name;
 
         for (int i = 0; i < strMap.GetLength(0); i++)
             for (int j = 0; j < strMap.GetLength(1); j++)
