@@ -20,6 +20,8 @@ public class ObjectConverter : MonoBehaviour
     PropGenerator _propGenerator;
     /// <summary>マップ上に設置する建築物のリスト</summary>
     [SerializeField] List<Building> _buildingList;
+    /// <summary>生成したステージの親</summary>
+    [SerializeField] Transform _parent;
     /// <summary>建築物を検索する用の辞書型</summary>
     Dictionary<char, Building> _buildingDic = new Dictionary<char, Building>();
 
@@ -54,6 +56,8 @@ public class ObjectConverter : MonoBehaviour
                 GameObject propRoot = BuildingFromArray(map.Props[z, x].GetCharArray(), "PropRoot");
                 areaRoot.transform.position = new Vector3(z * Area.Wide * 4, 0, x * Area.Wide * 4);
                 propRoot.transform.position = new Vector3(z * Area.Wide * 4, 1, x * Area.Wide * 4);
+                areaRoot.transform.SetParent(_parent);
+                propRoot.transform.SetParent(_parent);
             }
     }
 
@@ -79,8 +83,8 @@ public class ObjectConverter : MonoBehaviour
                 if (isExist)
                 {
                     // 区域の中央と区域内の真ん中のオブジェクトの位置を合わせるためオフセットを足す
-                    int offsetZ = -1 * (Map.Height / 2) - 1;
-                    int offsetX =  -1 * (Map.Width / 2) - 1;
+                    int offsetZ = -1 * (Map.Height / 2) - 15;
+                    int offsetX =  -1 * (Map.Width / 2) - 15;
                     Vector3 pos = new Vector3(i + offsetX, 0, j + offsetZ);
                     Quaternion rot = Quaternion.identity;
                     Transform parent = root.transform;
