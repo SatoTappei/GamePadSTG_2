@@ -33,15 +33,17 @@ public class Section
     // 区画の左上と右下を保存する => 各マスに割り当てるため
     public readonly int Height;
     public readonly int Width;
+    public readonly int Number;
     readonly (int z, int x) _upperLeft;
     readonly (int z, int x) _bottomRight;
     Mass[,] _masses;
 
-    public Section(int height, int width, (int z, int x) upperLeft, (int z, int x) bottomRight)
+    public Section(int height, int width, int number, (int z, int x) upperLeft, (int z, int x) bottomRight)
     {
         _masses = new Mass[height, width];
         Height = height;
         Width = width;
+        Number = number;
         _upperLeft = upperLeft;
         _bottomRight = bottomRight;
 
@@ -54,7 +56,7 @@ public class Section
 
     public Mass[,] Masses { get => _masses; }
 
-    /// <summary>区画内の番号を渡すと対応した対応したマスを返す</summary>
+    /// <summary>区画内の番号を渡すと対応したマスを返す</summary>
     public Mass GetMass(int z, int x) => _masses[z, x];
 
     /// <summary>この区画を文字の二次元配列にして返す。</summary>
@@ -111,15 +113,15 @@ public class Area
     {
         _sections = new Section[]
         {
-            new Section(3,3,(4,0),(6,2)),   // 左下
-            new Section(3,1,(4,3),(6,3)),   // 下
-            new Section(3,3,(4,4),(6,6)),   // 右下
-            new Section(1,3,(3,0),(3,2)),   // 左
-            new Section(1,1,(3,3),(3,3)),   // 真ん中
-            new Section(1,3,(3,4),(3,6)),   // 右
-            new Section(3,3,(0,0),(2,2)),   // 左上
-            new Section(3,1,(0,3),(2,3)),   // 上
-            new Section(3,3,(0,4),(0,6)),   // 右上
+            new Section(3, 3, 1, (4,0), (6,2)),   // 左下
+            new Section(3, 1, 2, (4,3), (6,3)),   // 下
+            new Section(3, 3, 3, (4,4), (6,6)),   // 右下
+            new Section(1, 3, 4, (3,0), (3,2)),   // 左
+            new Section(1, 1, 5, (3,3), (3,3)),   // 真ん中
+            new Section(1, 3, 6, (3,4), (3,6)),   // 右
+            new Section(3, 3, 7, (0,0), (2,2)),   // 左上
+            new Section(3, 1, 8, (0,3), (2,3)),   // 上
+            new Section(3, 3, 9, (0,4), (0,6)),   // 右上
          };
     }
 
