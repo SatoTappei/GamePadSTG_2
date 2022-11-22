@@ -25,8 +25,6 @@ public class PropGenerator
             for (int j = 0; j < Map.Width; j++)
             {
                 // “¹˜H’[‚ÉŠX“”‚ðÝ’u‚·‚é
-                // ‹æˆæ‚Ì’†‰›‚ªL‚¢“¹˜H‚©”Û‚©‚Å•ªŠò‚·‚é
-                bool isWide = areas[i, j].GetSectionFromNumKey(5).GetCharArray()[0, 0] == 'R';
                 
                 char[,] array31 =
                 {
@@ -39,26 +37,27 @@ public class PropGenerator
                     {'n', 'l', 'l'},
                 };
 
+                // ‹æˆæ‚Ì’†‰›‚ªL‚¢“¹˜H‚©‚Ç‚¤‚©
+                bool isWide = areas[i, j].GetSectionFromNumKey(5).GetCharArray()[0, 0] == 'R';
+                // ’†‰›‚Ì‹æ‰æ‚©‚çã‰º¶‰E‚Ì‹æ‰æ‚ð’²‚×‚Ä‚¢‚­
                 for (int k = 2; k <= 8; k += 2)
                 {
-                    if (areas[i, j].GetSectionFromNumKey(k).GetCharArray()[0, 0] == 'r')
+                    // ‚»‚Ì•ûŒü‚É“¹˜H‚ªL‚Ñ‚Ä‚¢‚é‚©
+                    bool isRoad = areas[i, j].GetSectionFromNumKey(k).GetCharArray()[0, 0] == 'r';
+                    // L‚¢“¹˜H‚È‚ç’†‰›‚©‚ç1ƒ}ƒX–Ú‚Í‰½‚à”z’u‚µ‚È‚¢
+                    if (isRoad && isWide)
                     {
-                        if (isWide)
-                        {
-                            if (k == 2 || k == 8)
-                            {
-                                props[i, j].GetSectionFromNumKey(k).SetCharArray(array31);
-                            }
-                            else
-                            {
-                                props[i, j].GetSectionFromNumKey(k).SetCharArray(array13);
-                            }
-                        }
+                        if (k == 2 || k == 8)
+                            props[i, j].GetSectionFromNumKey(k).SetCharArray(array31);
                         else
-                        {
-                            props[i, j].GetSectionFromNumKey(k).Fill('l');
-                        }
+                            props[i, j].GetSectionFromNumKey(k).SetCharArray(array13);
                     }
+                    // •’Ê‚Ì“¹˜H‚È‚ç‚»‚Ì‚Ü‚Ü“h‚è‚Â‚Ô‚·
+                    else if (isRoad)
+                    {
+                        props[i, j].GetSectionFromNumKey(k).Fill('l');
+                    }
+                    // ‚»‚à‚»‚à“¹˜H‚¶‚á‚È‚¢ê‡‚Í‰½‚àÝ’u‚µ‚È‚¢
                 }
             }
         }
