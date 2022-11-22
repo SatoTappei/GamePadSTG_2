@@ -51,7 +51,7 @@ public class ObjectConverter : MonoBehaviour
             for (int x = 0; x < Map.Width; x++)
             {
                 GameObject areaRoot = BuildingFromArray(map.Areas[z, x].GetCharArray());
-                GameObject propRoot = BuildingFromArray(map.Props[z, x].GetCharArray());
+                GameObject propRoot = BuildingFromArray(map.Props[z, x].GetCharArray(), "PropRoot");
                 areaRoot.transform.position = new Vector3(z * Area.Wide * 4, 0, x * Area.Wide * 4);
                 propRoot.transform.position = new Vector3(z * Area.Wide * 4, 1, x * Area.Wide * 4);
             }

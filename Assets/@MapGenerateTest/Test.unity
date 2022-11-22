@@ -362,6 +362,8 @@ MonoBehaviour:
     _object: {fileID: 6987181806387577369, guid: 9a1f9c27880b8b445a4fb72aff082059, type: 3}
   - _char: 77
     _object: {fileID: 6987181806387577369, guid: f8aeee10176dc5349a26f5547a4cfeda, type: 3}
+  - _char: 108
+    _object: {fileID: 8085063405230960277, guid: ec9d2506a688872419dafcca4cefbbf4, type: 3}
 --- !u!1 &2011959284
 GameObject:
   m_ObjectHideFlags: 0

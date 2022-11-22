@@ -76,7 +76,7 @@ public class AreaRoadGenerator
 
 
         // 内側の区域をランダムにカットする
-        foreach ((int z, int x) iPos in _innerAreaList.OrderBy(_ => System.Guid.NewGuid()))
+        foreach ((int z, int x) in _innerAreaList.OrderBy(_ => System.Guid.NewGuid()))
         {
             List<int> dirList = new List<int>() { 2, 4, 6, 8 };
             for (int i = 0; i < 4; i++)
@@ -86,15 +86,15 @@ public class AreaRoadGenerator
                 (int z,int x) next = GetDirTuple(dir);
 
                 // 選ばれた区域と隣の区域が4方向に接続されていれば区域間の道路を消す
-                if (areas[iPos.z, iPos.x].GetExtendCount() == 4 &&
-                    areas[iPos.z + next.z, iPos.x + next.x].GetExtendCount() == 4)
+                if (areas[z, x].GetExtendCount() == 4 &&
+                    areas[z + next.z, x + next.x].GetExtendCount() == 4)
                 {
-                    ExtendRoadToDir(areas[iPos.z, iPos.x], Non, dir);
-                    ExtendRoadToDir(areas[iPos.z + next.z, iPos.x + next.x], Non, reverseDir);
+                    ExtendRoadToDir(areas[z, x], Non, dir);
+                    ExtendRoadToDir(areas[z + next.z, x + next.x], Non, reverseDir);
 
                     // 消した先が辺上の点なら次の操作をする際に省きたいのでリストから削除する
-                    if (_edgeAreaList.Contains((iPos.z + next.z, iPos.x + next.x)))
-                        _edgeAreaList.Remove((iPos.z + next.z, iPos.x + next.x));
+                    if (_edgeAreaList.Contains((z + next.z, x + next.x)))
+                        _edgeAreaList.Remove((z + next.z, x + next.x));
                 }
 
                 dirList.Remove(dir);
@@ -127,14 +127,14 @@ public class AreaRoadGenerator
         // 太い道路の数が極端に少なくならないよう処理したらカウントを増やす
         count++;
         
-        (int z, int x) next = GetDirTuple(dir);
+        (int z, int x) = GetDirTuple(dir);
         // 隣のマスの逆方向も太い道路にするので反対方向も取得する
         int reverseDir = 10 - dir;
         ExtendRoadToDir(areas[pos.z, pos.x], WRoad, dir);
-        ExtendRoadToDir(areas[pos.z + next.z, pos.x + next.x], WRoad, reverseDir, 5);
+        ExtendRoadToDir(areas[pos.z + z, pos.x + x], WRoad, reverseDir, 5);
         
         // 隣の区域を次の基準にし、現在の方向に道路があるかチェックする
-        pos = (pos.z + next.z, pos.x + next.x);
+        pos = (pos.z + z, pos.x + x);
         if (areas[pos.z, pos.x].CheckExtendToDir(dir))
         {
             ChangeToWideRoad(areas, pos, dir, ref count);

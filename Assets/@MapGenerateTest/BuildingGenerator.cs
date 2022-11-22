@@ -62,7 +62,7 @@ public class BuildingGenerator
             int r1 = Random.Range(0, buildList.Count);
             char c = buildList[r1];
             int r2 = Random.Range(0, posList.Count);
-            (int z, int x) pos = posList[r2];
+            (int z, int x) = posList[r2];
 
             char[,] build =
             {
@@ -77,10 +77,10 @@ public class BuildingGenerator
                 {'n', 'n', 'n'},
             };
 
-            _areas[pos.z, pos.x].GetSectionFromNumKey(1).SetCharArray(build);
-            _areas[pos.z + 1, pos.x].GetSectionFromNumKey(7).SetCharArray(none);
-            _areas[pos.z + 1, pos.x - 1].GetSectionFromNumKey(9).SetCharArray(none);
-            _areas[pos.z, pos.x - 1].GetSectionFromNumKey(3).SetCharArray(none);
+            _areas[z, x].GetSectionFromNumKey(1).SetCharArray(build);
+            _areas[z + 1, x].GetSectionFromNumKey(7).SetCharArray(none);
+            _areas[z + 1, x - 1].GetSectionFromNumKey(9).SetCharArray(none);
+            _areas[z, x - 1].GetSectionFromNumKey(3).SetCharArray(none);
 
             buildList.RemoveAt(r1);
             posList.RemoveAt(r2);
