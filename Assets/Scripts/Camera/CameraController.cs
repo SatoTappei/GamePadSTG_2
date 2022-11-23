@@ -33,12 +33,47 @@ public class CameraController : MonoBehaviour
         public float fieldOfView = 45f;
         public Vector3 offsetPosition = new Vector3(0f, 1f, 0f);
         public Vector3 offsetAngles;
+
+        /// <summary>現在のParameterを複製して返す</summary>
+        public Parameter Clone()
+        {
+            return MemberwiseClone() as Parameter;
+        }
+
+        public static Parameter Lerp(Parameter a, Parameter b, float t, Parameter ret)
+        {
+            ret.position = Vector3.Lerp(a.position, b.position, t);
+            ret.angles = LerpAngles(a.angles, b.angles, t);
+            ret.distance = Mathf.Lerp(a.distance, b.distance, t);
+            ret.fieldOfView = Mathf.Lerp(a.fieldOfView, b.fieldOfView, t);
+            ret.offsetPosition = Vector3.Lerp(a.offsetPosition, b.offsetPosition, t);
+            ret.offsetAngles = LerpAngles(a.offsetAngles, b.offsetAngles, t);
+            return ret;
+        }
+
+        public static Vector3 LerpAngles(Vector3 a, Vector3 b, float t)
+        {
+            Vector3 ret = Vector3.zero;
+            ret.x = Mathf.LerpAngle(a.x, b.x, t);
+            ret.y = Mathf.LerpAngle(a.y, b.y, t);
+            ret.z = Mathf.LerpAngle(a.z, b.y, t);
+            return ret;
+        }
     }
+
+    public enum CameraMode
+    {
+        Default,
+        ItemLook,
+    }
+    public CameraMode Mode { get; set; }
 
     [SerializeField] Transform _parent;
     [SerializeField] Transform _child;
     [SerializeField] Camera _camera;
     [SerializeField] Parameter _parameter;
+
+    Sequence _cameraSeq;
 
     /// <summary>カメラの追従を一時停止させる</summary>
     public bool IsPause;
@@ -100,6 +135,13 @@ public class CameraController : MonoBehaviour
         _camera.fieldOfView = _parameter.fieldOfView;
         _camera.transform.localPosition = _parameter.offsetPosition;
         _camera.transform.localEulerAngles = _parameter.offsetAngles + _shakeAngles;
+    }
+
+    /// <summary>カメラのモードを切り替える</summary>
+    public void SwitchCamera(Parameter to)
+    {
+        Param._target = null;
+        _parameter = to;
     }
 
     /// <summary>少し遅れて追いかけてくるカメラを作るために線形補完を利用する</summary>

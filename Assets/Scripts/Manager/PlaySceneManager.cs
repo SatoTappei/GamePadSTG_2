@@ -47,11 +47,11 @@ public class PlaySceneManager : MonoBehaviour
     {
         // 他のStart()メソッドが終わるのを待つために1フレーム遅らせる
         yield return null;
-        _enemyMgr.Init(CharacterTag.BlueSoldier);
+        _enemyMgr.Init(CharacterTag.BossTank);
 
         // ReactiveCollectionはSubscribe時に処理が実行されないので
         // 一度手動でターゲットビューをセットしてから残りはターゲットが減るたびに更新させる。
-        _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), _actorDataMgr.GetActorDataSO(CharacterTag.BlueSoldier).Icon);
+        _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), _actorDataMgr.GetActorDataSO(CharacterTag.BossTank).Icon);
         _enemyMgr.TargetsObservable.Subscribe(t => _uiMgr.SetTargetView(_enemyMgr.GetTargetAmount(), t.Value.ActorData.Icon)).AddTo(_enemyMgr);
         
         // 敵の数が0になったらゲームクリアの処理を行う

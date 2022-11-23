@@ -15,5 +15,5 @@ MonoBehaviour:
   _tag: 1
   _icon: {fileID: 21300000, guid: b4e1f57a3f73d1348a3ecb72b1d19ecf, type: 3}
   _maxHP: 100
-  _attack: 27
+  _attack: 15
   _speed: 5
