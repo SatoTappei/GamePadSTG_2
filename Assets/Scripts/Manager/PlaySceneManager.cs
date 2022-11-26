@@ -53,6 +53,7 @@ public class PlaySceneManager : MonoBehaviour
         yield return _uiMgr.RemoveTitleUI();
         // カメラのターゲットをプレイヤーにしてゲームスタートの演出
         _cameraWorkManager.MoveToInGame();
+        _uiMgr.ActiveSatusUI();
         // ゲームスタート
 
         // 他のStart()メソッドが終わるのを待つために1フレーム遅らせる

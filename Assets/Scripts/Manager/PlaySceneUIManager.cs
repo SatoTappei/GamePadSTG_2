@@ -12,6 +12,7 @@ using Cysharp.Threading.Tasks;
 public class PlaySceneUIManager : MonoBehaviour
 {
     [SerializeField] GameObject _titleCanvas;
+    [SerializeField] GameObject _StatusUICanvas;
     [SerializeField] GameStartStag _gsStag;
     [SerializeField] GameOverStag _goStag;
     [SerializeField] GameClearStag _gcStag;
@@ -28,7 +29,8 @@ public class PlaySceneUIManager : MonoBehaviour
 
     void Start()
     {
-        
+        // タイトル中はステージ中のUIを表示させない
+        _StatusUICanvas.SetActive(false);
     }
 
     void Update()
@@ -89,5 +91,12 @@ public class PlaySceneUIManager : MonoBehaviour
     {
         _titleCanvas.SetActive(false);
         yield return null;
+    }
+
+    /// <summary>ステージ中のUIを表示させる</summary>
+    public void ActiveSatusUI()
+    {
+        // TODO:DotWeenを使った演出を描く
+        _StatusUICanvas.SetActive(true);
     }
 }
