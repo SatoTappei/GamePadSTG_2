@@ -15,6 +15,7 @@ public class PlaySceneManager : MonoBehaviour
     PlaySceneUIManager _uiMgr;
     EnemyManager _enemyMgr;
     ActorDataManager _actorDataMgr;
+    CameraWorkManager _cameraWorkManager;
     // TODO: 2つコンポーネント取ってくるの無駄、直すべき
     PlayerMove _playerMv;
     PlayerUnit _playerUnit;
@@ -30,6 +31,7 @@ public class PlaySceneManager : MonoBehaviour
         _uiMgr = GetComponent<PlaySceneUIManager>();
         _enemyMgr = GetComponent<EnemyManager>();
         _actorDataMgr = GetComponent<ActorDataManager>();
+        _cameraWorkManager = GetComponent<CameraWorkManager>();
         _playerMv = FindObjectOfType<PlayerMove>();
         _playerUnit = FindObjectOfType<PlayerUnit>();
 
@@ -45,6 +47,14 @@ public class PlaySceneManager : MonoBehaviour
 
     IEnumerator Start()
     {
+        // タイトル画面でコントローラーのボタンを押したら始まる
+        yield return new WaitUntil(() => Input.GetButton("Fire"));
+        // タイトルUIを消す
+        yield return _uiMgr.RemoveTitleUI();
+        // カメラのターゲットをプレイヤーにしてゲームスタートの演出
+        _cameraWorkManager.MoveToInGame();
+        // ゲームスタート
+
         // 他のStart()メソッドが終わるのを待つために1フレーム遅らせる
         yield return null;
         _enemyMgr.Init(CharacterTag.BossTank);
@@ -64,9 +74,9 @@ public class PlaySceneManager : MonoBehaviour
         _playerUnit.OnDamageObservable.Subscribe(i => _uiMgr.SetLifeGauge(_playerUnit.ActorData.MaxHP, i)).AddTo(_playerUnit);
 
         // ゲームスタートの演出後にタイマーをスタートさせ、プレイヤーと敵をアクティブにする。
-        yield return StartCoroutine(_uiMgr.PlayGameStartStag());
+        yield return _uiMgr.PlayGameStartStag();
         _uiMgr.TimerStart(() => GameOver());
-        _playerMv.WakeUp();
+        _playerUnit.WakeUp();
         _enemyMgr.WakeUpEnemyAll();
     }
 

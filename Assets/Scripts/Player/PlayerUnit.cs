@@ -14,9 +14,18 @@ public class PlayerUnit : ActorUnit
     [Header("各種ダメージ演出に必要")]
     [SerializeField] Animator _anim;
 
+    [SerializeField] PlayerMove _playerMove;
+    [SerializeField] PlayerFire _playerFire;
+
     void Update()
     {
         
+    }
+
+    public void WakeUp()
+    {
+        _playerMove.WakeUp();
+        _playerFire.Init();
     }
 
     /// <summary>ダメージを受けた際の演出</summary>

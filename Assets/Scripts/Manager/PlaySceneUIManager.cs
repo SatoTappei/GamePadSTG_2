@@ -11,6 +11,7 @@ using Cysharp.Threading.Tasks;
 /// </summary>
 public class PlaySceneUIManager : MonoBehaviour
 {
+    [SerializeField] GameObject _titleCanvas;
     [SerializeField] GameStartStag _gsStag;
     [SerializeField] GameOverStag _goStag;
     [SerializeField] GameClearStag _gcStag;
@@ -82,4 +83,11 @@ public class PlaySceneUIManager : MonoBehaviour
 
     /// <summary>タイマーの経過時間を取得する</summary>
     public int GetTimerCount() => _timer.GetCount();
+
+    /// <summary>タイトル画面のUIを消す</summary>
+    public IEnumerator RemoveTitleUI()
+    {
+        _titleCanvas.SetActive(false);
+        yield return null;
+    }
 }

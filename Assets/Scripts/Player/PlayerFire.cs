@@ -17,17 +17,6 @@ public class PlayerFire : MonoBehaviour
 
     public GameObject Weapon => _weapon;
 
-    void Awake()
-    {
-        _anim = GetComponentInChildren<Animator>();
-
-        this.UpdateAsObservable()
-            .Where(_ => Input.GetButton("Fire"))
-            .ThrottleFirst(System.TimeSpan.FromSeconds(_attackRate))
-            .Subscribe(_ => Fire())
-            .AddTo(this);
-    }
-
     void Start()
     {
 
@@ -36,6 +25,18 @@ public class PlayerFire : MonoBehaviour
     void Update()
     {
 
+    }
+
+    /// <summary>‰Šú‰»</summary>
+    public void Init()
+    {
+        _anim = GetComponentInChildren<Animator>();
+
+        this.UpdateAsObservable()
+            .Where(_ => Input.GetButton("Fire"))
+            .ThrottleFirst(System.TimeSpan.FromSeconds(_attackRate))
+            .Subscribe(_ => Fire())
+            .AddTo(this);
     }
 
     /// <summary>UŒ‚‚ğs‚¤</summary>

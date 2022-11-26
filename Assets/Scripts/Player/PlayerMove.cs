@@ -66,7 +66,6 @@ public class PlayerMove : MonoBehaviour, IAttackAnimControl
     void Update()
     {
         if (!_canMove) return;
-
         // ˆÚ“®‚Ì“ü—Í‚ðŽó‚¯Žæ‚é
         float hori = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");

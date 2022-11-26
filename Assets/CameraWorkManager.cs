@@ -7,11 +7,9 @@ using UnityEngine;
 /// </summary>
 public class CameraWorkManager : MonoBehaviour
 {
-    // TODO:タイトルからゲーム開始するときにカメラのターゲットをプレイヤーに移したい。
-    //      ゲームクリア及びゲームオーバーはシーンを読み込みなおすので問題なし
-    //      読み込みなおす理由はステージを毎回ランダムにしたいため
-    //      現在はStageParentオブジェクトのObjectRotateコンポーネントで回転せているが
-    //      これをタイトルからゲームに移るときに止めたい。
+    [SerializeField] ObjectRotate _objectRotate;
+    [SerializeField] Transform _player;
+    [SerializeField] CameraController _cameraController;
 
     void Start()
     {
@@ -21,5 +19,12 @@ public class CameraWorkManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    /// <summary>タイトルからゲームに移るときにカメラのターゲットを切り替える</summary>
+    public void MoveToInGame()
+    {
+        _objectRotate.enabled = false;
+        _cameraController.Param._target = _player;
     }
 }
