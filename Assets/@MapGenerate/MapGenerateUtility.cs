@@ -198,19 +198,20 @@ public class Map
 
     public Area[,] Areas { get; set; }
     public Area[,] Props { get; set; }
+    public Area[,] Enemies { get; set; }
 
     public Map(int height, int width)
     {
         Areas = new Area[height, width];
-
-        for (int z = 0; z < height; z++)
-            for (int x = 0; x < width; x++)
-                Areas[z, x] = new Area();
-
         Props = new Area[height, width];
+        Enemies = new Area[height, width];
 
         for (int z = 0; z < height; z++)
             for (int x = 0; x < width; x++)
+            {
+                Areas[z, x] = new Area();
                 Props[z, x] = new Area();
+                Enemies[z, x] = new Area();
+            }
     }
 }

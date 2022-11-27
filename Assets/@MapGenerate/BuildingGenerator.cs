@@ -7,16 +7,6 @@ using UnityEngine;
 /// </summary>
 public class BuildingGenerator
 {
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
-
     /// <summary>Œš•¨‚ğ¶¬‚·‚é</summary>
     public void Generate(Area[,] _areas)
     {

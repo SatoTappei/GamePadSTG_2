@@ -40,7 +40,7 @@ public class PropGenerator
                 };
 
                 // ‹æˆæ‚Ì’†‰›‚ªL‚¢“¹˜H‚©‚Ç‚¤‚©
-                bool isWide = areas[i, j].GetSectionFromNumKey(5).GetMass(0,0).Char == 'R';
+                bool isWide = areas[i, j].GetSectionFromNumKey(5).GetMass(0, 0).Char == 'R';
                 // ’†‰›‚Ì‹æ‰æ‚©‚çã‰º¶‰E‚Ì‹æ‰æ‚ğ’²‚×‚Ä‚¢‚­
                 for (int k = 2; k <= 8; k += 2)
                 {
